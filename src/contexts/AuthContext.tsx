@@ -1,12 +1,13 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { authService } from "../services/authService";
-import type { Role, User } from "../types/auth";
+import type { AccessApp, User } from "../types/auth";
 
 interface AuthContextData {
   user: User | null;
-  roles: Role[] | null;
+  accessApps: AccessApp[] | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isAdmin: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -15,8 +16,9 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [roles, setRoles] = useState<Role[] | null>(null);
+  const [accessApps, setAccessApps] = useState<AccessApp[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     loadStoredAuth();
@@ -25,11 +27,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function loadStoredAuth() {
     try {
       const storedUser = await authService.getUser();
-      const storedRoles = await authService.getRoles();
+      const storedAccessApps = await authService.getAccessApps();
 
       if (storedUser) {
         setUser(storedUser);
-        setRoles(storedRoles);
+        setAccessApps(storedAccessApps);
+        setIsAdmin(await authService.isAdmin());
       }
     } catch (error) {
       console.error("Error loading auth:", error);
@@ -40,9 +43,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function login(username: string, password: string) {
     try {
-      const response = await authService.login({ username, password });
+      const response = await authService.login(username, password);
       setUser(response.user);
-      setRoles(response.roles);
+      setAccessApps(response.accessApps);
+      setIsAdmin(await authService.isAdmin());
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -52,16 +56,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function logout() {
     await authService.logout();
     setUser(null);
-    setRoles(null);
+    setAccessApps(null);
+    setIsAdmin(false);
   }
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        roles,
+        accessApps,
         isAuthenticated: !!user,
         isLoading,
+        isAdmin,
         login,
         logout,
       }}

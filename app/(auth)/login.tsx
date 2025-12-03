@@ -13,13 +13,13 @@ import { useAuth } from "../../src/contexts/AuthContext";
 
 export default function LoginScreen() {
   const { login } = useAuth();
-  const [username, setUsername] = useState("");
+  const [cv, setCv] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   async function handleLogin() {
-    if (!username || !password) {
+    if (!cv || !password) {
       setError("Por favor, preencha todos os campos");
       return;
     }
@@ -28,8 +28,8 @@ export default function LoginScreen() {
     setError("");
 
     try {
-      await login(username, password);
-      router.replace("/(app)/dashboard" as any);
+      await login(cv, password);
+      router.replace("/(app)/dashboard");
     } catch (err: any) {
       setError(err.message || "Erro ao fazer login. Verifique suas credenciais.");
     } finally {
@@ -49,12 +49,12 @@ export default function LoginScreen() {
           <Text className="text-2xl font-bold text-slate-800 mb-6">Entrar</Text>
 
           <View className="mb-4">
-            <Text className="text-slate-700 font-semibold mb-2">Utilizador</Text>
+            <Text className="text-slate-700 font-semibold mb-2">CV</Text>
             <TextInput
-              value={username}
-              onChangeText={setUsername}
-              placeholder="Digite seu utilizador"
-              autoCapitalize="none"
+              value={cv}
+              onChangeText={setCv}
+              placeholder="Digite seu CV"
+              autoCapitalize="characters"
               autoCorrect={false}
               className="bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-base"
             />

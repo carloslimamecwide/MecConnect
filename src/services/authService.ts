@@ -1,7 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { LoginCredentials, LoginResponse, Role, User } from "../types/auth";
+import Constants from "expo-constants";
+import type { AccessApp, BackendLoginResponse, LoginResponse, Role, User } from "../types/auth";
 
-const API_BASE_URL = "https://api.example.com"; // Replace with actual base URL or import from env
+const AUTH_BASE_URL = Constants.expoConfig?.extra?.authBaseUrl;
 
 const STORAGE_KEYS = {
   TOKEN: "@mecconnect:token",
@@ -10,14 +11,14 @@ const STORAGE_KEYS = {
 };
 
 class AuthService {
-  async login(credentials: LoginCredentials): Promise<LoginResponse> {
+  async login(cv: string, password: string): Promise<LoginResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/Auth/login`, {
+      const response = await fetch(`${AUTH_BASE_URL}/Auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(credentials),
+        body: JSON.stringify({ user_cv: cv, password }),
       });
 
       if (!response.ok) {
@@ -25,13 +26,40 @@ class AuthService {
         throw new Error(error.message || "Erro ao fazer login");
       }
 
-      const data: LoginResponse = await response.json();
+      const backendData: BackendLoginResponse = await response.json();
 
-      await AsyncStorage.setItem(STORAGE_KEYS.TOKEN, data.token);
-      await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(data.user));
-      await AsyncStorage.setItem(STORAGE_KEYS.ROLES, JSON.stringify(data.roles));
+      if (!backendData.token) {
+        throw new Error("Token não recebido do servidor");
+      }
 
-      return data;
+      // Mapear resposta do backend para o formato interno
+      const user: User = {
+        cv: backendData.cv,
+        nome: backendData.nome,
+        prof_email: backendData.prof_email,
+        bi: backendData.bi,
+        country: backendData.country,
+        address: backendData.address,
+        location: backendData.location,
+        city: backendData.city,
+        nationality: backendData.nationality,
+        district: backendData.district,
+        job: backendData.job,
+        desc_job: backendData.desc_job,
+        photo: backendData.photo,
+      };
+
+      const loginResponse: LoginResponse = {
+        user,
+        token: backendData.token,
+        accessApps: backendData.accessApps,
+      };
+
+      await AsyncStorage.setItem(STORAGE_KEYS.TOKEN, loginResponse.token);
+      await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(loginResponse.user));
+      await AsyncStorage.setItem(STORAGE_KEYS.ROLES, JSON.stringify(loginResponse.accessApps));
+
+      return loginResponse;
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -51,9 +79,19 @@ class AuthService {
     return userJson ? JSON.parse(userJson) : null;
   }
 
-  async getRoles(): Promise<Role[] | null> {
-    const rolesJson = await AsyncStorage.getItem(STORAGE_KEYS.ROLES);
-    return rolesJson ? JSON.parse(rolesJson) : null;
+  async getAccessApps(): Promise<AccessApp[] | null> {
+    const appsJson = await AsyncStorage.getItem(STORAGE_KEYS.ROLES);
+    return appsJson ? JSON.parse(appsJson) : null;
+  }
+
+  async isAdmin(): Promise<boolean> {
+    const apps = await this.getAccessApps();
+    if (!apps) return false;
+
+    const ferApp = apps.find((app) => app.app === "FER");
+    if (!ferApp) return false;
+
+    return ferApp.roles.some((role: Role) => role.role === "ADM");
   }
 
   async isAuthenticated(): Promise<boolean> {

@@ -14,13 +14,15 @@ export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <View className="flex-1 flex-row bg-gray-50">
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+    <View className="flex-1 bg-gray-50">
+      <Header title={title} onMenuPress={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-      <View className="flex-1 flex flex-col">
-        <Header title={title} onMenuPress={() => setIsSidebarOpen(true)} />
+      <View className="flex-1 flex-row">
+        {isDesktop && <Sidebar isOpen={true} onClose={() => {}} />}
 
         <View className="flex-1">{children}</View>
+
+        {!isDesktop && <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />}
       </View>
     </View>
   );

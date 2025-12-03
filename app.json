@@ -10,14 +10,8 @@
     "scheme": "mecconnect",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "platforms": ["ios", "android", "web"],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mecwide.mecconnect",
@@ -43,12 +37,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "permissions": [
-        "INTERNET",
-        "ACCESS_NETWORK_STATE",
-        "INTERNET",
-        "ACCESS_NETWORK_STATE"
-      ],
+      "permissions": ["INTERNET", "ACCESS_NETWORK_STATE", "INTERNET", "ACCESS_NETWORK_STATE"],
       "backgroundColor": "#FFFFFF",
       "splash": {
         "image": "./assets/images/splash-icon.png",
@@ -89,7 +78,9 @@
       "router": {},
       "eas": {
         "projectId": "5051710e-46f1-4250-a578-f4fd060df383"
-      }
+      },
+      "apiBaseUrl": "https://api.mecwide.com",
+      "authBaseUrl": ""
     }
   }
 }
