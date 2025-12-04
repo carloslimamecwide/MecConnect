@@ -4,6 +4,7 @@ import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
+import { AppText } from "../Common/AppText";
 
 interface HeaderProps {
   title: string;
@@ -39,9 +40,9 @@ export function Header({ title, onMenuPress }: HeaderProps) {
       {/* Título centralizado só em desktop */}
       {isDesktop && (
         <View style={{ flex: 1, alignItems: "center" }}>
-          <Text style={{ fontSize: 20, fontWeight: "bold", color: "#FFFFFF" }} numberOfLines={1}>
+          <AppText style={{ fontSize: 20, fontWeight: "bold", color: "#FFFFFF" }} numberOfLines={1}>
             {title}
-          </Text>
+          </AppText>
         </View>
       )}
       {/* Botão logout totalmente à direita */}
