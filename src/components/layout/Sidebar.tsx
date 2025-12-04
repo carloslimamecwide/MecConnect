@@ -1,11 +1,10 @@
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { router, usePathname } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { AppText } from "../Common/AppText";
-import { ConfirmModal } from "../Common/ConfirmModal";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -21,22 +20,8 @@ const menuItems = [
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const isDesktop = useIsDesktop();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const pathname = usePathname();
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  const handleLogoutConfirm = async () => {
-    setIsLoggingOut(true);
-    try {
-      await logout();
-      setShowLogoutConfirm(false);
-      router.replace("/(auth)/login" as any);
-    } catch (error) {
-      console.error("Logout error:", error);
-      setIsLoggingOut(false);
-    }
-  };
 
   if (!isDesktop && !isOpen) {
     return null;
@@ -120,32 +105,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               </View>
             </View>
           </View>
-          <TouchableOpacity
-            onPress={() => setShowLogoutConfirm(true)}
-            className="rounded-xl py-3 items-center"
-            style={{ backgroundColor: "rgba(239, 68, 68, 0.1)", borderWidth: 1, borderColor: "rgba(239, 68, 68, 0.3)" }}
-            activeOpacity={0.7}
-          >
-            <View className="flex-row items-center">
-              <FontAwesome5 name="sign-out-alt" size={16} color="#ef4444" />
-              <AppText className="text-red-400 text-sm font-semibold ml-2">Sair</AppText>
-            </View>
-          </TouchableOpacity>
         </View>
       </View>
-
-      {/* Logout Confirm Modal */}
-      <ConfirmModal
-        visible={showLogoutConfirm}
-        title="Confirmar Logout"
-        message="Tem certeza que deseja sair da aplicação?"
-        confirmText="Sair"
-        cancelText="Cancelar"
-        onConfirm={handleLogoutConfirm}
-        onCancel={() => setShowLogoutConfirm(false)}
-        isLoading={isLoggingOut}
-        isDangerous={true}
-      />
     </>
   );
 }
