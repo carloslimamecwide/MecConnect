@@ -83,7 +83,7 @@
       "eas": {
         "projectId": "5051710e-46f1-4250-a578-f4fd060df383"
       },
-      "apiBaseUrl": "https://api.mecwide.com",
+      "apiBaseUrl": "http://localhost:33699",
       "authBaseUrl": ""
     }
   }
