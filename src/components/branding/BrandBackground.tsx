@@ -16,7 +16,7 @@ export function BrandBackground({ opacity = 0.05 }: BrandBackgroundProps) {
         source={require("../../../assets/images/M_ONLY.png")}
         style={{
           position: "absolute",
-          top: isMobile ? 0 : 20,
+          top: isMobile ? 0 : 60,
           right: isMobile ? -100 : -100,
           width: isMobile ? d.width : d.width * 0.8,
           height: isMobile ? d.height : d.height * 0.8,
