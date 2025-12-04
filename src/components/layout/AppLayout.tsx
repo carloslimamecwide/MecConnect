@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+// src/components/layout/AppLayout.tsx
+import { StatusBar } from "expo-status-bar";
+import React from "react";
 import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
+import BrandBackground from "../branding/BrandBackground";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 
@@ -11,19 +15,26 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
   const isDesktop = useIsDesktop();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <View className="flex-1 bg-gray-50">
-      <Header title={title} onMenuPress={() => setIsSidebarOpen(!isSidebarOpen)} />
+    <SafeAreaView className="flex-1" style={{ backgroundColor: "#0a1a2b" }}>
+      <StatusBar style="light" backgroundColor="#0a1a2b" translucent={false} />
+      {/* Marca d'água em toda a app */}
+      <BrandBackground color="#FFFFFF" opacity={0.06} />
 
-      <View className="flex-1 flex-row">
-        {isDesktop && <Sidebar isOpen={true} onClose={() => {}} />}
+      {/* Conteúdo por cima do background */}
+      <View className="flex-1" style={{ paddingTop: 0 }}>
+        {/* Header em todas as telas */}
+        <Header title={title} onMenuPress={() => {}} />
 
-        <View className="flex-1">{children}</View>
+        <View className="flex-1 flex-row">
+          {/* Sidebar fixa apenas em desktop */}
+          {isDesktop && <Sidebar isOpen={true} onClose={() => {}} />}
 
-        {!isDesktop && <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />}
+          {/* Área de conteúdo */}
+          <View className="flex-1">{children}</View>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

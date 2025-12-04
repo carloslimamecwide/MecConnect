@@ -40,20 +40,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <View className="p-6 border-b border-gray-200">
           <View className="flex flex-row items-center justify-between">
             <View className="flex flex-row items-center flex-1">
-              <View className="mr-3">
-                <Text className="text-3xl font-bold" style={{ color: "#0066CC" }}>
-                  mecwide
-                </Text>
-                <Text className="text-xs font-semibold" style={{ color: "#FF6B00" }}>
-                  CONNECT
-                </Text>
-              </View>
+              <Text className="text-2xl font-bold text-gray-900">MecConnect</Text>
             </View>
-            {!isDesktop && (
-              <TouchableOpacity onPress={onClose} className="p-2">
-                <Text className="text-gray-600 text-2xl">✕</Text>
-              </TouchableOpacity>
-            )}
+            <View className="items-end">
+              <Text className="text-xs font-bold" style={{ color: "#0066CC" }}>
+                MECWIDE
+              </Text>
+            </View>
           </View>
         </View>
 

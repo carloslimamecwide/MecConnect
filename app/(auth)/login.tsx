@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -9,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import BrandBackground from "../../src/components/branding/BrandBackground";
 import { useAuth } from "../../src/contexts/AuthContext";
 
 export default function LoginScreen() {
@@ -38,14 +40,33 @@ export default function LoginScreen() {
   }
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1 bg-slate-100">
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      className="flex-1"
+      style={{ backgroundColor: "#0a1a2b" }}
+    >
+      {/* Marca d'água com o símbolo cut */}
+      <BrandBackground color="#FFFFFF" opacity={0.06} />
+
       <View className="flex-1 justify-center items-center px-6">
-        <View className="mb-8 items-center">
-          <Text className="text-4xl font-bold text-slate-800 mb-2">MecConnect</Text>
-          <Text className="text-slate-600 text-base">Painel de Administração</Text>
+        {/* Logo Mecwide no canto superior direito */}
+        <View className="absolute left-4 top-20 items-start">
+          <Image
+            source={require("../../assets/images/LOGOTIPO_MECWIDE_BRANCO.png")}
+            style={{ width: 130, height: 60 }}
+          />
         </View>
 
-        <View className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+        <View className="mb-8 items-center">
+          <Text className="text-4xl font-extrabold mb-1" style={{ color: "#FFFFFF" }}>
+            MecConnect
+          </Text>
+          <Text className="text-base" style={{ color: "rgba(255,255,255,0.75)" }}>
+            Painel de Administração
+          </Text>
+        </View>
+
+        <View className="w-full max-w-md bg-white/95 rounded-2xl shadow-lg p-8">
           <Text className="text-2xl font-bold text-slate-800 mb-6">Entrar</Text>
 
           <View className="mb-4">
@@ -82,7 +103,8 @@ export default function LoginScreen() {
           <TouchableOpacity
             onPress={handleLogin}
             disabled={isLoading}
-            className={`bg-blue-600 rounded-lg py-3 items-center ${isLoading ? "opacity-50" : ""}`}
+            className={`rounded-lg py-3 items-center ${isLoading ? "opacity-50" : ""}`}
+            style={{ backgroundColor: "#0066CC" }}
           >
             {isLoading ? (
               <ActivityIndicator color="white" />
@@ -93,7 +115,7 @@ export default function LoginScreen() {
         </View>
 
         <View className="mt-8">
-          <Text className="text-slate-500 text-sm text-center">© 2025 MecConnect. Todos os direitos reservados.</Text>
+          <Text className="text-slate-300 text-sm text-center">© 2025 Mecwide. Todos os direitos reservados.</Text>
         </View>
       </View>
     </KeyboardAvoidingView>
