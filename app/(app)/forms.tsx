@@ -1,5 +1,6 @@
+import { AppText } from "@/src/components/Common/AppText";
 import React from "react";
-import { Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { AppLayout } from "../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../src/components/layout/PageWrapper";
 
@@ -7,19 +8,21 @@ export default function FormsScreen() {
   return (
     <AppLayout title="Formulários">
       <PageWrapper>
-        <View className="mb-6">
-          <Text className="text-2xl font-bold text-gray-800 mb-2">Gestão de Formulários</Text>
-          <Text className="text-gray-600">Crie e gerencie formulários da equipa</Text>
-        </View>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View className="mb-8">
+            <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Gestão de Formulários</AppText>
+            <AppText className="text-gray-300 text-sm md:text-base">Crie e gerencie formulários da equipa</AppText>
+          </View>
 
-        <View className="bg-white rounded-lg shadow">
-          {["Formulário de Feedback", "Avaliação de Desempenho", "Pedido de Férias"].map((form, idx) => (
-            <View key={idx} className="border-b border-gray-200 p-4 last:border-b-0">
-              <Text className="font-semibold text-gray-800">{form}</Text>
-              <Text className="text-gray-500 text-sm mt-1">Ativo</Text>
-            </View>
-          ))}
-        </View>
+          <View className="gap-3">
+            {["Formulário de Feedback", "Avaliação de Desempenho", "Pedido de Férias"].map((form, idx) => (
+              <View key={idx} className="rounded-xl p-5 bg-white/10 border border-white/10">
+                <AppText className="font-semibold text-gray-100 mb-1">{form}</AppText>
+                <AppText className="text-gray-400 text-sm">Ativo</AppText>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       </PageWrapper>
     </AppLayout>
   );

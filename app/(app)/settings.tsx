@@ -1,5 +1,6 @@
+import { AppText } from "@/src/components/Common/AppText";
 import React from "react";
-import { Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { AppLayout } from "../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../src/components/layout/PageWrapper";
 
@@ -7,18 +8,20 @@ export default function SettingsScreen() {
   return (
     <AppLayout title="Definições">
       <PageWrapper>
-        <View className="mb-6">
-          <Text className="text-2xl font-bold text-gray-800 mb-2">Definições da Aplicação</Text>
-          <Text className="text-gray-600">Configure preferências e parâmetros</Text>
-        </View>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View className="mb-8">
+            <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Definições da Aplicação</AppText>
+            <AppText className="text-gray-300 text-sm md:text-base">Configure preferências e parâmetros</AppText>
+          </View>
 
-        <View className="bg-white rounded-lg shadow">
-          {["Perfil de Utilizador", "Notificações", "Privacidade", "Sobre"].map((setting, idx) => (
-            <View key={idx} className="border-b border-gray-200 p-4 last:border-b-0">
-              <Text className="font-semibold text-gray-800">{setting}</Text>
-            </View>
-          ))}
-        </View>
+          <View className="gap-3">
+            {["Perfil de Utilizador", "Notificações", "Privacidade", "Sobre"].map((setting, idx) => (
+              <View key={idx} className="rounded-xl p-5 bg-white/10 border border-white/10">
+                <AppText className="font-semibold text-gray-100">{setting}</AppText>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       </PageWrapper>
     </AppLayout>
   );

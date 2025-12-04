@@ -8,7 +8,7 @@ interface PageWrapperProps {
 export function PageWrapper({ children }: PageWrapperProps) {
   return (
     <ScrollView className="flex-1">
-      <View className="p-4 md:p-6 lg:p-8">{children}</View>
+      <View className="pl-4 pr-4 md:p-6 lg:p-8">{children}</View>
     </ScrollView>
   );
 }

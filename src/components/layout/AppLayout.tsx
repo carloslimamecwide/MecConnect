@@ -23,7 +23,7 @@ export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
       <BrandBackground color="#FFFFFF" opacity={0.06} />
 
       {/* Conteúdo por cima do background */}
-      <View className="flex-1" style={{ paddingTop: 0 }}>
+      <View className="flex-1">
         {/* Header em todas as telas */}
         <Header title={title} onMenuPress={() => {}} />
 

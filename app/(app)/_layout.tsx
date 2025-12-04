@@ -1,5 +1,6 @@
 import { Redirect, Tabs } from "expo-router";
-import { View } from "react-native";
+import { Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LoadingScreen } from "../../src/components/branding/LoadingScreen";
 import { TabIcon } from "../../src/components/layout/TabIcon";
 import { useAuth } from "../../src/contexts/AuthContext";
@@ -8,6 +9,7 @@ import { useIsDesktop } from "../../src/hooks/useIsDesktop";
 export default function AppLayout() {
   const { isAuthenticated, isLoading } = useAuth();
   const isDesktop = useIsDesktop();
+  const insets = useSafeAreaInsets();
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -20,59 +22,60 @@ export default function AppLayout() {
   // Em mobile usa Tabs, em desktop usa navegação normal (com sidebar no AppLayout)
   if (!isDesktop) {
     return (
-      <View style={{ flex: 1, backgroundColor: "#0a1a2b" }}>
-        <Tabs
-          screenOptions={{
-            headerShown: false,
-            tabBarStyle: {
-              backgroundColor: "#0a1a2b",
-              borderTopColor: "rgba(255,255,255,0.1)",
-              height: 60,
-              paddingBottom: 8,
-            },
-            tabBarActiveTintColor: "#FFFFFF",
-            tabBarInactiveTintColor: "rgba(255,255,255,0.5)",
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarStyle: {
+            backgroundColor: "#0a1a2b",
+            borderTopColor: "rgba(255,255,255,0.1)",
+            height: Platform.OS === "android" ? 56 + insets.bottom : 70,
+            paddingTop: 0,
+            paddingBottom: Platform.OS === "android" ? insets.bottom : 4,
+          },
+          tabBarActiveTintColor: "#FFFFFF",
+          tabBarInactiveTintColor: "rgba(255,255,255,0.5)",
+        }}
+      >
+        <Tabs.Screen
+          name="dashboard"
+          options={{
+            title: "Início",
+            tabBarIcon: ({ color }) => <TabIcon icon="📊" color={color} />,
           }}
-        >
-          <Tabs.Screen
-            name="dashboard"
-            options={{
-              title: "Início",
-              tabBarIcon: ({ color }) => <TabIcon icon="📊" color={color} />,
-            }}
-          />
-          <Tabs.Screen
-            name="forms"
-            options={{
-              title: "Forms",
-              tabBarIcon: ({ color }) => <TabIcon icon="📝" color={color} />,
-            }}
-          />
-          <Tabs.Screen
-            name="notifications"
-            options={{
-              title: "Notifs",
-              tabBarIcon: ({ color }) => <TabIcon icon="🔔" color={color} />,
-            }}
-          />
-          <Tabs.Screen
-            name="settings"
-            options={{
-              title: "Config",
-              tabBarIcon: ({ color }) => <TabIcon icon="⚙️" color={color} />,
-            }}
-          />
-        </Tabs>
-      </View>
+        />
+        <Tabs.Screen
+          name="forms"
+          options={{
+            title: "Forms",
+            tabBarIcon: ({ color }) => <TabIcon icon="📝" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="notifications"
+          options={{
+            title: "Notifs",
+            tabBarIcon: ({ color }) => <TabIcon icon="🔔" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: "Config",
+            tabBarIcon: ({ color }) => <TabIcon icon="⚙️" color={color} />,
+          }}
+        />
+      </Tabs>
     );
   }
 
-  // Desktop usa Stack (sidebar aparece no AppLayout)
+  // Desktop usa Tabs sem tab bar visível (sidebar aparece no AppLayout)
   return (
     <Tabs
       screenOptions={{
-        headerShown: true,
-        tabBarStyle: { display: "none" },
+        headerShown: false,
+        tabBarStyle: {
+          display: "none",
+        },
       }}
     >
       <Tabs.Screen name="dashboard" />
