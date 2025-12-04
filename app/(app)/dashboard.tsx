@@ -1,4 +1,5 @@
 import { AppText } from "@/src/components/Common/AppText";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import React from "react";
 import { ScrollView, View } from "react-native";
 import { AppLayout } from "../../src/components/layout/AppLayout";
@@ -9,28 +10,28 @@ export default function DashboardScreen() {
     {
       label: "Formulários",
       value: "24",
-      icon: "📝",
+      icon: "file-alt",
       bgOpacity: "bg-white/10",
       textColor: "text-gray-100",
     },
     {
       label: "Notificações",
       value: "12",
-      icon: "🔔",
+      icon: "bell",
       bgOpacity: "bg-white/10",
       textColor: "text-gray-100",
     },
     {
       label: "Utilizadores",
       value: "156",
-      icon: "👥",
+      icon: "users",
       bgOpacity: "bg-white/10",
       textColor: "text-gray-100",
     },
     {
       label: "Relatórios",
       value: "8",
-      icon: "📊",
+      icon: "chart-bar",
       bgOpacity: "bg-white/10",
       textColor: "text-gray-100",
     },
@@ -57,7 +58,7 @@ export default function DashboardScreen() {
                   <AppText className="text-sm font-semibold text-gray-400 mb-1">{stat.label}</AppText>
                   <AppText className={`text-3xl font-bold ${stat.textColor}`}>{stat.value}</AppText>
                 </View>
-                <AppText className="text-4xl opacity-70">{stat.icon}</AppText>
+                <FontAwesome5 name={stat.icon} size={30} color="rgba(255,255,255,0.5)" />
               </View>
             ))}
           </View>

@@ -1,3 +1,4 @@
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { router, usePathname } from "expo-router";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -11,10 +12,10 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { href: "/dashboard", label: "Dashboard", icon: "📊" },
-  { href: "/forms", label: "Formulários", icon: "📝" },
-  { href: "/notifications", label: "Notificações", icon: "🔔" },
-  { href: "/settings", label: "Definições", icon: "⚙️" },
+  { href: "/dashboard", label: "Dashboard", icon: "home" },
+  { href: "/forms", label: "Formulários", icon: "file-alt" },
+  { href: "/notifications", label: "Notificações", icon: "bell" },
+  { href: "/settings", label: "Definições", icon: "cog" },
 ];
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
@@ -45,9 +46,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <View className="p-6 border-b border-white/10">
           <View className="flex flex-row items-center justify-between">
             <AppText className="text-2xl font-bold text-gray-100">MecConnect</AppText>
-            <AppText className="text-xs font-bold" style={{ color: "#0066CC" }}>
+            {/* <AppText className="text-xs font-bold" style={{ color: "#0066CC" }}>
               MECWIDE
-            </AppText>
+            </AppText> */}
           </View>
         </View>
 
@@ -74,7 +75,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     className="w-9 h-9 rounded-lg items-center justify-center mr-3"
                     style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
                   >
-                    <Text className="text-xl">{item.icon}</Text>
+                    <FontAwesome5 name={item.icon} size={16} color={isActive ? "#FFFFFF" : "rgba(255,255,255,0.6)"} />
                   </View>
                   <AppText className={`text-sm font-medium ${isActive ? "text-white" : "text-gray-300"}`}>
                     {item.label}
@@ -113,7 +114,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             style={{ backgroundColor: "rgba(239, 68, 68, 0.1)", borderWidth: 1, borderColor: "rgba(239, 68, 68, 0.3)" }}
             activeOpacity={0.7}
           >
-            <AppText className="text-red-400 text-sm font-semibold">🚪 Sair</AppText>
+            <View className="flex-row items-center">
+              <FontAwesome5 name="sign-out-alt" size={16} color="#ef4444" />
+              <AppText className="text-red-400 text-sm font-semibold ml-2">Sair</AppText>
+            </View>
           </TouchableOpacity>
         </View>
       </View>

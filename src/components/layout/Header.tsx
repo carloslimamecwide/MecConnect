@@ -8,21 +8,23 @@ import { AppText } from "../Common/AppText";
 
 interface HeaderProps {
   title: string;
-  onMenuPress?: () => void;
+  onLogoPress?: () => void;
 }
 
-export function Header({ title, onMenuPress }: HeaderProps) {
+export function Header({ title, onLogoPress }: HeaderProps) {
   const isDesktop = useIsDesktop();
   const { logout } = useAuth();
 
   return (
     <View className="flex-row items-center bg-[#0a1a2b] border-b border-white/10 px-2.5">
       {/* Logo Mecwide */}
-      <Image
-        source={require("../../../assets/images/LOGOTIPO_MECWIDE_BRANCO.png")}
-        style={{ width: 130, height: 60 }}
-        resizeMode="contain"
-      />
+      <TouchableOpacity onPress={onLogoPress} accessibilityLabel="Logo Mecwide">
+        <Image
+          source={require("../../../assets/images/LOGOTIPO_MECWIDE_BRANCO.png")}
+          style={{ width: 130, height: 60 }}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
 
       {/* Título centralizado só em desktop */}
       {isDesktop && (
