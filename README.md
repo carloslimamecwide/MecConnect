@@ -92,6 +92,47 @@ Os arquivos serão gerados em `dist/` e podem ser hospedados em qualquer servido
 eas build --platform all --profile production
 ```
 
+## Atualizações OTA (EAS Update)
+
+### Publicar update OTA
+
+```bash
+npx eas update --branch main --message "ajuste x"
+```
+
+#### Publicar em branch/ambiente de testes (ex.: staging)
+
+```bash
+npx eas update --branch staging --message "teste antes da produção"
+```
+
+#### Publicar em produção (branch main)
+
+```bash
+npx eas update --branch main --message "release produção"
+```
+
+##### Produção separado por plataforma
+
+```bash
+# Apenas iOS
+npx eas update --branch main --platform ios --message "release produção ios"
+
+# Apenas Android
+npx eas update --branch main --platform android --message "release produção android"
+```
+
+### Ver histórico de updates
+
+```bash
+npx eas update:list --branch main
+```
+
+### Observações
+
+- Certifique-se de que `updates.enabled` está `true` e `runtimeVersion` permanece estável enquanto não houver mudanças nativas.
+- Se alterar dependências nativas, gere novo build de loja (`eas build --profile production --platform all`) antes do próximo OTA.
+
 ## Submissão para Lojas
 
 ### Submeter para App Store (iOS)

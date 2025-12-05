@@ -58,6 +58,7 @@ export default function LoginScreen() {
             <Image
               source={require("../../assets/images/LOGOTIPO_MECWIDE_BRANCO.png")}
               style={{ width: isDesktop ? 230 : 130, height: isDesktop ? 110 : 60 }}
+              resizeMode="contain"
             />
           </View>
 

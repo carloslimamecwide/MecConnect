@@ -3,7 +3,7 @@
     "name": "MecConnect",
     "slug": "mecconnect",
     "owner": "mecwide",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "sdkVersion": "54.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -14,8 +14,14 @@
     "scheme": "mecconnect",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "platforms": ["ios", "android", "web"],
-    "assetBundlePatterns": ["**/*"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mecwide.mecconnect",
@@ -32,7 +38,7 @@
     },
     "android": {
       "package": "com.mecwide.mecconnect",
-      "versionCode": 1,
+      "versionCode": 5,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/splash.png",
@@ -41,7 +47,12 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "permissions": ["INTERNET", "ACCESS_NETWORK_STATE", "INTERNET", "ACCESS_NETWORK_STATE"],
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
       "backgroundColor": "#0a1a2b",
       "splash": {
         "image": "./assets/images/icon.png",
@@ -74,7 +85,7 @@
       "reactCompiler": true
     },
     "updates": {
-      "enabled": false,
+      "enabled": true,
       "url": "https://u.expo.dev/5051710e-46f1-4250-a578-f4fd060df383"
     },
     "runtimeVersion": "1.0.0",

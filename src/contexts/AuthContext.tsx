@@ -44,9 +44,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function login(username: string, password: string) {
     try {
       const response = await authService.login(username, password);
+
+      // Verificar se é ADM e tem default: true
+      const isAdminUser = await authService.isAdmin();
+      const hasDefaultRole = response.accessApps.some((app) =>
+        app.roles.some((role) => role.role === "ADM" && role.default === true)
+      );
+
+      if (!isAdminUser || !hasDefaultRole) {
+        await authService.logout();
+        throw new Error("Acesso negado. Apenas administradores com perfil padrão podem aceder.");
+      }
+
       setUser(response.user);
       setAccessApps(response.accessApps);
-      setIsAdmin(await authService.isAdmin());
+      setIsAdmin(isAdminUser);
     } catch (error) {
       console.error("Login error:", error);
       throw error;
