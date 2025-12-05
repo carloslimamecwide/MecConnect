@@ -19,7 +19,7 @@ export function Header({ title, onLogoPress }: HeaderProps) {
         <TouchableOpacity onPress={onLogoPress} accessibilityLabel="Logo Mecwide">
           <Image
             source={require("../../../assets/images/LOGOTIPO_MECWIDE_BRANCO.png")}
-            style={{ width: 130, height: 60 }}
+            style={{ width: isDesktop ? 200 : 130, height: isDesktop ? 80 : 60 }}
             resizeMode="contain"
           />
         </TouchableOpacity>

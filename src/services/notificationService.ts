@@ -1,6 +1,4 @@
-import Constants from "expo-constants";
-
-const API_BASE_URL = Constants.expoConfig?.extra?.apiBaseUrl;
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 interface NotificationPayload {
   title: string;
@@ -116,7 +114,7 @@ class NotificationService {
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
-
+      console.log("Fetch segments response status:", response.status);
       const users: User[] = await response.json();
 
       // Extrair desc_ax2 únicos e criar options

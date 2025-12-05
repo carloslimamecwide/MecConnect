@@ -1,8 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Constants from "expo-constants";
 import type { AccessApp, BackendLoginResponse, LoginResponse, Role, User } from "../types/auth";
 
-const AUTH_BASE_URL = Constants.expoConfig?.extra?.authBaseUrl;
+const AUTH_BASE_URL = process.env.EXPO_PUBLIC_AUTH_URL;
 
 const STORAGE_KEYS = {
   TOKEN: "@mecconnect:token",

@@ -54,7 +54,7 @@ export default function LoginScreen() {
       <DismissKeyboard>
         <View className="flex-1 justify-center items-center px-6" style={{ zIndex: 1 }}>
           {/* Logo Mecwide no canto superior direito */}
-          <View className="absolute left-4 top-10 items-start">
+          <View className={`absolute left-4 ${isDesktop ? "top-0" : "top-12"} items-start`}>
             <Image
               source={require("../../assets/images/LOGOTIPO_MECWIDE_BRANCO.png")}
               style={{ width: isDesktop ? 230 : 130, height: isDesktop ? 110 : 60 }}
@@ -88,7 +88,7 @@ export default function LoginScreen() {
                   autoCapitalize="characters"
                   autoCorrect={false}
                   className="border-b border-slate-400 px-0 py-3 text-base"
-                  style={{ color: "#FFFFFF" }}
+                  style={{ color: "#FFFFFF", outline: "none" } as any}
                 />
               </View>
 
@@ -103,7 +103,7 @@ export default function LoginScreen() {
                   autoCapitalize="none"
                   autoCorrect={false}
                   className="border-b border-slate-400 px-0 py-3 text-base"
-                  style={{ color: "#FFFFFF" }}
+                  style={{ color: "#FFFFFF", outline: "none" } as any}
                 />
               </View>
 
@@ -117,7 +117,7 @@ export default function LoginScreen() {
                 onPress={handleLogin}
                 disabled={isLoading}
                 className={`rounded-lg py-3 items-center ${isLoading ? "opacity-50" : ""}`}
-                style={{ backgroundColor: "#0066CC" }}
+                style={{ backgroundColor: "#0066CC", outline: "none" } as any}
               >
                 {isLoading ? (
                   <ActivityIndicator color="white" />

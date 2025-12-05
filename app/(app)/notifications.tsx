@@ -167,7 +167,7 @@ export default function NotificationsScreen() {
                 placeholder="Ex: Nova atualização disponível"
                 placeholderTextColor="rgba(255,255,255,0.3)"
                 className="border-b border-slate-400 px-0 py-3 text-base"
-                style={{ color: "#FFFFFF" }}
+                style={{ color: "#FFFFFF", outline: "none" } as any}
               />
             </View>
 
@@ -182,7 +182,7 @@ export default function NotificationsScreen() {
                 multiline
                 numberOfLines={4}
                 className="border border-slate-400 rounded-lg px-3 py-3 text-base"
-                style={{ color: "#FFFFFF", textAlignVertical: "top" }}
+                style={{ color: "#FFFFFF", textAlignVertical: "top", outline: "none" } as any}
               />
             </View>
 
