@@ -18,7 +18,7 @@ export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
   const router = useRouter();
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: "#0a1a2b" }}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: "#0a1a2b" }} edges={["top", "left", "right"]}>
       <StatusBar style="light" backgroundColor="#0a1a2b" translucent={false} />
       {/* Marca d'água em toda a app */}
       <BrandBackground opacity={0.06} />
