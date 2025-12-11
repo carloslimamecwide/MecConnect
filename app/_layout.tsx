@@ -4,6 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "../global.css";
 import { AuthProvider } from "../src/contexts/AuthContext";
+import { ToastProvider } from "../src/contexts/ToastContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -13,14 +14,16 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <AuthProvider>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: "#0a1a2b" },
-          animation: "fade",
-        }}
-      />
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: "#0a1a2b" },
+            animation: "fade",
+          }}
+        />
+      </AuthProvider>
+    </ToastProvider>
   );
 }
