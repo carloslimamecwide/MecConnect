@@ -50,6 +50,21 @@ export default function AppLayout() {
             tabBarIcon: ({ color }) => <FontAwesome5 name="file-alt" size={20} color={color} />,
           }}
         />
+
+        <Tabs.Screen
+          name="rewards"
+          options={{
+            title: "Rewards",
+            tabBarIcon: ({ color }) => <FontAwesome5 name="gift" size={20} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="events"
+          options={{
+            title: "Eventos",
+            tabBarIcon: ({ color }) => <FontAwesome5 name="calendar" size={20} color={color} />,
+          }}
+        />
         <Tabs.Screen
           name="notifications"
           options={{
@@ -81,6 +96,8 @@ export default function AppLayout() {
       <Tabs.Screen name="dashboard" />
       <Tabs.Screen name="forms" />
       <Tabs.Screen name="notifications" />
+      <Tabs.Screen name="rewards" />
+      <Tabs.Screen name="events" />
       <Tabs.Screen name="settings" />
     </Tabs>
   );

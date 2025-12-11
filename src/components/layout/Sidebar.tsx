@@ -14,6 +14,9 @@ interface SidebarProps {
 const menuItems = [
   { href: "/dashboard", label: "Dashboard", icon: "home" },
   { href: "/forms", label: "Formulários", icon: "file-alt" },
+
+  { href: "/rewards", label: "Rewards", icon: "gift" },
+  { href: "/events", label: "Eventos", icon: "calendar" },
   { href: "/notifications", label: "Notificações", icon: "bell" },
   { href: "/settings", label: "Definições", icon: "cog" },
 ];
