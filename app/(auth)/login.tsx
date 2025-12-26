@@ -1,16 +1,9 @@
 import { useIsDesktop } from "@/src/hooks/useIsDesktop";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import {
-  ActivityIndicator,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, KeyboardAvoidingView, Platform, TextInput, View } from "react-native";
 import { AppText } from "../../src/components/Common/AppText";
+import { Button } from "../../src/components/Common/Button";
 import { DismissKeyboard } from "../../src/components/Common/DismissKeyboard";
 import BrandBackground from "../../src/components/branding/BrandBackground";
 import { useAuth } from "../../src/contexts/AuthContext";
@@ -114,18 +107,13 @@ export default function LoginScreen() {
                 </View>
               ) : null}
 
-              <TouchableOpacity
-                onPress={handleLogin}
+              <Button
+                title="Entrar"
+                variant="primary"
+                isLoading={isLoading}
                 disabled={isLoading}
-                className={`rounded-lg py-3 items-center ${isLoading ? "opacity-50" : ""}`}
-                style={{ backgroundColor: "#0066CC", outline: "none" } as any}
-              >
-                {isLoading ? (
-                  <ActivityIndicator color="white" />
-                ) : (
-                  <AppText className="text-white font-bold text-base">Entrar</AppText>
-                )}
-              </TouchableOpacity>
+                onPress={handleLogin}
+              />
             </View>
           </View>
 

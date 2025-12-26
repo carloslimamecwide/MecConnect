@@ -1,13 +1,13 @@
 import { AppText } from "@/src/components/Common/AppText";
+import { Button } from "@/src/components/Common/Button";
 import { ConfirmModal } from "@/src/components/Common/ConfirmModal";
 import { Select } from "@/src/components/Common/Select";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, TextInput, TouchableOpacity, View } from "react-native";
+import { ScrollView, TextInput, View } from "react-native";
 import { AppLayout } from "../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../src/components/layout/PageWrapper";
 import { useAuth } from "../../src/contexts/AuthContext";
-import { authService } from "../../src/services/authService";
+import { useToast } from "../../src/contexts/ToastContext";
 import { notificationService } from "../../src/services/notificationService";
 
 interface SegmentOption {
@@ -16,8 +16,8 @@ interface SegmentOption {
 }
 
 export default function NotificationsScreen() {
-  const { user } = useAuth();
-  const [token, setToken] = useState<string | null>(null);
+  const { user, token } = useAuth();
+  const { showToast } = useToast();
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [segment, setSegment] = useState("");
@@ -28,49 +28,39 @@ export default function NotificationsScreen() {
   const [isTesting, setIsTesting] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackType, setFeedbackType] = useState<"success" | "error" | null>(null);
 
   useEffect(() => {
-    const getTokenAndData = async () => {
-      const storedToken = await authService.getToken();
-      setToken(storedToken);
-
+    const loadData = async () => {
       // Carregar screens
       const screenOptions = notificationService.getScreenOptions();
       setScreens(screenOptions);
 
-      if (storedToken) {
+      if (token) {
         setIsLoadingSegments(true);
         try {
-          const fetchedSegments = await notificationService.fetchSegments(storedToken);
+          const fetchedSegments = await notificationService.fetchSegments(token);
           setSegments(fetchedSegments);
         } catch (err) {
           console.error("Erro ao carregar segmentos:", err);
+          showToast({ message: "Erro ao carregar segmentos", type: "error", position: "top" });
         } finally {
           setIsLoadingSegments(false);
         }
       }
     };
-    getTokenAndData();
-  }, []);
+    loadData();
+  }, [token]);
 
   const isFormValid = title.trim() !== "" && message.trim() !== "";
 
-  const showFeedback = (msg: string, type: "success" | "error") => {
-    setFeedbackMessage(msg);
-    setFeedbackType(type);
-    setTimeout(() => setFeedbackType(null), 4000);
-  };
-
   const handleTestNotification = async () => {
     if (!isFormValid) {
-      showFeedback("Por favor, preencha o título e a mensagem", "error");
+      showToast({ message: "Preencha o título e a mensagem", type: "error", position: "top" });
       return;
     }
 
     if (!token) {
-      showFeedback("Token não encontrado. Faça login novamente.", "error");
+      showToast({ message: "Token não encontrado. Faça login novamente.", type: "error", position: "top" });
       return;
     }
 
@@ -81,13 +71,13 @@ export default function NotificationsScreen() {
         message: message.trim(),
         screen: screen.trim() || undefined,
       });
-      showFeedback("✓ Notificação de teste enviada com sucesso!", "success");
+      showToast({ message: "Notificação de teste enviada com sucesso!", type: "success", position: "top" });
       setTitle("");
       setMessage("");
       setSegment("");
       setScreen("");
     } catch (err: any) {
-      showFeedback(`Erro ao enviar: ${err.message || "Tente novamente"}`, "error");
+      showToast({ message: err.message || "Erro ao enviar notificação", type: "error", position: "top" });
     } finally {
       setIsTesting(false);
     }
@@ -95,12 +85,12 @@ export default function NotificationsScreen() {
 
   const handleBroadcast = async () => {
     if (!isFormValid) {
-      showFeedback("Por favor, preencha o título e a mensagem", "error");
+      showToast({ message: "Preencha o título e a mensagem", type: "error", position: "top" });
       return;
     }
 
     if (!token) {
-      showFeedback("Token não encontrado. Faça login novamente.", "error");
+      showToast({ message: "Token não encontrado. Faça login novamente.", type: "error", position: "top" });
       return;
     }
 
@@ -116,16 +106,17 @@ export default function NotificationsScreen() {
         segment: segment.trim() || undefined,
         screen: screen.trim() || undefined,
       });
-      showFeedback("✓ Notificação enviada para todos com sucesso!", "success");
+      showToast({ message: "Notificação enviada para todos com sucesso!", type: "success", position: "top" });
       setTitle("");
       setMessage("");
       setSegment("");
       setScreen("");
       setShowConfirmModal(false);
     } catch (err: any) {
-      showFeedback(`Erro ao enviar: ${err.message || "Tente novamente"}`, "error");
+      showToast({ message: err.message || "Erro ao enviar notificação", type: "error", position: "top" });
     } finally {
       setIsSending(false);
+      setShowConfirmModal(false);
     }
   };
 
@@ -137,24 +128,6 @@ export default function NotificationsScreen() {
             <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Central de Notificações</AppText>
             <AppText className="text-gray-300 text-sm md:text-base">Envie e teste notificações push</AppText>
           </View>
-
-          {/* Feedback Messages */}
-          {feedbackType && (
-            <View
-              className={`rounded-lg p-4 mb-6 flex-row items-center gap-3 border ${
-                feedbackType === "success" ? "bg-green-500/10 border-green-500/30" : "bg-red-500/10 border-red-500/30"
-              }`}
-            >
-              <FontAwesome5
-                name={feedbackType === "success" ? "check-circle" : "exclamation-circle"}
-                size={20}
-                color={feedbackType === "success" ? "#10b981" : "#ef4444"}
-              />
-              <AppText className={`flex-1 text-sm ${feedbackType === "success" ? "text-green-400" : "text-red-400"}`}>
-                {feedbackMessage}
-              </AppText>
-            </View>
-          )}
 
           {/* Formulário */}
           <View className="gap-6 mb-8">
@@ -220,45 +193,25 @@ export default function NotificationsScreen() {
 
           {/* Botões */}
           <View className="gap-3 mb-8">
-            <TouchableOpacity
+            <Button
+              title="Testar no Meu Dispositivo"
+              variant="info"
+              icon="mobile-alt"
+              isLoading={isTesting}
+              loadingText="Enviando..."
+              disabled={!isFormValid || isSending}
               onPress={handleTestNotification}
-              disabled={!isFormValid || isTesting || isSending}
-              className={`rounded-lg py-3 items-center flex-row justify-center gap-2 ${
-                !isFormValid || isTesting || isSending ? "opacity-50" : ""
-              }`}
-              style={{
-                backgroundColor: isTesting ? "#6b7280" : "#3b82f6",
-              }}
-            >
-              {isTesting ? (
-                <ActivityIndicator color="white" size="small" />
-              ) : (
-                <FontAwesome5 name="mobile-alt" size={16} color="white" />
-              )}
-              <AppText className="text-white font-bold text-base">
-                {isTesting ? "Enviando..." : "Testar no Meu Dispositivo"}
-              </AppText>
-            </TouchableOpacity>
+            />
 
-            <TouchableOpacity
+            <Button
+              title="Confirmar e Enviar para Todos"
+              variant="success"
+              icon="paper-plane"
+              isLoading={isSending}
+              loadingText="Enviando..."
+              disabled={!isFormValid || isTesting}
               onPress={handleBroadcast}
-              disabled={!isFormValid || isTesting || isSending}
-              className={`rounded-lg py-3 items-center flex-row justify-center gap-2 ${
-                !isFormValid || isTesting || isSending ? "opacity-50" : ""
-              }`}
-              style={{
-                backgroundColor: isSending ? "#6b7280" : "#10b981",
-              }}
-            >
-              {isSending ? (
-                <ActivityIndicator color="white" size="small" />
-              ) : (
-                <FontAwesome5 name="paper-plane" size={16} color="white" />
-              )}
-              <AppText className="text-white font-bold text-base">
-                {isSending ? "Enviando..." : "Confirmar e Enviar para Todos"}
-              </AppText>
-            </TouchableOpacity>
+            />
           </View>
         </ScrollView>
       </PageWrapper>

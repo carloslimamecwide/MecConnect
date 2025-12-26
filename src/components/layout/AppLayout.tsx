@@ -49,7 +49,7 @@ export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
           {isDesktop && <Sidebar isOpen={true} onClose={() => {}} />}
 
           {/* Área de conteúdo */}
-          <View className="flex-1">{children}</View>
+          <View className="flex-1 mt-4">{children}</View>
         </View>
       </View>
     </SafeAreaView>

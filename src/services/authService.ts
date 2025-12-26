@@ -1,7 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { AccessApp, BackendLoginResponse, LoginResponse, Role, User } from "../types/auth";
-
-const AUTH_BASE_URL = process.env.EXPO_PUBLIC_AUTH_URL;
+import { authClient } from "./apiClient";
 
 const STORAGE_KEYS = {
   TOKEN: "@mecconnect:token",
@@ -12,20 +11,12 @@ const STORAGE_KEYS = {
 class AuthService {
   async login(cv: string, password: string): Promise<LoginResponse> {
     try {
-      const response = await fetch(`${AUTH_BASE_URL}/Auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ user_cv: cv, password }),
+      const response = await authClient.post<BackendLoginResponse>("/Auth/login", {
+        user_cv: cv,
+        password,
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Erro ao fazer login");
-      }
-
-      const backendData: BackendLoginResponse = await response.json();
+      const backendData = response.data;
 
       if (!backendData.token) {
         throw new Error("Token não recebido do servidor");

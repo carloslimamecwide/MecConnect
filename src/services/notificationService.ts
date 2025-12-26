@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+import { apiClient } from "./apiClient";
 
 interface NotificationPayload {
   title: string;
@@ -50,27 +50,18 @@ const SCREEN_OPTIONS: SegmentOption[] = [
   { value: "ShareCarBooking", label: "Booking Viaturas - Partilha de Viagem" },
   // Booking - Alojamento
   { value: "HouseBookingNavigation", label: "Booking Alojamento - Módulo" },
+  { value: "Navigation", label: "Pagina Principal - Home Page" },
 ];
 
 class NotificationService {
   async testNotification(cv: string, token: string, payload: NotificationPayload): Promise<NotificationResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/notifications/test/${cv}`, {
-        method: "POST",
+      const response = await apiClient.post<NotificationResponse>(`/notifications/test/${cv}`, payload, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload),
       });
-
-      if (!response.ok) {
-        const error = await response.text();
-        throw new Error(error || `HTTP ${response.status}`);
-      }
-
-      const data: NotificationResponse = await response.json();
-      return data;
+      return response.data;
     } catch (error) {
       console.error("Test notification error:", error);
       throw error;
@@ -79,22 +70,12 @@ class NotificationService {
 
   async broadcastNotification(token: string, payload: NotificationPayload): Promise<NotificationResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/notifications/broadcast`, {
-        method: "POST",
+      const response = await apiClient.post<NotificationResponse>("/notifications/broadcast", payload, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload),
       });
-
-      if (!response.ok) {
-        const error = await response.text();
-        throw new Error(error || `HTTP ${response.status}`);
-      }
-
-      const data: NotificationResponse = await response.json();
-      return data;
+      return response.data;
     } catch (error) {
       console.error("Broadcast notification error:", error);
       throw error;
@@ -103,19 +84,13 @@ class NotificationService {
 
   async fetchSegments(token: string): Promise<SegmentOption[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/HierarchyMatrix?status=active`, {
-        method: "GET",
+      const response = await apiClient.get<User[]>("/HierarchyMatrix?status=active", {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
       console.log("Fetch segments response status:", response.status);
-      const users: User[] = await response.json();
+      const users = response.data;
 
       // Extrair desc_ax2 únicos e criar options
       const uniqueSegments = new Set<string>();

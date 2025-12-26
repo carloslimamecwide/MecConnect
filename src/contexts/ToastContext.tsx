@@ -56,6 +56,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         position={state.position}
         autoHide={state.autoHide}
         duration={state.duration}
+        onHide={hideToast}
       />
     </ToastContext.Provider>
   );

@@ -4,6 +4,7 @@ import type { AccessApp, User } from "../types/auth";
 
 interface AuthContextData {
   user: User | null;
+  token: string | null;
   accessApps: AccessApp[] | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [accessApps, setAccessApps] = useState<AccessApp[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -27,10 +29,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function loadStoredAuth() {
     try {
       const storedUser = await authService.getUser();
+      const storedToken = await authService.getToken();
       const storedAccessApps = await authService.getAccessApps();
 
-      if (storedUser) {
+      if (storedUser && storedToken) {
         setUser(storedUser);
+        setToken(storedToken);
         setAccessApps(storedAccessApps);
         setIsAdmin(await authService.isAdmin());
       }
@@ -57,6 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       setUser(response.user);
+      setToken(response.token);
       setAccessApps(response.accessApps);
       setIsAdmin(isAdminUser);
     } catch (error) {
@@ -68,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function logout() {
     await authService.logout();
     setUser(null);
+    setToken(null);
     setAccessApps(null);
     setIsAdmin(false);
   }
@@ -76,6 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        token,
         accessApps,
         isAuthenticated: !!user,
         isLoading,

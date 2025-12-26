@@ -1,4 +1,5 @@
 import { AppText } from "@/src/components/Common/AppText";
+import { Button } from "@/src/components/Common/Button";
 import { ConfirmModal } from "@/src/components/Common/ConfirmModal";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Constants from "expo-constants";
@@ -126,18 +127,18 @@ export default function SettingsScreen() {
             </View>
 
             {/* Botão Terminar Sessão */}
-            <TouchableOpacity
+            <Button
+              title="Terminar Sessão"
+              variant="danger"
+              icon="sign-out-alt"
               onPress={() => setShowLogoutConfirm(true)}
-              className="rounded-lg py-3 items-center flex-row justify-center gap-2 mb-8"
               style={{
                 backgroundColor: "rgba(239, 68, 68, 0.1)",
                 borderWidth: 1,
                 borderColor: "rgba(239, 68, 68, 0.3)",
               }}
-            >
-              <FontAwesome5 name="sign-out-alt" size={16} color="#ef4444" />
-              <AppText className="text-red-400 text-base font-semibold">Terminar Sessão</AppText>
-            </TouchableOpacity>
+              className="mb-8"
+            />
           </ScrollView>
         </PageWrapper>
       </AppLayout>
