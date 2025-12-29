@@ -2,8 +2,8 @@ import { AppText } from "@/src/components/Common/AppText";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import React from "react";
 import { ScrollView, View } from "react-native";
-import { AppLayout } from "../../src/components/layout/AppLayout";
-import { PageWrapper } from "../../src/components/layout/PageWrapper";
+import { AppLayout } from "../../../src/components/layout/AppLayout";
+import { PageWrapper } from "../../../src/components/layout/PageWrapper";
 
 export default function DashboardScreen() {
   const stats = [

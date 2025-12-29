@@ -5,10 +5,10 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
-import { AppLayout } from "../../src/components/layout/AppLayout";
-import { PageWrapper } from "../../src/components/layout/PageWrapper";
-import { useAuth } from "../../src/contexts/AuthContext";
+import { ScrollView, TouchableOpacity, View } from "react-native";
+import { AppLayout } from "../../../src/components/layout/AppLayout";
+import { PageWrapper } from "../../../src/components/layout/PageWrapper";
+import { useAuth } from "../../../src/contexts/AuthContext";
 
 export default function SettingsScreen() {
   const { user, logout } = useAuth();
@@ -17,9 +17,7 @@ export default function SettingsScreen() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const appVersion = Constants.expoConfig?.version || "1.0.0";
-
   const appName = Constants.expoConfig?.name || "MecConnect";
-  const supportEmail = "support@mecwide.com";
 
   const handleLogoutConfirm = async () => {
     setIsLoggingOut(true);
@@ -33,30 +31,18 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleSendEmail = async () => {
-    const subject = encodeURIComponent("Pedido de Suporte - MecConnect");
-    const body = encodeURIComponent("Olá,\n\nTenho uma dúvida/problema com a aplicação MecConnect:\n\n");
-    const url = `mailto:${supportEmail}?subject=${subject}&body=${body}`;
-
-    try {
-      await Linking.openURL(url);
-    } catch (error) {
-      console.error("Error opening email:", error);
-    }
-  };
-
   return (
     <>
       <AppLayout title="Definições">
         <PageWrapper>
           <ScrollView showsVerticalScrollIndicator={false}>
-            <View className="mb-8">
+            <View className="mb-4">
               <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Definições da Aplicação</AppText>
               <AppText className="text-gray-300 text-sm md:text-base">Configure preferências e parâmetros</AppText>
             </View>
 
             {/* Secção: Conta / Perfil */}
-            <View className="mb-8">
+            <View className="mb-4">
               <AppText className="text-lg font-bold text-gray-100 mb-4">Conta</AppText>
 
               {/* Perfil do Utilizador */}
@@ -113,14 +99,13 @@ export default function SettingsScreen() {
 
               {/* Ajuda e Suporte */}
               <TouchableOpacity
-                onPress={handleSendEmail}
+                onPress={() => router.push("/(app)/support")}
                 className="rounded-xl p-5 bg-white/10 border border-white/10 flex-row items-center justify-between"
               >
                 <View className="flex-row items-center gap-3">
                   <FontAwesome5 name="envelope" size={20} color="#3b82f6" />
                   <View>
                     <AppText className="text-base font-semibold text-blue-400">Contactar Suporte</AppText>
-                    <AppText className="text-xs text-gray-100 mt-1">{supportEmail}</AppText>
                   </View>
                 </View>
               </TouchableOpacity>

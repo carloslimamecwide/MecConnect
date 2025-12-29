@@ -27,7 +27,7 @@ export default function LoginScreen() {
 
     try {
       await login(cv, password);
-      router.replace("/(app)/dashboard");
+      router.replace("/(app)/(tabs)/dashboard");
     } catch (err: any) {
       setError(err.message || "Erro ao fazer login. Verifique suas credenciais.");
     } finally {

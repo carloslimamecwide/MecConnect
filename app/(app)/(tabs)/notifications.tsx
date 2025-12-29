@@ -1,14 +1,16 @@
 import { AppText } from "@/src/components/Common/AppText";
 import { Button } from "@/src/components/Common/Button";
 import { ConfirmModal } from "@/src/components/Common/ConfirmModal";
+import { Input } from "@/src/components/Common/Input";
 import { Select } from "@/src/components/Common/Select";
+import { TextArea } from "@/src/components/Common/TextArea";
 import React, { useEffect, useState } from "react";
-import { ScrollView, TextInput, View } from "react-native";
-import { AppLayout } from "../../src/components/layout/AppLayout";
-import { PageWrapper } from "../../src/components/layout/PageWrapper";
-import { useAuth } from "../../src/contexts/AuthContext";
-import { useToast } from "../../src/contexts/ToastContext";
-import { notificationService } from "../../src/services/notificationService";
+import { ScrollView, View } from "react-native";
+import { AppLayout } from "../../../src/components/layout/AppLayout";
+import { PageWrapper } from "../../../src/components/layout/PageWrapper";
+import { useAuth } from "../../../src/contexts/AuthContext";
+import { useToast } from "../../../src/contexts/ToastContext";
+import { notificationService } from "../../../src/services/notificationService";
 
 interface SegmentOption {
   value: string;
@@ -131,33 +133,20 @@ export default function NotificationsScreen() {
 
           {/* Formulário */}
           <View className="gap-6 mb-8">
-            {/* Input: Título */}
-            <View>
-              <AppText className="text-sm font-semibold text-gray-300 mb-2">Título da Notificação</AppText>
-              <TextInput
-                value={title}
-                onChangeText={setTitle}
-                placeholder="Ex: Nova atualização disponível"
-                placeholderTextColor="rgba(255,255,255,0.3)"
-                className="border-b border-slate-400 px-0 py-3 text-base"
-                style={{ color: "#FFFFFF", outline: "none" } as any}
-              />
-            </View>
+            <Input
+              label="Título da Notificação"
+              value={title}
+              onChangeText={setTitle}
+              placeholder="Ex: Nova atualização disponível"
+            />
 
-            {/* Input: Mensagem */}
-            <View>
-              <AppText className="text-sm font-semibold text-gray-300 mb-2">Mensagem</AppText>
-              <TextInput
-                value={message}
-                onChangeText={setMessage}
-                placeholder="Ex: Uma nova versão está disponível para download"
-                placeholderTextColor="rgba(255,255,255,0.3)"
-                multiline
-                numberOfLines={4}
-                className="border border-slate-400 rounded-lg px-3 py-3 text-base"
-                style={{ color: "#FFFFFF", textAlignVertical: "top", outline: "none" } as any}
-              />
-            </View>
+            <TextArea
+              label="Mensagem"
+              value={message}
+              onChangeText={setMessage}
+              placeholder="Ex: Uma nova versão está disponível para download"
+              rows={4}
+            />
 
             {/* Input: Segmento (Opcional) */}
             <View>
@@ -171,7 +160,6 @@ export default function NotificationsScreen() {
               />
             </View>
 
-            {/* Input: Screen/Rota (Opcional) */}
             <View>
               <AppText className="text-sm font-semibold text-gray-300 mb-2">
                 Screen para Redirecionar (Opcional)

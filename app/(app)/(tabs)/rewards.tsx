@@ -2,16 +2,18 @@ import { AppText } from "@/src/components/Common/AppText";
 import { Button } from "@/src/components/Common/Button";
 import { ConfirmModal } from "@/src/components/Common/ConfirmModal";
 import { DatePickerSheet } from "@/src/components/Common/DatePickerSheet";
+import { Input } from "@/src/components/Common/Input";
+import { TextArea } from "@/src/components/Common/TextArea";
 import { useToast } from "@/src/contexts/ToastContext";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import BottomSheet from "@gorhom/bottom-sheet";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, ScrollView, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, ScrollView, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { AppLayout } from "../../src/components/layout/AppLayout";
-import { PageWrapper } from "../../src/components/layout/PageWrapper";
-import { useAuth } from "../../src/contexts/AuthContext";
-import { RewardForm, rewardService } from "../../src/services/rewardService";
+import { AppLayout } from "../../../src/components/layout/AppLayout";
+import { PageWrapper } from "../../../src/components/layout/PageWrapper";
+import { useAuth } from "../../../src/contexts/AuthContext";
+import { RewardForm, rewardService } from "../../../src/services/rewardService";
 
 const LANGUAGES = ["PT", "EN", "ES"];
 
@@ -130,34 +132,26 @@ export default function RewardsScreen() {
 
             {/* Create Form */}
             {showCreateForm && (
-              <View className="mb-6 rounded-xl p-5 bg-white/10 border border-white/10">
+              <>
                 <AppText className="text-lg font-bold text-gray-100 mb-4">Novo Reward</AppText>
-
                 {LANGUAGES.map((lang) => (
                   <View key={lang} className="mb-4">
-                    <AppText className="text-sm font-semibold text-gray-300 mb-2">Título ({lang})</AppText>
-                    <TextInput
+                    <Input
+                      label={`Título (${lang})`}
                       value={titles[lang as keyof typeof titles]}
                       onChangeText={(text) => setTitles((prev) => ({ ...prev, [lang]: text }))}
                       placeholder={`Digite o título em ${lang}`}
-                      placeholderTextColor="rgba(255,255,255,0.3)"
-                      className="rounded-lg p-3 text-white bg-white/5 border border-white/10 mb-2"
-                      style={{ outline: "none" } as any}
+                      className="mb-2"
                     />
-                    <AppText className="text-sm font-semibold text-gray-300 mb-2">Descrição ({lang})</AppText>
-                    <TextInput
+                    <TextArea
+                      label={`Descrição (${lang})`}
                       value={descriptions[lang as keyof typeof descriptions]}
                       onChangeText={(text) => setDescriptions((prev) => ({ ...prev, [lang]: text }))}
                       placeholder={`Digite a descrição em ${lang}`}
-                      placeholderTextColor="rgba(255,255,255,0.3)"
-                      multiline
-                      numberOfLines={3}
-                      className="rounded-lg p-3 text-white bg-white/5 border border-white/10"
-                      style={{ outline: "none" } as any}
+                      rows={3}
                     />
                   </View>
                 ))}
-
                 <View className="mb-4">
                   <AppText className="text-sm font-semibold text-gray-300 mb-2">Data de Expiração</AppText>
                   <TouchableOpacity
@@ -189,7 +183,6 @@ export default function RewardsScreen() {
                     <FontAwesome5 name="chevron-right" size={14} color="rgba(255,255,255,0.4)" />
                   </TouchableOpacity>
                 </View>
-
                 <Button
                   title="Criar Reward"
                   variant="success"
@@ -198,7 +191,7 @@ export default function RewardsScreen() {
                   disabled={isCreating}
                   onPress={handleCreateReward}
                 />
-              </View>
+              </>
             )}
 
             {/* Rewards List */}
