@@ -14,14 +14,8 @@
     "scheme": "mecconnect",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "platforms": ["ios", "android", "web"],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mecwide.mecconnect",
@@ -47,12 +41,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "permissions": [
-        "INTERNET",
-        "ACCESS_NETWORK_STATE",
-        "INTERNET",
-        "ACCESS_NETWORK_STATE"
-      ],
+      "permissions": ["INTERNET", "ACCESS_NETWORK_STATE", "INTERNET", "ACCESS_NETWORK_STATE"],
       "backgroundColor": "#0a1a2b",
       "splash": {
         "image": "./assets/images/icon.png",
@@ -72,7 +61,7 @@
         {
           "image": "./assets/images/icon.png",
           "imageWidth": 200,
-          "resizeMode": "contain",
+          "resizeMode": "cover",
           "backgroundColor": "#0a1a2b",
           "dark": {
             "backgroundColor": "#0a1a2b"
@@ -91,7 +80,13 @@
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
       ],
-      "expo-secure-store"
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": true,
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

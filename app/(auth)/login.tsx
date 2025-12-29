@@ -61,17 +61,10 @@ export default function LoginScreen() {
               style={{ width: isDesktop ? 230 : 180, height: isDesktop ? 125 : 80 }}
               resizeMode="contain"
             />
-            {/* <AppText className="text-base" style={{ color: "rgba(255,255,255,0.75)" }}>
-              Painel de Administração
-            </AppText> */}
           </View>
 
           <View className={`w-full max-w-md ${Platform.OS === "android" ? "pb-20" : ""}`}>
             <View className="mb-8">
-              <AppText className="text-2xl font-bold mb-6" style={{ color: "#FFFFFF" }}>
-                Entrar
-              </AppText>
-
               <View className="mb-6">
                 <AppText className="text-slate-300 font-semibold mb-3">CV</AppText>
                 <TextInput
