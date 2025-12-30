@@ -54,13 +54,10 @@ const SCREEN_OPTIONS: SegmentOption[] = [
 ];
 
 class NotificationService {
-  async testNotification(cv: string, token: string, payload: NotificationPayload): Promise<NotificationResponse> {
+  async testNotification(cv: string, payload: NotificationPayload): Promise<NotificationResponse> {
+    // console.log("Enviando notificação de teste para CV:", cv, "com payload:", JSON.stringify(payload, null, 2));
     try {
-      const response = await apiClient.post<NotificationResponse>(`/notifications/test/${cv}`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiClient.post<NotificationResponse>(`/notifications/test/${cv}`, payload);
       return response.data;
     } catch (error) {
       console.error("Test notification error:", error);
@@ -68,13 +65,10 @@ class NotificationService {
     }
   }
 
-  async broadcastNotification(token: string, payload: NotificationPayload): Promise<NotificationResponse> {
+  async broadcastNotification(payload: NotificationPayload): Promise<NotificationResponse> {
+    console.log("Enviando notificação broadcast com payload:", JSON.stringify(payload, null, 2));
     try {
-      const response = await apiClient.post<NotificationResponse>("/notifications/broadcast", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiClient.post<NotificationResponse>("/notifications/broadcast", payload);
       return response.data;
     } catch (error) {
       console.error("Broadcast notification error:", error);
@@ -82,14 +76,9 @@ class NotificationService {
     }
   }
 
-  async fetchSegments(token: string): Promise<SegmentOption[]> {
+  async fetchSegments(): Promise<SegmentOption[]> {
     try {
-      const response = await apiClient.get<User[]>("/HierarchyMatrix?status=active", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("Fetch segments response status:", response.status);
+      const response = await apiClient.get<User[]>("/HierarchyMatrix?status=active");
       const users = response.data;
 
       // Extrair desc_ax2 únicos e criar options

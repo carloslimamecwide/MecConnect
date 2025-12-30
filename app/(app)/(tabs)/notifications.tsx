@@ -18,7 +18,7 @@ interface SegmentOption {
 }
 
 export default function NotificationsScreen() {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const { showToast } = useToast();
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -37,21 +37,19 @@ export default function NotificationsScreen() {
       const screenOptions = notificationService.getScreenOptions();
       setScreens(screenOptions);
 
-      if (token) {
-        setIsLoadingSegments(true);
-        try {
-          const fetchedSegments = await notificationService.fetchSegments(token);
-          setSegments(fetchedSegments);
-        } catch (err) {
-          console.error("Erro ao carregar segmentos:", err);
-          showToast({ message: "Erro ao carregar segmentos", type: "error", position: "top" });
-        } finally {
-          setIsLoadingSegments(false);
-        }
+      setIsLoadingSegments(true);
+      try {
+        const fetchedSegments = await notificationService.fetchSegments();
+        setSegments(fetchedSegments);
+      } catch (err) {
+        console.error("Erro ao carregar segmentos:", err);
+        showToast({ message: "Erro ao carregar segmentos", type: "error", position: "top" });
+      } finally {
+        setIsLoadingSegments(false);
       }
     };
     loadData();
-  }, [token]);
+  }, []);
 
   const isFormValid = title.trim() !== "" && message.trim() !== "";
 
@@ -61,14 +59,9 @@ export default function NotificationsScreen() {
       return;
     }
 
-    if (!token) {
-      showToast({ message: "Token não encontrado. Faça login novamente.", type: "error", position: "top" });
-      return;
-    }
-
     setIsTesting(true);
     try {
-      await notificationService.testNotification(user?.cv || "unknown", token, {
+      await notificationService.testNotification(user?.cv || "", {
         title: title.trim(),
         message: message.trim(),
         screen: screen.trim() || undefined,
@@ -91,22 +84,17 @@ export default function NotificationsScreen() {
       return;
     }
 
-    if (!token) {
-      showToast({ message: "Token não encontrado. Faça login novamente.", type: "error", position: "top" });
-      return;
-    }
-
     setShowConfirmModal(true);
   };
 
   const handleConfirmBroadcast = async () => {
     setIsSending(true);
     try {
-      await notificationService.broadcastNotification(token!, {
+      await notificationService.broadcastNotification({
         title: title.trim(),
         message: message.trim(),
-        segment: segment.trim() || undefined,
-        screen: screen.trim() || undefined,
+        segment: segment.trim() || "",
+        screen: screen.trim() || "",
       });
       showToast({ message: "Notificação enviada para todos com sucesso!", type: "success", position: "top" });
       setTitle("");

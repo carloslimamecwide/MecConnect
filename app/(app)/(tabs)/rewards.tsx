@@ -25,14 +25,19 @@ export default function RewardsScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDrawing, setIsDrawing] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDrawModal, setShowDrawModal] = useState(false);
+  const [rewardToDrawId, setRewardToDrawId] = useState<string | null>(null);
   const [rewardToDelete, setRewardToDelete] = useState<string | null>(null);
 
   // Form state
   const [titles, setTitles] = useState({ PT: "", EN: "", ES: "" });
   const [descriptions, setDescriptions] = useState({ PT: "", EN: "", ES: "" });
   const [expirationDate, setExpirationDate] = useState(new Date());
+  const [numberOfWinners, setNumberOfWinners] = useState(1);
+  const [numberOfWinnersDraw, setNumberOfWinnersDraw] = useState(1);
 
   useEffect(() => {
     loadRewards();
@@ -61,6 +66,11 @@ export default function RewardsScreen() {
       return;
     }
 
+    if (!numberOfWinners || numberOfWinners < 1) {
+      showToast({ message: "Informe o número de vencedores (mínimo 1)", type: "error", position: "top" });
+      return;
+    }
+
     try {
       setIsCreating(true);
       await rewardService.createReward({
@@ -70,6 +80,7 @@ export default function RewardsScreen() {
           { language: "ES", title: titles.ES, description: descriptions.ES },
         ],
         dateExpiration: expirationDate.toISOString().split("T")[0],
+        numberOfWinners,
       });
 
       showToast({ message: "Reward criado com sucesso", type: "success", position: "top" });
@@ -77,6 +88,7 @@ export default function RewardsScreen() {
       setTitles({ PT: "", EN: "", ES: "" });
       setDescriptions({ PT: "", EN: "", ES: "" });
       setExpirationDate(new Date());
+      setNumberOfWinners(1);
       loadRewards();
     } catch (error: any) {
       showToast({ message: error.message || "Erro ao criar reward", type: "error", position: "top" });
@@ -88,6 +100,11 @@ export default function RewardsScreen() {
   function handleDeleteClick(rewardId: string) {
     setRewardToDelete(rewardId);
     setShowDeleteModal(true);
+  }
+  function handleDrawClick(rewardId: string, numberOfWinners: number) {
+    setRewardToDrawId(rewardId);
+    setNumberOfWinnersDraw(numberOfWinners);
+    setShowDrawModal(true);
   }
 
   async function handleConfirmDelete() {
@@ -105,6 +122,20 @@ export default function RewardsScreen() {
     } finally {
       setIsDeleting(false);
       setShowDeleteModal(false);
+    }
+  }
+
+  // Função para sortear vencedores (placeholder)
+  async function handleDrawWinners() {
+    try {
+      setIsDrawing(true);
+      await rewardService.drawWinners(rewardToDrawId || "", numberOfWinnersDraw);
+      showToast({ message: "Sorteio realizado com sucesso!", type: "success", position: "top" });
+    } catch (error: any) {
+      showToast({ message: error.message || "Erro ao realizar sorteio", type: "error", position: "top" });
+    } finally {
+      setIsDrawing(false);
+      setShowDrawModal(false);
     }
   }
 
@@ -152,6 +183,17 @@ export default function RewardsScreen() {
                     />
                   </View>
                 ))}
+                <View className="mb-4">
+                  <AppText className="text-sm font-semibold text-gray-300 mb-2">Número de Vencedores</AppText>
+                  <Input
+                    label=""
+                    value={String(numberOfWinners)}
+                    onChangeText={(text) => setNumberOfWinners(Number(text.replace(/\D/g, "")))}
+                    placeholder="Informe o número de vencedores"
+                    keyboardType="numeric"
+                    className="mb-2"
+                  />
+                </View>
                 <View className="mb-4">
                   <AppText className="text-sm font-semibold text-gray-300 mb-2">Data de Expiração</AppText>
                   <TouchableOpacity
@@ -208,34 +250,46 @@ export default function RewardsScreen() {
                 </View>
               ) : (
                 <View className="gap-3">
-                  {rewards.map((reward) => (
-                    <View key={reward.id} className="rounded-xl p-5 bg-white/10 border border-white/10">
-                      <View className="flex-row items-start justify-between mb-2">
-                        <View className="flex-1">
-                          <AppText className="text-base font-bold text-gray-100 mb-1">{reward.title}</AppText>
-                          <AppText className="text-sm text-gray-300">{reward.description}</AppText>
+                  {rewards.map((reward) => {
+                    const expired = new Date(reward.dateExpiration) < new Date();
+                    return (
+                      <View key={reward.id} className="rounded-xl p-5 bg-white/10 border border-white/10">
+                        <View className="flex-row items-start justify-between mb-2">
+                          <View className="flex-1">
+                            <AppText className="text-base font-bold text-gray-100 mb-1">{reward.title}</AppText>
+                            <AppText className="text-sm text-gray-300">{reward.description}</AppText>
+                          </View>
+                          <View className="flex-row items-center gap-3">
+                            <FontAwesome5 name="gift" size={20} color="#10b981" />
+                            <TouchableOpacity onPress={() => handleDeleteClick(reward.id)}>
+                              <FontAwesome5 name="trash" size={18} color="#ef4444" />
+                            </TouchableOpacity>
+                          </View>
                         </View>
-                        <View className="flex-row items-center gap-3">
-                          <FontAwesome5 name="gift" size={20} color="#10b981" />
-                          <TouchableOpacity onPress={() => handleDeleteClick(reward.id)}>
-                            <FontAwesome5 name="trash" size={18} color="#ef4444" />
-                          </TouchableOpacity>
+                        <View className="flex-row items-center gap-4 mt-3">
+                          <View className="flex-row items-center gap-1">
+                            <FontAwesome5 name="calendar" size={12} color="rgba(255,255,255,0.5)" />
+                            <AppText className="text-xs text-gray-400">
+                              Expira: {new Date(reward.dateExpiration).toLocaleDateString("pt-PT")}
+                            </AppText>
+                          </View>
+                          <View className="flex-row items-center gap-1">
+                            <FontAwesome5 name="language" size={12} color="rgba(255,255,255,0.5)" />
+                            <AppText className="text-xs text-gray-400">{reward.language}</AppText>
+                          </View>
                         </View>
+                        {expired && (
+                          <Button
+                            title="Sortear Vencedores"
+                            variant="primary"
+                            icon="trophy"
+                            onPress={() => handleDrawClick(reward.id, reward.numberOfWinners)}
+                            className="mt-4"
+                          />
+                        )}
                       </View>
-                      <View className="flex-row items-center gap-4 mt-3">
-                        <View className="flex-row items-center gap-1">
-                          <FontAwesome5 name="calendar" size={12} color="rgba(255,255,255,0.5)" />
-                          <AppText className="text-xs text-gray-400">
-                            Expira: {new Date(reward.dateExpiration).toLocaleDateString("pt-PT")}
-                          </AppText>
-                        </View>
-                        <View className="flex-row items-center gap-1">
-                          <FontAwesome5 name="language" size={12} color="rgba(255,255,255,0.5)" />
-                          <AppText className="text-xs text-gray-400">{reward.language}</AppText>
-                        </View>
-                      </View>
-                    </View>
-                  ))}
+                    );
+                  })}
                 </View>
               )}
             </View>
@@ -254,6 +308,18 @@ export default function RewardsScreen() {
             setRewardToDelete(null);
           }}
           isLoading={isDeleting}
+        />
+        <ConfirmModal
+          visible={showDrawModal}
+          title="Realizar Sorteio"
+          message="Tem a certeza que deseja realizar o sorteio deste reward? Esta ação não pode ser revertida."
+          confirmText="Sortear"
+          cancelText="Cancelar"
+          onConfirm={handleDrawWinners}
+          onCancel={() => {
+            setShowDrawModal(false);
+          }}
+          isLoading={isDrawing}
         />
 
         <DatePickerSheet

@@ -16,6 +16,7 @@ export interface RewardForm {
   dateCreation: string;
   userEdition: string;
   dateEdition: string;
+  numberOfWinners: number;
 }
 
 export interface RewardTranslation {
@@ -27,6 +28,7 @@ export interface RewardTranslation {
 export interface CreateRewardPayload {
   translations: RewardTranslation[];
   dateExpiration: string;
+  numberOfWinners: number;
 }
 
 export interface CreateRewardResponse {
@@ -53,10 +55,12 @@ class RewardService {
   }
 
   async createReward(payload: CreateRewardPayload): Promise<void> {
+    console.log("Creating reward with payload:", JSON.stringify(payload, null, 2));
     try {
       await apiClient.post("/Form/Rewards", {
         translations: payload.translations,
         dateExpiration: payload.dateExpiration,
+        numberOfWinners: payload.numberOfWinners,
       });
     } catch (error: any) {
       console.error("Error creating reward:", error);
@@ -69,6 +73,15 @@ class RewardService {
       await apiClient.delete(`/Form/Rewards/${rewardId}`);
     } catch (error: any) {
       console.error("Error deleting reward:", error);
+      throw error;
+    }
+  }
+  async drawWinners(rewardId: string, numberOfWinners: number): Promise<void> {
+    console.log("Drawing winners for reward ID:", rewardId, "Number of winners:", numberOfWinners);
+    try {
+      await apiClient.post(`/Form/RandomWinners/${rewardId}/${numberOfWinners}`);
+    } catch (error: any) {
+      console.error("Error drawing winners for reward:", error);
       throw error;
     }
   }
