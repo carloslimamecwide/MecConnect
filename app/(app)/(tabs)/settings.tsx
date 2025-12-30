@@ -36,59 +36,93 @@ export default function SettingsScreen() {
       <AppLayout title="Definições">
         <PageWrapper>
           <ScrollView showsVerticalScrollIndicator={false}>
-            <View className="mb-4">
-              <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Definições da Aplicação</AppText>
-              <AppText className="text-gray-300 text-sm md:text-base">Configure preferências e parâmetros</AppText>
+            <View className="mb-6">
+              <View className="flex-row items-center gap-3 mb-4">
+                <View className="h-12 w-12 rounded-2xl bg-blue-500/20 border border-blue-400/30 items-center justify-center">
+                  <FontAwesome5 name="cog" size={18} color="#60a5fa" />
+                </View>
+                <View className="flex-1">
+                  <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">
+                    Definições da Aplicação
+                  </AppText>
+                  <AppText className="text-gray-300 text-sm md:text-base">Configure preferências e parâmetros</AppText>
+                </View>
+              </View>
+              <View className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex-row items-center justify-between">
+                <View className="flex-row items-center gap-2">
+                  <View className="h-2 w-2 rounded-full bg-emerald-400" />
+                  <AppText className="text-xs text-gray-300">Sessão ativa</AppText>
+                </View>
+                <AppText className="text-xs text-gray-400">v{appVersion}</AppText>
+              </View>
             </View>
 
             {/* Secção: Conta / Perfil */}
-            <View className="mb-4">
+            <View className="mb-6">
               <AppText className="text-lg font-bold text-gray-100 mb-4">Conta</AppText>
 
-              {/* Perfil do Utilizador */}
-              <View className="rounded-xl p-5 bg-white/10 border border-white/10 mb-3 flex-row items-center justify-between">
-                <View className="flex-1">
-                  <AppText className="text-sm font-semibold text-gray-400 mb-1">Utilizador</AppText>
-                  <AppText className="text-base font-semibold text-gray-100">
-                    {user?.nome || "Utilizador Desconhecido"}
-                  </AppText>
-                  {user?.prof_email && <AppText className="text-xs text-gray-500 mt-1">{user.prof_email}</AppText>}
+              <View className="rounded-2xl bg-white/5 border border-white/10">
+                <View className="p-4 flex-row items-center gap-3">
+                  <View className="h-10 w-10 rounded-full bg-blue-500/20 border border-blue-400/30 items-center justify-center">
+                    <FontAwesome5 name="user" size={14} color="#60a5fa" />
+                  </View>
+                  <View className="flex-1">
+                    <AppText className="text-sm font-semibold text-gray-400">Utilizador</AppText>
+                    <AppText className="text-base font-semibold text-gray-100">
+                      {user?.nome || "Utilizador Desconhecido"}
+                    </AppText>
+                    {user?.prof_email && <AppText className="text-xs text-gray-500 mt-1">{user.prof_email}</AppText>}
+                  </View>
                 </View>
+
+                {user?.desc_job && (
+                  <View className="border-t border-white/10 p-4 flex-row items-center gap-3">
+                    <View className="h-9 w-9 rounded-full bg-white/5 border border-white/10 items-center justify-center">
+                      <FontAwesome5 name="briefcase" size={12} color="#9ca3af" />
+                    </View>
+                    <View className="flex-1">
+                      <AppText className="text-xs text-gray-400">Cargo</AppText>
+                      <AppText className="text-sm text-gray-100">{user.desc_job}</AppText>
+                    </View>
+                  </View>
+                )}
+
+                {user?.city && (
+                  <View className="border-t border-white/10 p-4 flex-row items-center gap-3">
+                    <View className="h-9 w-9 rounded-full bg-white/5 border border-white/10 items-center justify-center">
+                      <FontAwesome5 name="map-marker-alt" size={12} color="#9ca3af" />
+                    </View>
+                    <View className="flex-1">
+                      <AppText className="text-xs text-gray-400">Localização</AppText>
+                      <AppText className="text-sm text-gray-100">{user.city}</AppText>
+                    </View>
+                  </View>
+                )}
               </View>
-
-              {/* Informação do Utilizador */}
-              {user?.desc_job && (
-                <View className="rounded-xl p-5 bg-white/10 border border-white/10 mb-3">
-                  <AppText className="text-sm font-semibold text-gray-400 mb-1">Cargo</AppText>
-                  <AppText className="text-base text-gray-100">{user.desc_job}</AppText>
-                </View>
-              )}
-
-              {user?.city && (
-                <View className="rounded-xl p-5 bg-white/10 border border-white/10">
-                  <AppText className="text-sm font-semibold text-gray-400 mb-1">Localização</AppText>
-                  <AppText className="text-base text-gray-100">{user.city}</AppText>
-                </View>
-              )}
             </View>
 
             {/* Secção: Aplicação / Sobre */}
-            <View className="mb-8">
+            <View className="mb-6">
               <AppText className="text-lg font-bold text-gray-100 mb-4">Aplicação</AppText>
 
-              {/* Nome da App */}
-              <View className="rounded-xl p-5 bg-white/10 border border-white/10 mb-3 flex-row items-center justify-between">
-                <View>
-                  <AppText className="text-sm font-semibold text-gray-400">Nome</AppText>
-                  <AppText className="text-base text-gray-100">{appName}</AppText>
+              <View className="rounded-2xl bg-white/5 border border-white/10">
+                <View className="p-4 flex-row items-center gap-3">
+                  <View className="h-9 w-9 rounded-full bg-white/5 border border-white/10 items-center justify-center">
+                    <FontAwesome5 name="cube" size={12} color="#9ca3af" />
+                  </View>
+                  <View className="flex-1">
+                    <AppText className="text-xs text-gray-400">Nome</AppText>
+                    <AppText className="text-sm text-gray-100">{appName}</AppText>
+                  </View>
                 </View>
-              </View>
-
-              {/* Versão */}
-              <View className="rounded-xl p-5 bg-white/10 border border-white/10 mb-3 flex-row items-center justify-between">
-                <View>
-                  <AppText className="text-sm font-semibold text-gray-400">Versão</AppText>
-                  <AppText className="text-base text-gray-100">v{appVersion}</AppText>
+                <View className="border-t border-white/10 p-4 flex-row items-center gap-3">
+                  <View className="h-9 w-9 rounded-full bg-white/5 border border-white/10 items-center justify-center">
+                    <FontAwesome5 name="code-branch" size={12} color="#9ca3af" />
+                  </View>
+                  <View className="flex-1">
+                    <AppText className="text-xs text-gray-400">Versão</AppText>
+                    <AppText className="text-sm text-gray-100">v{appVersion}</AppText>
+                  </View>
                 </View>
               </View>
             </View>
@@ -97,17 +131,20 @@ export default function SettingsScreen() {
             <View className="mb-8">
               <AppText className="text-lg font-bold text-gray-100 mb-4">Suporte</AppText>
 
-              {/* Ajuda e Suporte */}
               <TouchableOpacity
                 onPress={() => router.push("/(app)/support")}
-                className="rounded-xl p-5 bg-white/10 border border-white/10 flex-row items-center justify-between"
+                className="rounded-2xl p-5 bg-white/5 border border-white/10 flex-row items-center justify-between"
               >
                 <View className="flex-row items-center gap-3">
-                  <FontAwesome5 name="envelope" size={20} color="#3b82f6" />
+                  <View className="h-10 w-10 rounded-full bg-blue-500/20 border border-blue-400/30 items-center justify-center">
+                    <FontAwesome5 name="envelope" size={14} color="#60a5fa" />
+                  </View>
                   <View>
-                    <AppText className="text-base font-semibold text-blue-400">Contactar Suporte</AppText>
+                    <AppText className="text-base font-semibold text-gray-100">Contactar Suporte</AppText>
+                    <AppText className="text-xs text-gray-400">Resposta por email</AppText>
                   </View>
                 </View>
+                <FontAwesome5 name="chevron-right" size={14} color="rgba(255,255,255,0.5)" />
               </TouchableOpacity>
             </View>
 
@@ -120,7 +157,7 @@ export default function SettingsScreen() {
               style={{
                 backgroundColor: "rgba(239, 68, 68, 0.1)",
                 borderWidth: 1,
-                borderColor: "rgba(239, 68, 68, 0.3)",
+                borderColor: "rgba(239, 68, 68, 0.35)",
               }}
               className="mb-8"
             />

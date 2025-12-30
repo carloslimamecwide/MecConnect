@@ -19,14 +19,14 @@ export interface RewardForm {
   numberOfWinners: number;
 }
 
-export interface RewardTranslation {
+export interface RewardFormTranslation {
   language: string;
   title: string;
   description: string;
 }
 
 export interface CreateRewardPayload {
-  translations: RewardTranslation[];
+  rewardForm: RewardFormTranslation[];
   dateExpiration: string;
   numberOfWinners: number;
 }
@@ -58,7 +58,7 @@ class RewardService {
     console.log("Creating reward with payload:", JSON.stringify(payload, null, 2));
     try {
       await apiClient.post("/Form/Rewards", {
-        translations: payload.translations,
+        rewardForm: payload.rewardForm,
         dateExpiration: payload.dateExpiration,
         numberOfWinners: payload.numberOfWinners,
       });

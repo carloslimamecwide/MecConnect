@@ -3,19 +3,21 @@ import { Button } from "@/src/components/Common/Button";
 import { ConfirmModal } from "@/src/components/Common/ConfirmModal";
 import { DatePickerSheet } from "@/src/components/Common/DatePickerSheet";
 import { Input } from "@/src/components/Common/Input";
+import Loading from "@/src/components/Common/Loading";
 import { TextArea } from "@/src/components/Common/TextArea";
 import { useToast } from "@/src/contexts/ToastContext";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import BottomSheet from "@gorhom/bottom-sheet";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, ScrollView, TouchableOpacity, View } from "react-native";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AppLayout } from "../../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../../src/components/layout/PageWrapper";
 import { useAuth } from "../../../src/contexts/AuthContext";
 import { RewardForm, rewardService } from "../../../src/services/rewardService";
 
-const LANGUAGES = ["PT", "EN", "ES"];
+const LANGUAGES = ["PT", "EN", "ES"] as const;
+type Language = (typeof LANGUAGES)[number];
 
 export default function RewardsScreen() {
   const { user, token } = useAuth();
@@ -33,11 +35,12 @@ export default function RewardsScreen() {
   const [rewardToDelete, setRewardToDelete] = useState<string | null>(null);
 
   // Form state
-  const [titles, setTitles] = useState({ PT: "", EN: "", ES: "" });
-  const [descriptions, setDescriptions] = useState({ PT: "", EN: "", ES: "" });
+  const [titles, setTitles] = useState<Record<Language, string>>({ PT: "", EN: "", ES: "" });
+  const [descriptions, setDescriptions] = useState<Record<Language, string>>({ PT: "", EN: "", ES: "" });
   const [expirationDate, setExpirationDate] = useState(new Date());
   const [numberOfWinners, setNumberOfWinners] = useState(1);
   const [numberOfWinnersDraw, setNumberOfWinnersDraw] = useState(1);
+  const [activeLang, setActiveLang] = useState<Language>("PT");
 
   useEffect(() => {
     loadRewards();
@@ -74,7 +77,7 @@ export default function RewardsScreen() {
     try {
       setIsCreating(true);
       await rewardService.createReward({
-        translations: [
+        rewardForm: [
           { language: "PT", title: titles.PT, description: descriptions.PT },
           { language: "EN", title: titles.EN, description: descriptions.EN },
           { language: "ES", title: titles.ES, description: descriptions.ES },
@@ -144,45 +147,85 @@ export default function RewardsScreen() {
       <AppLayout title="Rewards">
         <PageWrapper>
           <ScrollView showsVerticalScrollIndicator={false}>
-            <View className="mb-8 flex-row items-center justify-between">
-              <View>
-                <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Rewards</AppText>
-                <AppText className="text-gray-300 text-sm md:text-base">Sistema de recompensas e benefícios</AppText>
+            <View className="mb-8">
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center gap-3">
+                  <View className="h-12 w-12 rounded-2xl bg-blue-500/20 border border-blue-400/30 items-center justify-center">
+                    <FontAwesome5 name="gift" size={18} color="#60a5fa" />
+                  </View>
+                  <View>
+                    <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Rewards</AppText>
+                    <AppText className="text-gray-300 text-sm md:text-base">Sistema de recompensas e benefícios</AppText>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setShowCreateForm(!showCreateForm)}
+                  className="rounded-lg px-4 py-2 flex-row items-center gap-2"
+                  style={{ backgroundColor: showCreateForm ? "#ef4444" : "#0066CC" }}
+                >
+                  <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />
+                  <AppText className="text-white font-semibold text-sm">
+                    {showCreateForm ? "Cancelar" : "Criar Reward"}
+                  </AppText>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                onPress={() => setShowCreateForm(!showCreateForm)}
-                className="rounded-lg px-4 py-2 flex-row items-center gap-2"
-                style={{ backgroundColor: showCreateForm ? "#ef4444" : "#0066CC" }}
-              >
-                <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />
-                <AppText className="text-white font-semibold text-sm">
-                  {showCreateForm ? "Cancelar" : "Criar Reward"}
-                </AppText>
-              </TouchableOpacity>
+              <View className="mt-4 rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex-row items-center justify-between">
+                <View className="flex-row items-center gap-2">
+                  <View className={`h-2 w-2 rounded-full ${rewards.length ? "bg-emerald-400" : "bg-amber-400"}`} />
+                  <AppText className="text-xs text-gray-300">
+                    {rewards.length ? `${rewards.length} reward(s) ativo(s)` : "Sem rewards ativos"}
+                  </AppText>
+                </View>
+                <AppText className="text-xs text-gray-400">Gestão rápida</AppText>
+              </View>
             </View>
 
             {/* Create Form */}
             {showCreateForm && (
-              <>
+              <View className="mb-8 p-5 rounded-2xl bg-white/5 border border-white/10">
                 <AppText className="text-lg font-bold text-gray-100 mb-4">Novo Reward</AppText>
-                {LANGUAGES.map((lang) => (
-                  <View key={lang} className="mb-4">
-                    <Input
-                      label={`Título (${lang})`}
-                      value={titles[lang as keyof typeof titles]}
-                      onChangeText={(text) => setTitles((prev) => ({ ...prev, [lang]: text }))}
-                      placeholder={`Digite o título em ${lang}`}
-                      className="mb-2"
-                    />
-                    <TextArea
-                      label={`Descrição (${lang})`}
-                      value={descriptions[lang as keyof typeof descriptions]}
-                      onChangeText={(text) => setDescriptions((prev) => ({ ...prev, [lang]: text }))}
-                      placeholder={`Digite a descrição em ${lang}`}
-                      rows={3}
-                    />
+
+                <View className="mb-4">
+                  <AppText className="text-sm font-semibold text-gray-300 mb-2">Idioma de edição</AppText>
+                  <View className="flex-row gap-2">
+                    {LANGUAGES.map((lang) => {
+                      const isActive = lang === activeLang;
+                      return (
+                        <TouchableOpacity
+                          key={lang}
+                          onPress={() => setActiveLang(lang)}
+                          className={`rounded-full px-4 py-2 border ${
+                            isActive ? "bg-blue-600/20 border-blue-400/40" : "bg-white/5 border-white/10"
+                          }`}
+                        >
+                          <AppText className={`text-xs font-semibold ${isActive ? "text-blue-200" : "text-gray-300"}`}>
+                            {lang}
+                          </AppText>
+                        </TouchableOpacity>
+                      );
+                    })}
                   </View>
-                ))}
+                  <AppText className="text-xs text-gray-400 mt-2">
+                    Preencha todos os idiomas usando o seletor acima.
+                  </AppText>
+                </View>
+
+                <View className="mb-4">
+                  <Input
+                    label={`Título (${activeLang})`}
+                    value={titles[activeLang]}
+                    onChangeText={(text) => setTitles((prev) => ({ ...prev, [activeLang]: text }))}
+                    placeholder={`Digite o título em ${activeLang}`}
+                    className="mb-2"
+                  />
+                  <TextArea
+                    label={`Descrição (${activeLang})`}
+                    value={descriptions[activeLang]}
+                    onChangeText={(text) => setDescriptions((prev) => ({ ...prev, [activeLang]: text }))}
+                    placeholder={`Digite a descrição em ${activeLang}`}
+                    rows={3}
+                  />
+                </View>
                 <View className="mb-4">
                   <AppText className="text-sm font-semibold text-gray-300 mb-2">Número de Vencedores</AppText>
                   <Input
@@ -198,14 +241,7 @@ export default function RewardsScreen() {
                   <AppText className="text-sm font-semibold text-gray-300 mb-2">Data de Expiração</AppText>
                   <TouchableOpacity
                     onPress={() => datePickerRef.current?.expand()}
-                    className="rounded-lg p-4 bg-white/10 border-2 border-white/20 flex-row items-center justify-between"
-                    style={{
-                      shadowColor: "#000",
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: 0.25,
-                      shadowRadius: 3.84,
-                      elevation: 5,
-                    }}
+                    className="rounded-lg p-4 bg-white/5 border border-white/10 flex-row items-center justify-between"
                   >
                     <View className="flex-row items-center gap-3">
                       <View className="rounded-full p-2 bg-blue-500/20">
@@ -228,21 +264,18 @@ export default function RewardsScreen() {
                 <Button
                   title="Criar Reward"
                   variant="success"
-                  icon="check"
                   isLoading={isCreating}
                   disabled={isCreating}
                   onPress={handleCreateReward}
                 />
-              </>
+              </View>
             )}
 
             {/* Rewards List */}
             <View className="mb-4">
               <AppText className="text-lg font-bold text-gray-100 mb-3">Rewards Disponíveis</AppText>
               {isLoading ? (
-                <View className="py-8 items-center">
-                  <ActivityIndicator size="large" color="#0066CC" />
-                </View>
+                <Loading message="A carregar Rewards..." size="large" />
               ) : rewards.length === 0 ? (
                 <View className="rounded-xl p-6 bg-white/5 border border-white/10 items-center">
                   <FontAwesome5 name="gift" size={32} color="rgba(255,255,255,0.3)" />
@@ -253,7 +286,7 @@ export default function RewardsScreen() {
                   {rewards.map((reward) => {
                     const expired = new Date(reward.dateExpiration) < new Date();
                     return (
-                      <View key={reward.id} className="rounded-xl p-5 bg-white/10 border border-white/10">
+                      <View key={reward.id} className="rounded-xl p-5 bg-white/5 border border-white/10">
                         <View className="flex-row items-start justify-between mb-2">
                           <View className="flex-1">
                             <AppText className="text-base font-bold text-gray-100 mb-1">{reward.title}</AppText>

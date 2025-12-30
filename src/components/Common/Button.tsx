@@ -1,6 +1,6 @@
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import React from "react";
-import { ActivityIndicator, TouchableOpacity, TouchableOpacityProps } from "react-native";
+import { ActivityIndicator, DimensionValue, TouchableOpacity, TouchableOpacityProps } from "react-native";
 import { AppText } from "./AppText";
 
 type ButtonVariant = "primary" | "secondary" | "success" | "danger" | "warning" | "info";
@@ -18,47 +18,55 @@ interface ButtonProps extends TouchableOpacityProps {
   isLoading?: boolean;
   /** Texto enquanto carrega */
   loadingText?: string;
-  /** Ocupa largura total */
-  fullWidth?: boolean;
+  /** Largura do botãos */
+  width?: string;
   /** Desabilita o botão */
   disabled?: boolean;
 }
 
-const variantStyles: Record<ButtonVariant, { backgroundColor: string; textColor: string }> = {
-  primary: { backgroundColor: "#0066CC", textColor: "#ffffff" },
-  secondary: { backgroundColor: "#6b7280", textColor: "#ffffff" },
-  success: { backgroundColor: "#10b981", textColor: "#ffffff" },
-  danger: { backgroundColor: "#ef4444", textColor: "#ffffff" },
-  warning: { backgroundColor: "#f59e0b", textColor: "#ffffff" },
-  info: { backgroundColor: "#3b82f6", textColor: "#ffffff" },
+const variantStyles: Record<ButtonVariant, { backgroundColor: string; textColor: string; borderColor: string }> = {
+  primary: { backgroundColor: "#0066CC", textColor: "#ffffff", borderColor: "rgba(255,255,255,0.16)" },
+  secondary: { backgroundColor: "#6b7280", textColor: "#ffffff", borderColor: "rgba(255,255,255,0.12)" },
+  success: { backgroundColor: "#10b981", textColor: "#ffffff", borderColor: "rgba(255,255,255,0.16)" },
+  danger: { backgroundColor: "#ef4444", textColor: "#ffffff", borderColor: "rgba(255,255,255,0.16)" },
+  warning: { backgroundColor: "#f59e0b", textColor: "#ffffff", borderColor: "rgba(255,255,255,0.16)" },
+  info: { backgroundColor: "#3b82f6", textColor: "#ffffff", borderColor: "rgba(255,255,255,0.16)" },
 };
 
 export function Button({
   title,
   variant = "primary",
   icon,
-  iconSize = 16,
+  iconSize = 14,
   isLoading = false,
   loadingText,
-  fullWidth = true,
+  width = "100%",
   disabled,
   style,
   className,
   ...props
 }: ButtonProps) {
-  const { backgroundColor, textColor } = variantStyles[variant];
+  const { backgroundColor, textColor, borderColor } = variantStyles[variant];
   const isDisabled = !!disabled || !!isLoading;
 
   return (
     <TouchableOpacity
       disabled={isDisabled}
-      className={`rounded-lg py-3 px-6 items-center flex-row justify-center gap-3 ${className || ""}`}
+      activeOpacity={0.85}
+      className={`rounded-xl py-2 px-4 items-center flex-row justify-center gap-3 ${className || ""}`}
       style={[
         {
           backgroundColor,
-          width: fullWidth ? "100%" : "auto",
-          minHeight: 40,
-          opacity: isDisabled ? 0.5 : isLoading ? 0.8 : 1,
+          width: (width as DimensionValue) || null,
+          minHeight: 20,
+          borderWidth: 1,
+          borderColor,
+          shadowColor: "#000",
+          shadowOpacity: isDisabled ? 0 : 0.25,
+          shadowRadius: 6,
+          shadowOffset: { width: 0, height: 3 },
+          elevation: isDisabled ? 0 : 3,
+          opacity: isDisabled ? 0.55 : isLoading ? 0.85 : 1,
         },
         style,
       ]}

@@ -26,8 +26,7 @@ export function Select({ options, value, onChange, placeholder = "Selecionar..."
       <TouchableOpacity
         onPress={() => setIsOpen(true)}
         disabled={isLoading}
-        className="border border-slate-400 rounded-lg px-3 py-3 flex-row items-center justify-between"
-        style={{ backgroundColor: "rgba(255,255,255,0.05)" }}
+        className="border border-white/10 rounded-lg px-3 py-3 flex-row items-center justify-between bg-white/5"
       >
         <AppText style={{ color: value ? "#FFFFFF" : "rgba(255,255,255,0.5)" }} className="text-base">
           {selectedLabel}
@@ -48,7 +47,7 @@ export function Select({ options, value, onChange, placeholder = "Selecionar..."
               style={{ backgroundColor: "#1a2a3b", maxHeight: "80%" }}
             >
               <View className="px-4 py-3 border-b border-white/10">
-                <AppText className="text-lg font-bold text-white">Selecionar segmento</AppText>
+                <AppText className="text-lg font-bold text-white">Selecionar opção</AppText>
               </View>
 
               <ScrollView showsVerticalScrollIndicator={false}>

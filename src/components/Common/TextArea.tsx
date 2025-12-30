@@ -16,13 +16,13 @@ export function TextArea({ label, error, rows = 4, minHeight, style, className, 
       <TextInput
         multiline
         numberOfLines={rows}
-        className={`border border-slate-400 rounded-lg px-3 py-3 text-base ${className || ""}`}
+        className={`border border-white/10 bg-white/5 rounded-lg px-3 py-3 text-base ${className || ""}`}
         style={[
           { color: "#FFFFFF", textAlignVertical: "top", outline: "none" } as any,
           minHeight ? { minHeight } : {},
           style,
         ]}
-        placeholderTextColor="rgba(255,255,255,0.3)"
+        placeholderTextColor="rgba(255,255,255,0.4)"
         {...props}
       />
       {error && <AppText className="text-red-400 text-xs mt-1">{error}</AppText>}
