@@ -245,7 +245,6 @@ export default function EventsScreen() {
                 </View>
                 <View>
                   <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Eventos</AppText>
-                  <AppText className="text-gray-300 text-sm md:text-base">Gestão de eventos e atividades</AppText>
                 </View>
               </View>
 

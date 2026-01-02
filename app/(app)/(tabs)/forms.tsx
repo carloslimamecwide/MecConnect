@@ -56,7 +56,6 @@ const trimI18n = (value: I18nText): I18nText => ({
   ES: value.ES.trim(),
 });
 
-
 export default function FormsScreen() {
   const { showToast } = useToast();
   const { user } = useAuth();
@@ -361,9 +360,6 @@ export default function FormsScreen() {
                   </View>
                   <View>
                     <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Formulários</AppText>
-                    <AppText className="text-gray-300 text-sm md:text-base">
-                      Crie e gerencie formulários da equipa
-                    </AppText>
                   </View>
                 </View>
                 <TouchableOpacity
@@ -497,7 +493,7 @@ export default function FormsScreen() {
                     {groups.map((group, groupIdx) => (
                       <View key={groupIdx} className="mb-4 rounded-lg p-4 border border-white/10">
                         <View className="flex-row items-center justify-between mb-2">
-                        <AppText className="text-gray-100 font-bold">Grupo {groupIdx + 1}</AppText>
+                          <AppText className="text-gray-100 font-bold">Grupo {groupIdx + 1}</AppText>
                           <TouchableOpacity onPress={() => removeGroup(groupIdx)}>
                             <AppText className="text-red-400 text-xs">Remover grupo</AppText>
                           </TouchableOpacity>
@@ -607,9 +603,7 @@ export default function FormsScreen() {
                     <AppText className="text-gray-200 mb-2">Confira os dados antes de criar o formulário.</AppText>
 
                     <View className="rounded-lg p-4 border border-white/10 mb-4">
-                      <AppText className="text-sm font-semibold text-gray-200 mb-3">
-                        Informações ({activeLang})
-                      </AppText>
+                      <AppText className="text-sm font-semibold text-gray-200 mb-3">Informações ({activeLang})</AppText>
                       <View className="mb-3">
                         <AppText className="text-xs text-gray-400 mb-1">Título</AppText>
                         <AppText className="text-gray-100 text-sm">{displayValue(titles[activeLang])}</AppText>
@@ -645,7 +639,8 @@ export default function FormsScreen() {
                           {group.questions.map((question, qIdx) => (
                             <View key={qIdx} className="ml-3 mt-2">
                               <AppText className="text-xs text-gray-300">
-                                {qIdx + 1}. {displayValue(question.text[activeLang])} ({formatDescType(question.descType)})
+                                {qIdx + 1}. {displayValue(question.text[activeLang])} (
+                                {formatDescType(question.descType)})
                               </AppText>
                               {question.descType === "Dropdown" && question.options.length > 0 && (
                                 <View className="ml-3 mt-1">
@@ -794,7 +789,9 @@ export default function FormsScreen() {
                             <AppText className="text-xs text-gray-400 mb-2">Grupos</AppText>
                             {form.questionGroups.map((group) => (
                               <View key={group.id} className="flex-row items-center justify-between py-1">
-                                <AppText className="text-sm text-gray-200">{group.group?.trim() || "Sem grupo"}</AppText>
+                                <AppText className="text-sm text-gray-200">
+                                  {group.group?.trim() || "Sem grupo"}
+                                </AppText>
                                 <AppText className="text-xs text-gray-400">{group.questions.length} perguntas</AppText>
                               </View>
                             ))}

@@ -154,7 +154,6 @@ export default function RewardsScreen() {
                   </View>
                   <View>
                     <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Rewards</AppText>
-                    <AppText className="text-gray-300 text-sm md:text-base">Sistema de recompensas e benefícios</AppText>
                   </View>
                 </View>
                 <TouchableOpacity
