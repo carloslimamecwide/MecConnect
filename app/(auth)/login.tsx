@@ -56,7 +56,7 @@ export default function LoginScreen() {
             />
           </View>
 
-          <View className="items-center">
+          <View className="items-center" style={{ marginTop: isDesktop ? 64 : 40, marginBottom: 24 }}>
             <Image
               source={require("../../assets/images/icon.png")}
               style={{ width: isDesktop ? 220 : 170, height: isDesktop ? 115 : 80 }}
@@ -126,19 +126,10 @@ export default function LoginScreen() {
                 disabled={isLoading}
                 onPress={handleLogin}
               />
-
-              <View className="mt-5 rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
-                <View className="flex-row items-center gap-2">
-                  <FontAwesome5 name="shield-alt" size={12} color="#93c5fd" />
-                  <AppText className="text-xs text-gray-300">
-                    Acesso restrito a administradores com perfil autorizado.
-                  </AppText>
-                </View>
-              </View>
             </View>
           </View>
 
-          <View className={`${Platform.OS === "android" ? "pb-20" : "mt-8"}`}>
+          <View style={{ position: "absolute", left: 0, right: 0, bottom: 20 }}>
             <AppText className="text-slate-300 text-sm text-center">
               © 2025 Mecwide. Todos os direitos reservados.
             </AppText>
