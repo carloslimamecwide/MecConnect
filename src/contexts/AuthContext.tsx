@@ -1,5 +1,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { authService } from "../services/authService";
+import * as biometricService from "../services/biometricService";
 import type { AccessApp, User } from "../types/auth";
 
 interface AuthContextData {
@@ -33,6 +34,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const storedAccessApps = await authService.getAccessApps();
 
       if (storedUser && storedToken) {
+        // Se biometria estiver habilitada, exige autenticação biométrica
+        if (await biometricService.isBiometricEnabled()) {
+          const ok = await biometricService.authenticateBiometric();
+          if (!ok) {
+            // Se biometria falhar, faz logout e limpa token
+            await authService.logout();
+            setUser(null);
+            setToken(null);
+            setAccessApps(null);
+            setIsAdmin(false);
+            setIsLoading(false);
+            return;
+          }
+        }
         setUser(storedUser);
         setToken(storedToken);
         setAccessApps(storedAccessApps);
@@ -64,6 +79,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(response.token);
       setAccessApps(response.accessApps);
       setIsAdmin(isAdminUser);
+
+      // Após login bem-sucedido, ativa biometria se disponível
+      if (await biometricService.isBiometricAvailable()) {
+        await biometricService.enableBiometric();
+      }
     } catch (error) {
       console.error("Login error:", error);
       throw error;

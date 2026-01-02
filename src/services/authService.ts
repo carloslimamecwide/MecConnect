@@ -1,11 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 import type { AccessApp, BackendLoginResponse, LoginResponse, Role, User } from "../types/auth";
 import { authClient } from "./apiClient";
 
 const STORAGE_KEYS = {
-  TOKEN: "@mecconnect:token",
-  USER: "@mecconnect:user",
-  ROLES: "@mecconnect:roles",
+  TOKEN: "mecconnect_token",
+  USER: "mecconnect_user",
+  ROLES: "mecconnect_roles",
 };
 
 class AuthService {
@@ -45,7 +46,9 @@ class AuthService {
         accessApps: backendData.accessApps,
       };
 
-      await AsyncStorage.setItem(STORAGE_KEYS.TOKEN, loginResponse.token);
+      await SecureStore.setItemAsync(STORAGE_KEYS.TOKEN, loginResponse.token, {
+        keychainAccessible: SecureStore.ALWAYS_THIS_DEVICE_ONLY,
+      });
       await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(loginResponse.user));
       await AsyncStorage.setItem(STORAGE_KEYS.ROLES, JSON.stringify(loginResponse.accessApps));
 
@@ -57,11 +60,12 @@ class AuthService {
   }
 
   async logout(): Promise<void> {
-    await AsyncStorage.multiRemove([STORAGE_KEYS.TOKEN, STORAGE_KEYS.USER, STORAGE_KEYS.ROLES]);
+    await SecureStore.deleteItemAsync(STORAGE_KEYS.TOKEN);
+    await AsyncStorage.multiRemove([STORAGE_KEYS.USER, STORAGE_KEYS.ROLES]);
   }
 
   async getToken(): Promise<string | null> {
-    return await AsyncStorage.getItem(STORAGE_KEYS.TOKEN);
+    return await SecureStore.getItemAsync(STORAGE_KEYS.TOKEN);
   }
 
   async getUser(): Promise<User | null> {
