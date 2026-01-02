@@ -1,7 +1,8 @@
 import { useIsDesktop } from "@/src/hooks/useIsDesktop";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Image, KeyboardAvoidingView, Platform, TextInput, View } from "react-native";
+import { Image, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity, View } from "react-native";
 import { AppText } from "../../src/components/Common/AppText";
 import { Button } from "../../src/components/Common/Button";
 import { DismissKeyboard } from "../../src/components/Common/DismissKeyboard";
@@ -13,6 +14,7 @@ export default function LoginScreen() {
   const isDesktop = useIsDesktop();
   const [cv, setCv] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -46,7 +48,6 @@ export default function LoginScreen() {
 
       <DismissKeyboard>
         <View className="flex-1 justify-center items-center px-6" style={{ zIndex: 1 }}>
-          {/* Logo Mecwide no canto superior direito */}
           <View className={`absolute left-4 ${isDesktop ? "top-0" : "top-12"} items-start`}>
             <Image
               source={require("../../assets/images/LOGOTIPO_MECWIDE_BRANCO.png")}
@@ -58,45 +59,63 @@ export default function LoginScreen() {
           <View className="items-center">
             <Image
               source={require("../../assets/images/icon.png")}
-              style={{ width: isDesktop ? 230 : 180, height: isDesktop ? 125 : 80 }}
+              style={{ width: isDesktop ? 220 : 170, height: isDesktop ? 115 : 80 }}
               resizeMode="contain"
             />
           </View>
 
           <View className={`w-full max-w-md ${Platform.OS === "android" ? "pb-20" : ""}`}>
-            <View className="mb-8">
+            <View className="rounded-3xl border border-white/10 bg-white/5 p-6">
               <View className="mb-6">
-                <AppText className="text-slate-300 font-semibold mb-3">CV</AppText>
-                <TextInput
-                  value={cv}
-                  onChangeText={setCv}
-                  placeholder="Digite seu CV"
-                  placeholderTextColor="rgba(255,255,255,0.5)"
-                  autoCapitalize="characters"
-                  autoCorrect={false}
-                  className="border-b border-slate-400 px-0 py-3 text-base"
-                  style={{ color: "#FFFFFF", outline: "none" } as any}
-                />
+                <AppText className="text-xs text-blue-200 uppercase tracking-widest mb-2">MecConnect Admin</AppText>
               </View>
 
-              <View className="mb-8">
-                <AppText className="text-slate-300 font-semibold mb-3">Senha</AppText>
-                <TextInput
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="Digite sua senha"
-                  placeholderTextColor="rgba(255,255,255,0.5)"
-                  secureTextEntry
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  className="border-b border-slate-400 px-0 py-3 text-base"
-                  style={{ color: "#FFFFFF", outline: "none" } as any}
-                />
+              <View className="mb-5">
+                <AppText className="text-slate-300 font-semibold mb-2">CV</AppText>
+                <View className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                  <TextInput
+                    value={cv}
+                    onChangeText={setCv}
+                    placeholder="Digite o seu CV"
+                    placeholderTextColor="rgba(255,255,255,0.45)"
+                    autoCapitalize="characters"
+                    autoCorrect={false}
+                    returnKeyType="next"
+                    className="flex-1 text-base text-white"
+                    style={{ outline: "none" } as any}
+                  />
+                </View>
+                <AppText className="text-xs text-gray-400 mt-2">Use o CV em maiúsculas.</AppText>
+              </View>
+
+              <View className="mb-6">
+                <View className="flex-row items-center justify-between mb-2">
+                  <AppText className="text-slate-300 font-semibold">Senha</AppText>
+                  <TouchableOpacity onPress={() => setShowPassword((prev) => !prev)}>
+                    <AppText className="text-xs text-blue-300">{showPassword ? "Ocultar" : "Mostrar"}</AppText>
+                  </TouchableOpacity>
+                </View>
+                <View className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                  <FontAwesome5 name="lock" size={16} color="rgba(255,255,255,0.5)" />
+                  <TextInput
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="Digite a sua senha"
+                    placeholderTextColor="rgba(255,255,255,0.45)"
+                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    returnKeyType="go"
+                    onSubmitEditing={handleLogin}
+                    className="flex-1 text-base text-white"
+                    style={{ outline: "none" } as any}
+                  />
+                </View>
               </View>
 
               {error ? (
-                <View className="mb-6 bg-red-500/20 border border-red-400 rounded-lg p-4">
-                  <AppText className="text-red-300 text-sm">{error}</AppText>
+                <View className="mb-5 bg-red-500/20 border border-red-400 rounded-xl p-4">
+                  <AppText className="text-red-200 text-sm">{error}</AppText>
                 </View>
               ) : null}
 
@@ -107,6 +126,15 @@ export default function LoginScreen() {
                 disabled={isLoading}
                 onPress={handleLogin}
               />
+
+              <View className="mt-5 rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+                <View className="flex-row items-center gap-2">
+                  <FontAwesome5 name="shield-alt" size={12} color="#93c5fd" />
+                  <AppText className="text-xs text-gray-300">
+                    Acesso restrito a administradores com perfil autorizado.
+                  </AppText>
+                </View>
+              </View>
             </View>
           </View>
 
