@@ -42,8 +42,7 @@ export default function SupportScreen() {
     }
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [4, 3],
+      allowsEditing: false,
       quality: 1,
     });
     if (!result.canceled && result.assets && result.assets[0]?.uri) {
