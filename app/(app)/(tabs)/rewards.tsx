@@ -77,11 +77,10 @@ export default function RewardsScreen() {
     try {
       setIsCreating(true);
       await rewardService.createReward({
-        rewardForm: [
-          { language: "PT", title: titles.PT, description: descriptions.PT },
-          { language: "EN", title: titles.EN, description: descriptions.EN },
-          { language: "ES", title: titles.ES, description: descriptions.ES },
-        ],
+        rewardForm: {
+          title: { ...titles },
+          description: { ...descriptions },
+        },
         dateExpiration: expirationDate.toISOString().split("T")[0],
         numberOfWinners,
       });

@@ -132,7 +132,7 @@ export default function SettingsScreen() {
               <AppText className="text-lg font-bold text-gray-100 mb-4">Suporte</AppText>
 
               <TouchableOpacity
-                onPress={() => router.push("/(app)/support")}
+                onPress={() => router.push("/support")}
                 className="rounded-2xl p-5 bg-white/5 border border-white/10 flex-row items-center justify-between"
               >
                 <View className="flex-row items-center gap-3">

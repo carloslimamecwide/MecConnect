@@ -1,6 +1,7 @@
 import { apiClient } from "./apiClient";
 export type Language = "PT" | "EN" | "ES";
 export type I18nText = Record<Language, string>;
+export type QuestionDescType = "Dropdown" | "TextBox" | "Rating";
 
 export interface EventForm {
   id: string;
@@ -18,22 +19,70 @@ export interface EventForm {
   dateCreation: string;
   userEdition: string;
   dateEdition: string;
+  questionGroups?: QuestionGroup[];
 }
 
-export interface EventTranslation {
-  language: string;
-  title: string;
-  description: string;
+export interface TranslatedFields {
+  title: I18nText;
+  description: I18nText;
 }
 
 export type QuestionForm = {
   text: I18nText;
   options: I18nText[];
-  descType: "Dropdown";
+  descType: QuestionDescType;
 };
 
+export interface FormQuestionOption {
+  option: string;
+  description: string;
+  index: number;
+  id?: number;
+  idOptn?: number;
+}
+
+export interface FormQuestion {
+  id?: string;
+  idCab?: string;
+  idQstn?: string;
+  text: string;
+  type: number;
+  descType: QuestionDescType;
+  index: number;
+  required: boolean;
+  options: FormQuestionOption[];
+}
+
+export interface QuestionGroup {
+  id: number;
+  group: string;
+  questions: FormQuestion[];
+}
+
+export interface CreateFormOption {
+  description: I18nText;
+}
+
+export interface CreateFormQuestion {
+  text: I18nText;
+  descType: QuestionDescType;
+  required: boolean;
+  options: CreateFormOption[];
+}
+
+export interface CreateFormGroup {
+  group: I18nText;
+  questions: CreateFormQuestion[];
+}
+
+export interface CreateFormPayload {
+  formForm: TranslatedFields;
+  dateExpiration: string;
+  questionGroups: CreateFormGroup[];
+}
+
 export interface CreateEventPayload {
-  eventForm: EventTranslation[];
+  eventForm: TranslatedFields;
   dateExpiration: string;
   questions: QuestionForm[];
 }
@@ -75,12 +124,35 @@ class EventsService {
     }
   }
 
+  async createForm(payload: CreateFormPayload): Promise<void> {
+    console.log("Creating form with payload:", JSON.stringify(payload, null, 2));
+    try {
+      await apiClient.post("/Form/Forms", {
+        formForm: payload.formForm,
+        dateExpiration: payload.dateExpiration,
+        questionGroups: payload.questionGroups,
+      });
+    } catch (error: any) {
+      console.error("Error creating form:", error);
+      throw error;
+    }
+  }
+
   async deleteEvent(eventId: string): Promise<void> {
     // console.log("Deleting event with ID:", eventId);
     try {
       await apiClient.delete(`/Form/Events/${eventId}`);
     } catch (error: any) {
       console.error("Error deleting event:", error);
+      throw error;
+    }
+  }
+
+  async deleteForm(formId: string): Promise<void> {
+    try {
+      await apiClient.delete(`/Form/Forms/${formId}`);
+    } catch (error: any) {
+      console.error("Error deleting form:", error);
       throw error;
     }
   }

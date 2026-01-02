@@ -66,7 +66,7 @@ export default function EventsScreen() {
     try {
       setIsLoading(true);
       const data = await eventsService.getActiveEvents("PT", cv);
-      setEvents(data);
+      setEvents(data.filter((item) => item.participation));
     } catch (error: any) {
       showToast({ message: error.message || "Erro ao carregar eventos", type: "error", position: "top" });
     } finally {
@@ -115,11 +115,10 @@ export default function EventsScreen() {
       const dateExpiration = expirationDate.toLocaleDateString("en-CA"); // YYYY-MM-DD
 
       await eventsService.createEvent({
-        eventForm: [
-          { language: "PT", title: titles.PT, description: descriptions.PT },
-          { language: "EN", title: titles.EN, description: descriptions.EN },
-          { language: "ES", title: titles.ES, description: descriptions.ES },
-        ],
+        eventForm: {
+          title: { ...titles },
+          description: { ...descriptions },
+        },
         questions: questions.map((q) => ({
           text: { ...q.text },
           options: q.options.map((o) => ({ ...o })),

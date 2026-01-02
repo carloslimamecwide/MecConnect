@@ -1,4 +1,5 @@
 import { apiClient } from "./apiClient";
+import type { I18nText } from "./eventsService";
 
 export interface RewardForm {
   id: string;
@@ -19,14 +20,13 @@ export interface RewardForm {
   numberOfWinners: number;
 }
 
-export interface RewardFormTranslation {
-  language: string;
-  title: string;
-  description: string;
+export interface RewardFormFields {
+  title: I18nText;
+  description: I18nText;
 }
 
 export interface CreateRewardPayload {
-  rewardForm: RewardFormTranslation[];
+  rewardForm: RewardFormFields;
   dateExpiration: string;
   numberOfWinners: number;
 }
