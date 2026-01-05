@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import "../global.css";
+import { LoadingScreen } from "../src/components/branding/LoadingScreen";
 import { AuthProvider } from "../src/contexts/AuthContext";
 import { ToastProvider } from "../src/contexts/ToastContext";
 
@@ -15,13 +16,14 @@ export default function RootLayout() {
       // Aqui você pode carregar fontes, dados, etc.
       // Exemplo: await loadFonts();
       await SplashScreen.hideAsync();
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       setAppIsReady(true);
     }
     prepare();
   }, []);
 
   if (!appIsReady) {
-    return null;
+    return <LoadingScreen />;
   }
   return (
     <ToastProvider>
