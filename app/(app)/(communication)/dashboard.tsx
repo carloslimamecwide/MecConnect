@@ -5,7 +5,7 @@ import { useToast } from "@/src/contexts/ToastContext";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import { Platform, ScrollView, TouchableOpacity, View } from "react-native";
 import { AppLayout } from "../../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../../src/components/layout/PageWrapper";
 import type { EventForm } from "../../../src/services/eventsService";
@@ -233,6 +233,11 @@ export default function DashboardScreen() {
                   <View
                     key={stat.label}
                     className={`rounded-2xl p-5 border ${stat.tone} flex-row items-center justify-between`}
+                    style={
+                      Platform.OS === "web"
+                        ? { flexGrow: 1, flexBasis: 240, minWidth: 220 }
+                        : undefined
+                    }
                   >
                     <View>
                       <AppText className="text-xs text-gray-400 mb-1">{stat.label}</AppText>
@@ -254,6 +259,11 @@ export default function DashboardScreen() {
                       key={action.label}
                       onPress={() => router.push(action.route as any)}
                       className="rounded-2xl p-4 border border-white/10 bg-white/5 flex-row items-center justify-between"
+                      style={
+                        Platform.OS === "web"
+                          ? { flexGrow: 1, flexBasis: 260, minWidth: 240 }
+                          : undefined
+                      }
                     >
                       <View className="flex-row items-center gap-3">
                         <View className="h-10 w-10 rounded-xl bg-blue-500/20 border border-blue-400/30 items-center justify-center">

@@ -24,7 +24,8 @@ export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
   const [wasOffline, setWasOffline] = useState(false);
 
   const segmentList = segments as string[];
-  const mode = segmentList.includes("(management)") || segmentList.includes("management") ? "management" : "communication";
+  const mode =
+    segmentList.includes("(management)") || segmentList.includes("management") ? "management" : "communication";
   const isModeSelection = segmentList.includes("mode-selection");
 
   useEffect(() => {
@@ -47,7 +48,10 @@ export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
       {/* Conteúdo por cima do background */}
       <View className="flex-1">
         {/* Header em todas as telas */}
-        <Header title={title} onLogoPress={() => router.push("/(app)/mode-selection" as any)} />
+        <Header
+          title={title}
+          onLogoPress={() => (isModeSelection ? null : router.push("/(app)/mode-selection" as any))}
+        />
 
         <View className="flex-1 flex-row">
           {/* Sidebar fixa apenas em desktop */}
