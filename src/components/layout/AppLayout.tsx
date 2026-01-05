@@ -23,10 +23,9 @@ export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
   const { showToast } = useToast();
   const [wasOffline, setWasOffline] = useState(false);
 
-  const mode =
-    (segments as string[]).includes("(management)") || (segments as string[]).includes("management")
-      ? "management"
-      : "communication";
+  const segmentList = segments as string[];
+  const mode = segmentList.includes("(management)") || segmentList.includes("management") ? "management" : "communication";
+  const isModeSelection = segmentList.includes("mode-selection");
 
   useEffect(() => {
     if (isOffline) {
@@ -52,7 +51,7 @@ export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
 
         <View className="flex-1 flex-row">
           {/* Sidebar fixa apenas em desktop */}
-          {isDesktop && <Sidebar isOpen={true} onClose={() => {}} mode={mode} />}
+          {isDesktop && !isModeSelection && <Sidebar isOpen={true} onClose={() => {}} mode={mode} />}
 
           {/* Área de conteúdo */}
           <View className="flex-1 mt-4">{children}</View>
