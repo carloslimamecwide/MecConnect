@@ -33,6 +33,7 @@ export function Sidebar({ isOpen, onClose, mode = "communication" }: SidebarProp
 
   const isDeveloper = user?.roleIt === "developer";
   const menuItems = mode === "management" ? managementMenuItems : communicationMenuItems;
+  const modeLabel = mode === "management" ? "Gestão" : "Comunicação";
 
   if (!isDesktop && !isOpen) {
     return null;
@@ -55,13 +56,19 @@ export function Sidebar({ isOpen, onClose, mode = "communication" }: SidebarProp
         className="flex flex-col"
       >
         <View className="p-6 border-b border-white/10">
-          <View className="flex flex-row items-center justify-between">
-            <AppText className="text-2xl font-bold text-gray-100">MecConnect</AppText>
+          <View className="flex flex-row items-center gap-3">
+            <View className="h-11 w-11 rounded-2xl items-center justify-center bg-blue-500/15 border border-blue-400/30">
+              <FontAwesome5 name="layer-group" size={16} color="#93c5fd" />
+            </View>
+            <View className="flex-1">
+              <AppText className="text-xl font-bold text-gray-100">MecConnect</AppText>
+              <AppText className="text-xs text-gray-400">Modo {modeLabel}</AppText>
+            </View>
           </View>
           {isDeveloper && (
             <TouchableOpacity
               onPress={() => router.push("/(app)/mode-selection")}
-              className="mt-4 rounded-lg py-2 px-3 flex-row items-center justify-center gap-2"
+              className="mt-4 rounded-xl py-2.5 px-3 flex-row items-center justify-center gap-2"
               style={{
                 backgroundColor: "rgba(255,255,255,0.05)",
                 borderWidth: 1,
@@ -81,22 +88,30 @@ export function Sidebar({ isOpen, onClose, mode = "communication" }: SidebarProp
               <TouchableOpacity
                 key={item.href}
                 onPress={() => {
-                  console.log("Navigating to:", item.href, "Current pathname:", pathname);
                   router.replace(item.href as any);
                   if (!isDesktop) onClose();
                 }}
-                className="mx-3 mb-2 rounded-xl overflow-hidden"
+                className="mx-3 mb-2"
                 activeOpacity={0.7}
               >
                 <View
-                  className="flex flex-row items-center px-4 py-3"
+                  className={`flex flex-row items-center px-4 py-3 rounded-xl border ${
+                    isActive ? "bg-blue-500/15 border-blue-400/30" : "bg-white/5 border-white/10"
+                  }`}
                   style={{
-                    backgroundColor: isActive ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.05)",
+                    shadowColor: "#000",
+                    shadowOpacity: isActive ? 0.2 : 0,
+                    shadowRadius: 6,
+                    shadowOffset: { width: 0, height: 2 },
+                    elevation: isActive ? 2 : 0,
                   }}
                 >
                   <View
-                    className="w-9 h-9 rounded-lg items-center justify-center mr-3"
-                    style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
+                    className="w-9 h-9 rounded-lg items-center justify-center mr-3 border"
+                    style={{
+                      backgroundColor: isActive ? "rgba(59,130,246,0.2)" : "rgba(255,255,255,0.08)",
+                      borderColor: isActive ? "rgba(147,197,253,0.35)" : "rgba(255,255,255,0.08)",
+                    }}
                   >
                     <FontAwesome5 name={item.icon} size={16} color={isActive ? "#FFFFFF" : "rgba(255,255,255,0.6)"} />
                   </View>
@@ -114,7 +129,7 @@ export function Sidebar({ isOpen, onClose, mode = "communication" }: SidebarProp
             <View className="flex flex-row items-center">
               <View
                 className="w-12 h-12 rounded-full items-center justify-center mr-3"
-                style={{ backgroundColor: "#0066CC" }}
+                style={{ backgroundColor: "rgba(0,102,204,0.85)" }}
               >
                 <Text className="text-white font-bold text-lg">{user?.nome?.charAt(0)?.toUpperCase() || "U"}</Text>
               </View>

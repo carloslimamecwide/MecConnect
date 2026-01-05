@@ -41,6 +41,15 @@ export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
     }
   }, [isOffline, wasOffline]);
 
+  const handleLogoPress = () => {
+    if (isModeSelection) return;
+    if (isDeveloper) {
+      router.push("/(app)/mode-selection" as any);
+    } else {
+      router.push("/(app)/(communication)/dashboard" as any);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: "#0a1a2b" }} edges={["top", "left", "right"]}>
       <StatusBar style="light" backgroundColor="#0a1a2b" translucent={false} />
@@ -50,16 +59,7 @@ export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
       {/* Conteúdo por cima do background */}
       <View className="flex-1">
         {/* Header em todas as telas */}
-        <Header
-          title={title}
-          onLogoPress={() =>
-            isModeSelection
-              ? null
-              : isDeveloper
-                ? router.push("/(app)/mode-selection" as any)
-                : router.push("/(app)/(communication)/dashboard" as any)
-          }
-        />
+        <Header title={title} onLogoPress={handleLogoPress} />
 
         <View className="flex-1 flex-row">
           {/* Sidebar fixa apenas em desktop */}
