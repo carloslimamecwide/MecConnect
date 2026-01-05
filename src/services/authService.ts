@@ -39,9 +39,9 @@ class AuthService {
         job: backendData.job,
         desc_job: backendData.desc_job,
         photo: backendData.photo,
-        roleIt: "developer", // Valor fixo conforme solicitado
+        roleIt: "developer",
       };
-      console.log("User logged in:", JSON.stringify(user, null, 2));
+      // console.log("User logged in:", JSON.stringify(user, null, 2));
 
       const loginResponse: LoginResponse = {
         user,

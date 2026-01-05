@@ -5,6 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../../contexts/AuthContext";
 import { useConnectivity } from "../../hooks/useConnectivity";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import BrandBackground from "../branding/BrandBackground";
@@ -16,13 +17,14 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
+  const { user } = useAuth();
   const isDesktop = useIsDesktop();
   const router = useRouter();
   const segments = useSegments();
   const { isOffline } = useConnectivity();
   const { showToast } = useToast();
   const [wasOffline, setWasOffline] = useState(false);
-
+  const isDeveloper = user?.roleIt === "developer";
   const segmentList = segments as string[];
   const mode =
     segmentList.includes("(management)") || segmentList.includes("management") ? "management" : "communication";
@@ -50,7 +52,13 @@ export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
         {/* Header em todas as telas */}
         <Header
           title={title}
-          onLogoPress={() => (isModeSelection ? null : router.push("/(app)/mode-selection" as any))}
+          onLogoPress={() =>
+            isModeSelection
+              ? null
+              : isDeveloper
+                ? router.push("/(app)/mode-selection" as any)
+                : router.push("/(app)/(communication)/dashboard" as any)
+          }
         />
 
         <View className="flex-1 flex-row">
