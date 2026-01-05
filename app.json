@@ -38,7 +38,7 @@
     },
     "android": {
       "package": "com.mecwide.mecconnect",
-      "versionCode": 6,
+      "versionCode": 7,
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",

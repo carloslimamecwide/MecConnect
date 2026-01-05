@@ -9,22 +9,30 @@ import { AppText } from "../Common/AppText";
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  mode?: "communication" | "management";
 }
 
-const menuItems = [
-  { href: "/dashboard", label: "Dashboard", icon: "home" },
-  { href: "/forms", label: "Formulários", icon: "file-alt" },
-
-  { href: "/rewards", label: "Rewards", icon: "gift" },
-  { href: "/events", label: "Eventos", icon: "calendar" },
-  { href: "/notifications", label: "Notificações", icon: "bell" },
-  { href: "/settings", label: "Definições", icon: "cog" },
+const communicationMenuItems = [
+  { href: "/(app)/(communication)/dashboard", label: "Dashboard", icon: "home" },
+  { href: "/(app)/(communication)/forms", label: "Formulários", icon: "file-alt" },
+  { href: "/(app)/(communication)/rewards", label: "Rewards", icon: "gift" },
+  { href: "/(app)/(communication)/events", label: "Eventos", icon: "calendar" },
+  { href: "/(app)/(communication)/notifications", label: "Notificações", icon: "bell" },
+  { href: "/(app)/(communication)/settings", label: "Definições", icon: "cog" },
 ];
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
+const managementMenuItems = [
+  { href: "/(app)/(management)/users", label: "Usuários", icon: "users" },
+  { href: "/(app)/(management)/settings", label: "Definições", icon: "cog" },
+];
+
+export function Sidebar({ isOpen, onClose, mode = "communication" }: SidebarProps) {
   const isDesktop = useIsDesktop();
   const { user } = useAuth();
   const pathname = usePathname();
+
+  const isDeveloper = user?.roleIt === "developer";
+  const menuItems = mode === "management" ? managementMenuItems : communicationMenuItems;
 
   if (!isDesktop && !isOpen) {
     return null;
@@ -49,10 +57,21 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <View className="p-6 border-b border-white/10">
           <View className="flex flex-row items-center justify-between">
             <AppText className="text-2xl font-bold text-gray-100">MecConnect</AppText>
-            {/* <AppText className="text-xs font-bold" style={{ color: "#0066CC" }}>
-              MECWIDE
-            </AppText> */}
           </View>
+          {isDeveloper && (
+            <TouchableOpacity
+              onPress={() => router.push("/(app)/mode-selection")}
+              className="mt-4 rounded-lg py-2 px-3 flex-row items-center justify-center gap-2"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.05)",
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.1)",
+              }}
+            >
+              <FontAwesome5 name="exchange-alt" size={12} color="#9ca3af" />
+              <AppText className="text-xs font-semibold text-gray-400">Trocar Modo</AppText>
+            </TouchableOpacity>
+          )}
         </View>
 
         <ScrollView className="flex-1 py-3" showsVerticalScrollIndicator={false}>
@@ -62,7 +81,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               <TouchableOpacity
                 key={item.href}
                 onPress={() => {
-                  router.push(item.href as any);
+                  console.log("Navigating to:", item.href, "Current pathname:", pathname);
+                  router.replace(item.href as any);
                   if (!isDesktop) onClose();
                 }}
                 className="mx-3 mb-2 rounded-xl overflow-hidden"

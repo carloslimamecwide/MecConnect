@@ -12,6 +12,7 @@ export interface User {
   job: string;
   desc_job: string;
   photo: string | null;
+  roleIt: string;
 }
 
 export interface Role {

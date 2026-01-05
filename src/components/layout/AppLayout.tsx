@@ -1,6 +1,6 @@
 // src/components/layout/AppLayout.tsx
 import { useToast } from "@/src/contexts/ToastContext";
-import { useRouter } from "expo-router";
+import { useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
@@ -18,9 +18,15 @@ interface AppLayoutProps {
 export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
   const isDesktop = useIsDesktop();
   const router = useRouter();
+  const segments = useSegments();
   const { isOffline } = useConnectivity();
   const { showToast } = useToast();
   const [wasOffline, setWasOffline] = useState(false);
+
+  const mode =
+    (segments as string[]).includes("(management)") || (segments as string[]).includes("management")
+      ? "management"
+      : "communication";
 
   useEffect(() => {
     if (isOffline) {
@@ -42,11 +48,11 @@ export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
       {/* Conteúdo por cima do background */}
       <View className="flex-1">
         {/* Header em todas as telas */}
-        <Header title={title} onLogoPress={() => router.push("/dashboard")} />
+        <Header title={title} onLogoPress={() => router.push("/(app)/mode-selection" as any)} />
 
         <View className="flex-1 flex-row">
           {/* Sidebar fixa apenas em desktop */}
-          {isDesktop && <Sidebar isOpen={true} onClose={() => {}} />}
+          {isDesktop && <Sidebar isOpen={true} onClose={() => {}} mode={mode} />}
 
           {/* Área de conteúdo */}
           <View className="flex-1 mt-4">{children}</View>
