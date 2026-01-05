@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 import type { AccessApp, BackendLoginResponse, LoginResponse, Role, User } from "../types/auth";
 import { authClient } from "./apiClient";
 
@@ -46,9 +47,13 @@ class AuthService {
         accessApps: backendData.accessApps,
       };
 
-      await SecureStore.setItemAsync(STORAGE_KEYS.TOKEN, loginResponse.token, {
-        keychainAccessible: SecureStore.ALWAYS_THIS_DEVICE_ONLY,
-      });
+      if (Platform.OS === "web" && typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.setItem(STORAGE_KEYS.TOKEN, loginResponse.token);
+      } else {
+        await SecureStore.setItemAsync(STORAGE_KEYS.TOKEN, loginResponse.token, {
+          keychainAccessible: SecureStore.ALWAYS_THIS_DEVICE_ONLY,
+        });
+      }
       await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(loginResponse.user));
       await AsyncStorage.setItem(STORAGE_KEYS.ROLES, JSON.stringify(loginResponse.accessApps));
 
@@ -60,12 +65,20 @@ class AuthService {
   }
 
   async logout(): Promise<void> {
-    await SecureStore.deleteItemAsync(STORAGE_KEYS.TOKEN);
+    if (Platform.OS === "web" && typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.removeItem(STORAGE_KEYS.TOKEN);
+    } else {
+      await SecureStore.deleteItemAsync(STORAGE_KEYS.TOKEN);
+    }
     await AsyncStorage.multiRemove([STORAGE_KEYS.USER, STORAGE_KEYS.ROLES]);
   }
 
   async getToken(): Promise<string | null> {
-    return await SecureStore.getItemAsync(STORAGE_KEYS.TOKEN);
+    if (Platform.OS === "web" && typeof window !== "undefined" && window.localStorage) {
+      return window.localStorage.getItem(STORAGE_KEYS.TOKEN);
+    } else {
+      return await SecureStore.getItemAsync(STORAGE_KEYS.TOKEN);
+    }
   }
 
   async getUser(): Promise<User | null> {

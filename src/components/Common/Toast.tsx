@@ -70,8 +70,8 @@ export function Toast({
     };
   }, [visible, autoHide, duration, onHide, slide, opacity]);
 
-  const topOffset = Platform.OS === "android" ? 12 : insets.top + 12;
-  const bottomOffset = Platform.OS === "android" ? 12 : insets.bottom + 12;
+  const topOffset = insets.top + (Platform.OS === "android" ? 32 : 12);
+  const bottomOffset = insets.bottom + 12;
 
   const bgColor = type === "error" ? "#ef4444" : type === "success" ? "#10b981" : "#0ea5e9";
   const iconName = type === "error" ? "exclamation-circle" : type === "success" ? "check-circle" : "info-circle";
@@ -89,9 +89,14 @@ export function Toast({
         alignItems: "center",
       }}
     >
-      <View className="flex-row items-center gap-2 px-4 py-3 rounded-full" style={{ backgroundColor: bgColor }}>
+      <View
+        className="flex-row items-start gap-2 px-4 py-3 rounded-2xl"
+        style={{ backgroundColor: bgColor, maxWidth: "92%" }}
+      >
         <FontAwesome5 name={iconName as any} size={16} color="#fff" />
-        <AppText className="text-white font-semibold">{message}</AppText>
+        <AppText className="text-white font-semibold" style={{ flexShrink: 1 }}>
+          {message}
+        </AppText>
       </View>
     </Animated.View>
   );

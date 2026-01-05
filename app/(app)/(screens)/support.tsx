@@ -12,6 +12,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Image, KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppLayout } from "../../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../../src/components/layout/PageWrapper";
 import { supportService } from "../../../src/services/supportService";
@@ -20,6 +21,7 @@ export default function SupportScreen() {
   const { user } = useAuth();
   const { showToast } = useToast();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [form, setForm] = useState({
     cv: user?.cv || "",
@@ -93,7 +95,11 @@ export default function SupportScreen() {
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ flexGrow: 1, justifyContent: "space-between", paddingBottom: 24 }}
+            contentContainerStyle={{
+              flexGrow: 1,
+              justifyContent: "space-between",
+              paddingBottom: 24 + insets.bottom,
+            }}
             keyboardShouldPersistTaps="handled"
           >
             <View style={{ flex: 1, justifyContent: "space-between", minHeight: 400 }}>
