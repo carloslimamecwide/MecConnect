@@ -98,15 +98,41 @@ export const DatePickerSheet = forwardRef<BottomSheet, DatePickerSheetProps>(
 
     // Web: Usa Modal com input type="date"
     if (Platform.OS === "web") {
+      const normalizeDate = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
       const formatDateForInput = (date: Date) => {
-        return date.toISOString().split("T")[0];
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+
+      const formatDateLabel = (date: Date) =>
+        date.toLocaleDateString("pt-PT", { day: "2-digit", month: "long", year: "numeric" });
+
+      const clampDate = (date: Date) => {
+        let next = normalizeDate(date);
+        if (minimumDate && next < normalizeDate(minimumDate)) {
+          next = normalizeDate(minimumDate);
+        }
+        if (maximumDate && next > normalizeDate(maximumDate)) {
+          next = normalizeDate(maximumDate);
+        }
+        return next;
       };
 
       const handleWebDateChange = (dateString: string) => {
-        const newDate = new Date(dateString + "T00:00:00");
+        const newDate = new Date(`${dateString}T00:00:00`);
         if (!isNaN(newDate.getTime())) {
-          onChange(newDate);
+          onChange(clampDate(newDate));
         }
+      };
+
+      const applyOffset = (days: number) => {
+        const base = normalizeDate(value);
+        const next = new Date(base);
+        next.setDate(base.getDate() + days);
+        onChange(clampDate(next));
       };
 
       return (
@@ -125,7 +151,7 @@ export const DatePickerSheet = forwardRef<BottomSheet, DatePickerSheetProps>(
               activeOpacity={1}
               onPress={(e) => e.stopPropagation()}
               style={{
-                backgroundColor: "#1e293b",
+                backgroundColor: "#0a1a2b",
                 borderRadius: 16,
                 padding: 24,
                 width: "90%",
@@ -137,24 +163,64 @@ export const DatePickerSheet = forwardRef<BottomSheet, DatePickerSheetProps>(
                 <AppText className="text-sm text-gray-400">Escolha a data de expiração</AppText>
               </View>
 
-              <input
-                type="date"
-                value={formatDateForInput(value)}
-                onChange={(e: any) => handleWebDateChange(e.target.value)}
-                min={minimumDate ? formatDateForInput(minimumDate) : undefined}
-                max={maximumDate ? formatDateForInput(maximumDate) : undefined}
-                style={{
-                  backgroundColor: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: "8px",
-                  padding: "12px",
-                  color: "#ffffff",
-                  fontSize: "16px",
-                  marginBottom: "16px",
-                  width: "100%",
-                  colorScheme: "dark",
-                }}
-              />
+              <View className="rounded-xl border border-white/10 bg-white/5 p-4 mb-4">
+                <AppText className="text-xs text-gray-400 mb-1">Data selecionada</AppText>
+                <AppText className="text-lg font-semibold text-gray-100">{formatDateLabel(value)}</AppText>
+                {(minimumDate || maximumDate) && (
+                  <AppText className="text-[11px] text-gray-500 mt-1">
+                    {minimumDate ? `Mínimo: ${formatDateLabel(minimumDate)}` : "Sem mínimo"} ·{" "}
+                    {maximumDate ? `Máximo: ${formatDateLabel(maximumDate)}` : "Sem máximo"}
+                  </AppText>
+                )}
+              </View>
+
+              <View className="flex-row flex-wrap gap-2 mb-4">
+                <TouchableOpacity
+                  onPress={() => applyOffset(0)}
+                  className="rounded-full px-3 py-1.5 border border-white/10 bg-white/5"
+                >
+                  <AppText className="text-xs text-gray-200">Hoje</AppText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => applyOffset(1)}
+                  className="rounded-full px-3 py-1.5 border border-white/10 bg-white/5"
+                >
+                  <AppText className="text-xs text-gray-200">Amanhã</AppText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => applyOffset(7)}
+                  className="rounded-full px-3 py-1.5 border border-white/10 bg-white/5"
+                >
+                  <AppText className="text-xs text-gray-200">+7 dias</AppText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => applyOffset(30)}
+                  className="rounded-full px-3 py-1.5 border border-white/10 bg-white/5"
+                >
+                  <AppText className="text-xs text-gray-200">+30 dias</AppText>
+                </TouchableOpacity>
+              </View>
+
+              <View className="mb-4">
+                <AppText className="text-xs text-gray-400 mb-2">Escolha manualmente</AppText>
+                <input
+                  type="date"
+                  value={formatDateForInput(value)}
+                  onChange={(e: any) => handleWebDateChange(e.target.value)}
+                  min={minimumDate ? formatDateForInput(minimumDate) : undefined}
+                  max={maximumDate ? formatDateForInput(maximumDate) : undefined}
+                  style={{
+                    backgroundColor: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: "10px",
+                    padding: "12px",
+                    color: "#ffffff",
+                    fontSize: "16px",
+                    width: "100%",
+                    colorScheme: "dark",
+                  }}
+                />
+              </View>
 
               <Button title="Confirmar" variant="info" onPress={handleClose} />
             </TouchableOpacity>
@@ -171,7 +237,7 @@ export const DatePickerSheet = forwardRef<BottomSheet, DatePickerSheetProps>(
         snapPoints={snapPoints}
         enablePanDownToClose
         backdropComponent={renderBackdrop}
-        backgroundStyle={{ backgroundColor: "#1e293b" }}
+        backgroundStyle={{ backgroundColor: "#0a1a2b" }}
         handleIndicatorStyle={{ backgroundColor: "rgba(255,255,255,0.3)", width: 40 }}
       >
         <BottomSheetView style={{ flex: 1, padding: 20 }}>
