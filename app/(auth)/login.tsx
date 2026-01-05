@@ -68,64 +68,67 @@ export default function LoginScreen() {
           <View className="flex-1 justify-center items-center px-6" style={{ zIndex: 1 }}>
             {showSplitLayout ? (
               <View className="w-full" style={{ maxWidth: 1200 }}>
-                <View className="flex-row items-stretch gap-8">
-                  <View className="flex-1 rounded-[32px] border border-white/10 bg-white/5 p-9 overflow-hidden">
-                    <View className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-sky-500/15" />
-                    <View className="absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-emerald-500/15" />
+                <View className="rounded-[32px] border border-white/10 bg-white/5 overflow-hidden">
+                  <View className="flex-row items-stretch">
+                    <View className="flex-1 p-9 relative overflow-hidden">
+                      <View className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-sky-500/15" />
+                      <View className="absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-emerald-500/15" />
 
-                    <View className="flex-row items-center justify-between mb-10">
-                      <Image
-                        source={require("../../assets/images/LOGOTIPO_MECWIDE_BRANCO.png")}
-                        style={{ width: 190, height: 70 }}
-                        resizeMode="contain"
-                      />
-                      <View className="rounded-full px-3 py-1 border border-white/10 bg-white/5">
-                        <AppText className="text-[10px] text-blue-200 uppercase tracking-[2px]">
-                          MecConnect Admin
+                      <View className="flex-row items-center justify-between mb-10">
+                        <Image
+                          source={require("../../assets/images/LOGOTIPO_MECWIDE_BRANCO.png")}
+                          style={{ width: 190, height: 70 }}
+                          resizeMode="contain"
+                        />
+                        <View className="rounded-full px-3 py-1 border border-white/10 bg-white/5">
+                          <AppText className="text-[10px] text-blue-200 uppercase tracking-[2px]">
+                            MecConnect Admin
+                          </AppText>
+                        </View>
+                      </View>
+
+                      <AppText className="text-4xl font-bold text-gray-100 mb-3">
+                        Onde a comunicação interna ganha ritmo.
+                      </AppText>
+                      <AppText className="text-sm text-gray-300">
+                        Gerencie conteúdos críticos, eventos e campanhas com clareza e rapidez.
+                      </AppText>
+
+                      <View className="flex-row flex-wrap gap-2 mt-6">
+                        {["Formulários", "Eventos", "Rewards", "Notificações"].map((item) => (
+                          <View key={item} className="rounded-full px-3 py-1 bg-white/5 border border-white/10">
+                            <AppText className="text-[11px] text-gray-300">{item}</AppText>
+                          </View>
+                        ))}
+                      </View>
+
+                      <View className="gap-3 mt-8">
+                        {[
+                          { icon: "bullhorn", label: "Campanhas e anúncios organizados" },
+                          { icon: "calendar-alt", label: "Calendário de eventos centralizado" },
+                          { icon: "gift", label: "Rewards e incentivos monitorizados" },
+                          { icon: "bell", label: "Alertas e comunicados imediatos" },
+                        ].map((item) => (
+                          <View key={item.label} className="flex-row items-center gap-3">
+                            <View className="h-9 w-9 rounded-xl items-center justify-center bg-white/10 border border-white/10">
+                              <FontAwesome5 name={item.icon as any} size={14} color="#93c5fd" />
+                            </View>
+                            <AppText className="text-sm text-gray-200">{item.label}</AppText>
+                          </View>
+                        ))}
+                      </View>
+
+                      <View className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <AppText className="text-xs text-gray-400">
+                          Acesso protegido com autenticação e permissões por perfil.
                         </AppText>
                       </View>
                     </View>
 
-                    <AppText className="text-4xl font-bold text-gray-100 mb-3">
-                      Onde a comunicação interna ganha ritmo.
-                    </AppText>
-                    <AppText className="text-sm text-gray-300">
-                      Gerencie conteúdos críticos, eventos e campanhas com clareza e rapidez.
-                    </AppText>
-
-                    <View className="flex-row flex-wrap gap-2 mt-6">
-                      {["Formulários", "Eventos", "Rewards", "Notificações"].map((item) => (
-                        <View key={item} className="rounded-full px-3 py-1 bg-white/5 border border-white/10">
-                          <AppText className="text-[11px] text-gray-300">{item}</AppText>
-                        </View>
-                      ))}
-                    </View>
-
-                    <View className="gap-3 mt-8">
-                      {[
-                        { icon: "bullhorn", label: "Campanhas e anúncios organizados" },
-                        { icon: "calendar-alt", label: "Calendário de eventos centralizado" },
-                        { icon: "gift", label: "Rewards e incentivos monitorizados" },
-                        { icon: "bell", label: "Alertas e comunicados imediatos" },
-                      ].map((item) => (
-                        <View key={item.label} className="flex-row items-center gap-3">
-                          <View className="h-9 w-9 rounded-xl items-center justify-center bg-white/10 border border-white/10">
-                            <FontAwesome5 name={item.icon as any} size={14} color="#93c5fd" />
-                          </View>
-                          <AppText className="text-sm text-gray-200">{item.label}</AppText>
-                        </View>
-                      ))}
-                    </View>
-
-                    <View className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-4">
-                      <AppText className="text-xs text-gray-400">
-                        Acesso protegido com autenticação e permissões por perfil.
-                      </AppText>
-                    </View>
-                  </View>
-
-                  <View className="w-full" style={{ maxWidth: 420 }}>
-                    <View className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                    <View
+                      className="w-full border-l border-white/10 bg-white/5 p-6"
+                      style={{ maxWidth: 420 }}
+                    >
                       <View className="mb-6 flex-row items-center gap-3">
                         <View className="h-12 w-12 rounded-2xl items-center justify-center bg-blue-500/20 border border-blue-400/30">
                           <FontAwesome5 name="shield-alt" size={16} color="#60a5fa" />
