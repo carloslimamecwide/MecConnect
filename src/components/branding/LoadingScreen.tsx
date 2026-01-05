@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
-import { View, Text } from "react-native";
+import { Text, View } from "react-native";
 import Animated, {
   Easing,
   cancelAnimation,
