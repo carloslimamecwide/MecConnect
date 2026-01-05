@@ -3,6 +3,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Image, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppText } from "../../src/components/Common/AppText";
 import { Button } from "../../src/components/Common/Button";
 import { DismissKeyboard } from "../../src/components/Common/DismissKeyboard";
@@ -12,6 +13,7 @@ import { useAuth } from "../../src/contexts/AuthContext";
 export default function LoginScreen() {
   const { login } = useAuth();
   const isDesktop = useIsDesktop();
+  const insets = useSafeAreaInsets();
   const [cv, setCv] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -39,9 +41,10 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       className="flex-1"
       style={{ backgroundColor: "#0a1a2b" }}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
     >
       {/* Marca d'água com o M da Mecwide */}
       <BrandBackground opacity={0.1} />
@@ -50,7 +53,10 @@ export default function LoginScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "android" ? 24 : 0 }}
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingBottom: Platform.OS === "android" ? 100 : 0,
+          }}
           style={{ flex: 1 }}
         >
           <View className="flex-1 justify-center items-center px-6" style={{ zIndex: 1 }}>
@@ -62,7 +68,7 @@ export default function LoginScreen() {
               />
             </View>
 
-            <View className="items-center" style={{ marginTop: isDesktop ? 64 : 40, marginBottom: 24 }}>
+            <View className="items-center" style={{ marginTop: isDesktop ? 64 : 40, marginBottom: 10 }}>
               <Image
                 source={require("../../assets/images/icon.png")}
                 style={{ width: isDesktop ? 220 : 170, height: isDesktop ? 115 : 80 }}
@@ -78,7 +84,10 @@ export default function LoginScreen() {
 
                 <View className="mb-5">
                   <AppText className="text-slate-300 font-semibold mb-2">CV</AppText>
-                  <View className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                  <View
+                    className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-white/5"
+                    style={{ paddingHorizontal: 16, paddingVertical: Platform.OS === "android" ? 6 : 12 }}
+                  >
                     <TextInput
                       value={cv}
                       onChangeText={setCv}
@@ -87,8 +96,9 @@ export default function LoginScreen() {
                       autoCapitalize="characters"
                       autoCorrect={false}
                       returnKeyType="next"
-                      className="flex-1 text-base text-white"
-                      style={{ outline: "none" } as any}
+                      allowFontScaling={Platform.OS !== "android"}
+                      className="flex-1 text-white"
+                      style={[{ outline: "none" } as any, { fontSize: Platform.OS === "android" ? 14 : 16 }]}
                     />
                   </View>
                   <AppText className="text-xs text-gray-400 mt-2">Use o CV em maiúsculas.</AppText>
@@ -101,8 +111,11 @@ export default function LoginScreen() {
                       <AppText className="text-xs text-blue-300">{showPassword ? "Ocultar" : "Mostrar"}</AppText>
                     </TouchableOpacity>
                   </View>
-                  <View className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                    <FontAwesome5 name="lock" size={16} color="rgba(255,255,255,0.5)" />
+                  <View
+                    className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-white/5"
+                    style={{ paddingHorizontal: 16, paddingVertical: Platform.OS === "android" ? 6 : 12 }}
+                  >
+                    <FontAwesome5 name="lock" size={14} color="rgba(255,255,255,0.5)" />
                     <TextInput
                       value={password}
                       onChangeText={setPassword}
@@ -113,8 +126,9 @@ export default function LoginScreen() {
                       autoCorrect={false}
                       returnKeyType="go"
                       onSubmitEditing={handleLogin}
-                      className="flex-1 text-base text-white"
-                      style={{ outline: "none" } as any}
+                      allowFontScaling={Platform.OS !== "android"}
+                      className="flex-1 text-white"
+                      style={[{ outline: "none" } as any, { fontSize: Platform.OS === "android" ? 14 : 16 }]}
                     />
                   </View>
                 </View>
@@ -135,7 +149,14 @@ export default function LoginScreen() {
               </View>
             </View>
 
-            <View style={{ position: "absolute", left: 0, right: 0, bottom: 20 }}>
+            <View
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                bottom: Platform.OS === "android" ? 0 : 20,
+              }}
+            >
               <AppText className="text-slate-300 text-sm text-center">
                 © 2025 Mecwide. Todos os direitos reservados.
               </AppText>

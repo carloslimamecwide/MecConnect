@@ -1,5 +1,5 @@
 import React from "react";
-import { TextInput, TextInputProps, View } from "react-native";
+import { Platform, TextInput, TextInputProps, View } from "react-native";
 import { AppText } from "./AppText";
 
 interface TextAreaProps extends TextInputProps {
@@ -9,7 +9,16 @@ interface TextAreaProps extends TextInputProps {
   minHeight?: number;
 }
 
-export function TextArea({ label, error, rows = 4, minHeight, style, className, ...props }: TextAreaProps) {
+export function TextArea({
+  label,
+  error,
+  rows = 4,
+  minHeight,
+  style,
+  className,
+  allowFontScaling,
+  ...props
+}: TextAreaProps) {
   return (
     <View>
       {label && <AppText className="text-sm font-semibold text-gray-300 mb-2 mt-2">{label}</AppText>}
@@ -23,6 +32,7 @@ export function TextArea({ label, error, rows = 4, minHeight, style, className, 
           style,
         ]}
         placeholderTextColor="rgba(255,255,255,0.4)"
+        allowFontScaling={allowFontScaling ?? Platform.OS !== "android"}
         {...props}
       />
       {error && <AppText className="text-red-400 text-xs mt-1">{error}</AppText>}
