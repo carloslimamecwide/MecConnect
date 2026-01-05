@@ -1,6 +1,6 @@
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import React, { useState } from "react";
-import { Modal, ScrollView, TouchableOpacity, View } from "react-native";
+import { Modal, Platform, ScrollView, TouchableOpacity, View } from "react-native";
 import { AppText } from "./AppText";
 
 interface SelectOption {
@@ -20,6 +20,8 @@ export function Select({ options, value, onChange, placeholder = "Selecionar..."
   const [isOpen, setIsOpen] = useState(false);
 
   const selectedLabel = options.find((opt) => opt.value === value)?.label || placeholder;
+  const modalMaxWidth = Platform.OS === "web" ? 420 : undefined;
+  const modalMaxHeight = Platform.OS === "web" ? "70%" : "80%";
 
   return (
     <>
@@ -44,13 +46,26 @@ export function Select({ options, value, onChange, placeholder = "Selecionar..."
           <View className="flex-1 justify-center items-center px-4">
             <View
               className="w-full rounded-lg overflow-hidden"
-              style={{ backgroundColor: "#1a2a3b", maxHeight: "80%" }}
+              style={{ backgroundColor: "#1a2a3b", maxHeight: modalMaxHeight, maxWidth: modalMaxWidth }}
             >
               <View className="px-4 py-3 border-b border-white/10">
                 <AppText className="text-lg font-bold text-white">Selecionar opção</AppText>
               </View>
 
               <ScrollView showsVerticalScrollIndicator={false}>
+                {value ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      onChange("");
+                      setIsOpen(false);
+                    }}
+                    className="px-4 py-3 border-b border-white/10 flex-row items-center justify-between"
+                    activeOpacity={0.7}
+                  >
+                    <AppText className="text-base text-gray-300">Limpar seleção</AppText>
+                    <FontAwesome5 name="times-circle" size={16} color="rgba(255,255,255,0.5)" />
+                  </TouchableOpacity>
+                ) : null}
                 {options.map((option) => (
                   <TouchableOpacity
                     key={option.value}
