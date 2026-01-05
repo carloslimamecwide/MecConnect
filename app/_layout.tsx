@@ -16,7 +16,7 @@ export default function RootLayout() {
       // Aqui você pode carregar fontes, dados, etc.
       // Exemplo: await loadFonts();
       await SplashScreen.hideAsync();
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 10000));
       setAppIsReady(true);
     }
     prepare();
