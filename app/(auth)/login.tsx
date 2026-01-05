@@ -125,10 +125,7 @@ export default function LoginScreen() {
                       </View>
                     </View>
 
-                    <View
-                      className="w-full border-l border-white/10 bg-white/5 p-6"
-                      style={{ maxWidth: 420 }}
-                    >
+                    <View className="w-full border-l border-white/10 bg-white/5 p-6" style={{ maxWidth: 420 }}>
                       <View className="mb-6 flex-row items-center gap-3">
                         <View className="h-12 w-12 rounded-2xl items-center justify-center bg-blue-500/20 border border-blue-400/30">
                           <FontAwesome5 name="shield-alt" size={16} color="#60a5fa" />
@@ -319,7 +316,7 @@ export default function LoginScreen() {
                   }}
                 >
                   <AppText className="text-slate-300 text-sm text-center">
-                    © 2025 Mecwide. Todos os direitos reservados.
+                    © 2026 Mecwide. Todos os direitos reservados.
                   </AppText>
                 </View>
               </>

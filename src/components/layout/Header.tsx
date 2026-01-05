@@ -14,7 +14,7 @@ export function Header({ title, onLogoPress }: HeaderProps) {
 
   return (
     <>
-      <View className="flex-row items-center bg-[#0a1a2b] border-b border-white/10 px-4 py-2">
+      <View className="flex-row items-center bg-[#0a1a2b] border-b border-white/10 px-2 py-2">
         {/* Logo Mecwide */}
         <TouchableOpacity onPress={onLogoPress} accessibilityLabel="Logo Mecwide">
           <Image

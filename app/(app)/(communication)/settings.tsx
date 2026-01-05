@@ -45,7 +45,6 @@ export default function SettingsScreen() {
                   <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">
                     Definições da Aplicação
                   </AppText>
-                  <AppText className="text-gray-300 text-sm md:text-base">Configure preferências e parâmetros</AppText>
                 </View>
               </View>
               <View className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex-row items-center justify-between">
