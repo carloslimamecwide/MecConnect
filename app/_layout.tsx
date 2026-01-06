@@ -13,8 +13,6 @@ export default function RootLayout() {
 
   useEffect(() => {
     async function prepare() {
-      // Aqui você pode carregar fontes, dados, etc.
-      // Exemplo: await loadFonts();
       await SplashScreen.hideAsync();
       await new Promise((resolve) => setTimeout(resolve, 4000));
       setAppIsReady(true);
