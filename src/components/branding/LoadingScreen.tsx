@@ -149,7 +149,7 @@ export function LoadingScreen() {
 
         {/* Tagline */}
         <Animated.View style={taglineStyle}>
-          <Text style={styles.tagline}>MECHANICAL SOLUTIONS</Text>
+          <Text style={styles.tagline}>STAY CONNECTED</Text>
         </Animated.View>
 
         {/* Barra de progresso */}
