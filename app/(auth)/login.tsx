@@ -11,7 +11,7 @@ import BrandBackground from "../../src/components/branding/BrandBackground";
 import { useAuth } from "../../src/contexts/AuthContext";
 
 export default function LoginScreen() {
-  const { login, user } = useAuth();
+  const { login, isSuperAdmin } = useAuth();
   const isDesktop = useIsDesktop();
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === "web";
@@ -33,8 +33,8 @@ export default function LoginScreen() {
 
     try {
       await login(cv, password);
-      const isDeveloper = user?.roleIt === "developer";
-      router.replace(isDeveloper ? "/(app)/mode-selection" : "/(app)/(communication)/dashboard");
+
+      router.replace(isSuperAdmin ? "/(app)/mode-selection" : "/(app)/(communication)/dashboard");
     } catch (err: any) {
       setError(err.message || "Erro ao fazer login. Verifique suas credenciais.");
     } finally {

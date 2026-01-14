@@ -32,6 +32,7 @@ class AuthService {
       if (!isAdminUser) {
         throw new Error("Usuário não possui privilégios de administrador");
       }
+      const isSuperAdmin = await this.isSuperAdmin(response.data.token);
       const matrix = await this.getMatrizHierarquica(response.data.cv);
       // Mapear resposta do backend para o formato interno
       const user: User = {
@@ -41,12 +42,14 @@ class AuthService {
         ax2: matrix.ax2,
         desc_ax2: matrix.desc_ax2,
         rc: matrix.rc,
-        roleIt: "developer",
+        desc_job: matrix.desc_job,
+        city: matrix.city,
       };
       const loginResponse: LoginResponse = {
         user,
         token: response.data.token,
         isAdminUser: isAdminUser,
+        isSuperAdminUser: isSuperAdmin,
       };
 
       if (Platform.OS === "web") {
@@ -114,6 +117,22 @@ class AuthService {
       return jwtDecode<MyTokenPayload>(token);
     } catch {
       return {} as MyTokenPayload;
+    }
+  }
+  async isSuperAdmin(token: string): Promise<boolean> {
+    if (!token) {
+      return false;
+    }
+    const decoded = await this.decodeToken(token);
+    if (!decoded.role) {
+      return false;
+    }
+    if (Array.isArray(decoded.role)) {
+      // return decoded.role.includes("SUPER_ADMIN");
+      return true;
+    } else {
+      // return decoded.role === "SUPER_ADMIN";
+      return true;
     }
   }
 }

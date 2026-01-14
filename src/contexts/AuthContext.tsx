@@ -8,6 +8,7 @@ interface AuthContextData {
   isAuthenticated: boolean;
   isLoading: boolean;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -19,6 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   useEffect(() => {
     loadStoredAuth();
@@ -52,9 +54,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
       }
-      setUser({ ...matrixUser, roleIt: "developer" });
+      setUser(matrixUser);
       setToken(storedToken);
       setIsAdmin(await authService.isAdmin(storedToken));
+      setIsSuperAdmin(await authService.isSuperAdmin(storedToken));
     } catch (error) {
       console.error("Error loading auth:", error);
     } finally {
@@ -69,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(response.user);
       setToken(response.token);
       setIsAdmin(response.isAdminUser);
-
+      setIsSuperAdmin(response.isSuperAdminUser);
       // Após login bem-sucedido, ativa biometria se disponível
       if (await biometricService.isBiometricAvailable()) {
         await biometricService.enableBiometric();
@@ -85,6 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setToken(null);
     setIsAdmin(false);
+    setIsSuperAdmin(false);
   }
 
   return (
@@ -95,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         isLoading,
         isAdmin,
+        isSuperAdmin,
         login,
         logout,
       }}

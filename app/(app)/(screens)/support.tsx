@@ -26,7 +26,7 @@ export default function SupportScreen() {
   const [form, setForm] = useState({
     cv: user?.cv || "",
     name: user?.nome || "",
-    email: user?.prof_email || "",
+    email: user?.email_prof || "",
     subject: "",
     description: "",
     platform: "MecConnect",

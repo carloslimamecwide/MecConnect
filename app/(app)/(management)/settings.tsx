@@ -4,7 +4,7 @@ import { ConfirmModal } from "@/src/components/Common/ConfirmModal";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { AppLayout } from "../../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../../src/components/layout/PageWrapper";
@@ -15,7 +15,6 @@ export default function SettingsScreen() {
   const router = useRouter();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
   const appVersion = Constants.expoConfig?.version || "1.0.0";
   const appName = Constants.expoConfig?.name || "MecConnect";
 
@@ -30,6 +29,10 @@ export default function SettingsScreen() {
       setIsLoggingOut(false);
     }
   };
+
+  useEffect(() => {
+    console.log("Settings screen mounted", user);
+  }, []);
 
   return (
     <>
@@ -70,7 +73,7 @@ export default function SettingsScreen() {
                     <AppText className="text-base font-semibold text-gray-100">
                       {user?.nome || "Utilizador Desconhecido"}
                     </AppText>
-                    {user?.prof_email && <AppText className="text-xs text-gray-500 mt-1">{user.prof_email}</AppText>}
+                    {user?.email_prof && <AppText className="text-xs text-gray-500 mt-1">{user.email_prof}</AppText>}
                   </View>
                 </View>
 

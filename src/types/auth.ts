@@ -5,14 +5,9 @@ export type User = {
   ax2: string;
   desc_ax2: string;
   rc: string;
-  roleIt: string;
+  desc_job?: string;
+  city?: string;
 };
-
-export interface Role {
-  role: string;
-  descRole: string;
-  default: boolean;
-}
 
 export interface BackendLoginResponse {
   cv: string;
@@ -35,6 +30,7 @@ export interface LoginResponse {
   user: User;
   token: string;
   isAdminUser: boolean;
+  isSuperAdminUser: boolean;
 }
 
 export interface LoginCredentials {
