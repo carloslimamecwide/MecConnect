@@ -4,7 +4,7 @@ import { ConfirmModal } from "@/src/components/Common/ConfirmModal";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { AppLayout } from "../../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../../src/components/layout/PageWrapper";
@@ -29,10 +29,6 @@ export default function SettingsScreen() {
       setIsLoggingOut(false);
     }
   };
-
-  useEffect(() => {
-    console.log("Settings screen mounted", JSON.stringify(user, null, 2));
-  }, []);
 
   return (
     <>
