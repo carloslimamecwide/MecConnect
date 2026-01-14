@@ -1,12 +1,10 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { authService } from "../services/authService";
 import * as biometricService from "../services/biometricService";
-import type { AccessApp, User } from "../types/auth";
-
+import { User } from "../types/auth";
 interface AuthContextData {
   user: User | null;
   token: string | null;
-  accessApps: AccessApp[] | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   isAdmin: boolean;
@@ -19,7 +17,6 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [accessApps, setAccessApps] = useState<AccessApp[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -29,30 +26,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function loadStoredAuth() {
     try {
-      const storedUser = await authService.getUser();
       const storedToken = await authService.getToken();
-      const storedAccessApps = await authService.getAccessApps();
-
-      if (storedUser && storedToken) {
-        // Se biometria estiver habilitada, exige autenticação biométrica
-        if (await biometricService.isBiometricEnabled()) {
-          const ok = await biometricService.authenticateBiometric();
-          if (!ok) {
-            // Se biometria falhar, faz logout e limpa token
-            await authService.logout();
-            setUser(null);
-            setToken(null);
-            setAccessApps(null);
-            setIsAdmin(false);
-            setIsLoading(false);
-            return;
-          }
-        }
-        setUser(storedUser);
-        setToken(storedToken);
-        setAccessApps(storedAccessApps);
-        setIsAdmin(await authService.isAdmin());
+      if (!storedToken) {
+        setIsLoading(false);
+        return;
       }
+      // Decodifica o token para obter o cv do usuário
+      const decoded = await authService.decodeToken(storedToken);
+      const cv = decoded?.nameid || "";
+      if (!cv) {
+        setIsLoading(false);
+        return;
+      }
+      const matrixUser = await authService.getMatrizHierarquica(cv);
+      // Se biometria estiver habilitada, exige autenticação biométrica
+      if (await biometricService.isBiometricEnabled()) {
+        const ok = await biometricService.authenticateBiometric();
+        if (!ok) {
+          // Se biometria falhar, faz logout e limpa token
+          await authService.logout();
+          setUser(null);
+          setToken(null);
+          setIsAdmin(false);
+          setIsLoading(false);
+          return;
+        }
+      }
+      setUser({ ...matrixUser, roleIt: "developer" });
+      setToken(storedToken);
+      setIsAdmin(await authService.isAdmin(storedToken));
     } catch (error) {
       console.error("Error loading auth:", error);
     } finally {
@@ -64,21 +66,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authService.login(username, password);
 
-      // Verificar se é ADM e tem default: true
-      const isAdminUser = await authService.isAdmin();
-      const hasDefaultRole = response.accessApps.some((app) =>
-        app.roles.some((role) => role.role === "ADM" && role.default === true)
-      );
-
-      if (!isAdminUser || !hasDefaultRole) {
-        await authService.logout();
-        throw new Error("Acesso negado. Apenas administradores com perfil padrão podem aceder.");
-      }
-
       setUser(response.user);
       setToken(response.token);
-      setAccessApps(response.accessApps);
-      setIsAdmin(isAdminUser);
+      setIsAdmin(response.isAdminUser);
 
       // Após login bem-sucedido, ativa biometria se disponível
       if (await biometricService.isBiometricAvailable()) {
@@ -94,7 +84,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await authService.logout();
     setUser(null);
     setToken(null);
-    setAccessApps(null);
     setIsAdmin(false);
   }
 
@@ -103,7 +92,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         token,
-        accessApps,
         isAuthenticated: !!user,
         isLoading,
         isAdmin,

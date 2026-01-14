@@ -9,10 +9,9 @@ import { Button } from "../../src/components/Common/Button";
 import { DismissKeyboard } from "../../src/components/Common/DismissKeyboard";
 import BrandBackground from "../../src/components/branding/BrandBackground";
 import { useAuth } from "../../src/contexts/AuthContext";
-import { authService } from "../../src/services/authService";
 
 export default function LoginScreen() {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const isDesktop = useIsDesktop();
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === "web";
@@ -34,8 +33,7 @@ export default function LoginScreen() {
 
     try {
       await login(cv, password);
-      const loggedUser = await authService.getUser();
-      const isDeveloper = loggedUser?.roleIt === "developer";
+      const isDeveloper = user?.roleIt === "developer";
       router.replace(isDeveloper ? "/(app)/mode-selection" : "/(app)/(communication)/dashboard");
     } catch (err: any) {
       setError(err.message || "Erro ao fazer login. Verifique suas credenciais.");

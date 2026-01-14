@@ -1,30 +1,17 @@
-export interface User {
+export type User = {
   cv: string;
   nome: string;
-  prof_email: string;
-  bi: string;
-  country: string;
-  address: string;
-  location: string;
-  city: string;
-  nationality: string;
-  district: string;
-  job: string;
-  desc_job: string;
-  photo: string | null;
+  email_prof: string;
+  ax2: string;
+  desc_ax2: string;
+  rc: string;
   roleIt: string;
-}
+};
 
 export interface Role {
   role: string;
   descRole: string;
   default: boolean;
-}
-
-export interface AccessApp {
-  app: string;
-  bd: string;
-  roles: Role[];
 }
 
 export interface BackendLoginResponse {
@@ -42,13 +29,12 @@ export interface BackendLoginResponse {
   desc_job: string;
   photo: string | null;
   token: string;
-  accessApps: AccessApp[];
 }
 
 export interface LoginResponse {
   user: User;
   token: string;
-  accessApps: AccessApp[];
+  isAdminUser: boolean;
 }
 
 export interface LoginCredentials {
