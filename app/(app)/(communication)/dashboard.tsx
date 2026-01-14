@@ -189,12 +189,8 @@ export default function DashboardScreen() {
               <View className="flex-row items-center justify-between">
                 <View>
                   <AppText className="text-xs text-gray-400 mb-2">Bem-vindo</AppText>
-                  <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">
-                    Olá, {firstName}
-                  </AppText>
-                  <AppText className="text-gray-300 text-sm md:text-base">
-                    {user?.desc_job || user?.job || "Painel de administração interno"}
-                  </AppText>
+                  <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Olá, {firstName}</AppText>
+                  <AppText className="text-gray-300 text-sm md:text-base">Painel de administração interno</AppText>
                 </View>
                 <TouchableOpacity
                   onPress={loadDashboard}
@@ -207,9 +203,7 @@ export default function DashboardScreen() {
               <View className="mt-5 flex-row items-center justify-between">
                 <View className="flex-row items-center gap-2">
                   <View
-                    className={`h-2 w-2 rounded-full ${
-                      expiringSoonCount > 0 ? "bg-amber-400" : "bg-emerald-400"
-                    }`}
+                    className={`h-2 w-2 rounded-full ${expiringSoonCount > 0 ? "bg-amber-400" : "bg-emerald-400"}`}
                   />
                   <AppText className="text-xs text-gray-300">
                     {expiringSoonCount > 0
@@ -233,11 +227,7 @@ export default function DashboardScreen() {
                   <View
                     key={stat.label}
                     className={`rounded-2xl p-5 border ${stat.tone} flex-row items-center justify-between`}
-                    style={
-                      Platform.OS === "web"
-                        ? { flexGrow: 1, flexBasis: 240, minWidth: 220 }
-                        : undefined
-                    }
+                    style={Platform.OS === "web" ? { flexGrow: 1, flexBasis: 240, minWidth: 220 } : undefined}
                   >
                     <View>
                       <AppText className="text-xs text-gray-400 mb-1">{stat.label}</AppText>
@@ -259,11 +249,7 @@ export default function DashboardScreen() {
                       key={action.label}
                       onPress={() => router.push(action.route as any)}
                       className="rounded-2xl p-4 border border-white/10 bg-white/5 flex-row items-center justify-between"
-                      style={
-                        Platform.OS === "web"
-                          ? { flexGrow: 1, flexBasis: 260, minWidth: 240 }
-                          : undefined
-                      }
+                      style={Platform.OS === "web" ? { flexGrow: 1, flexBasis: 260, minWidth: 240 } : undefined}
                     >
                       <View className="flex-row items-center gap-3">
                         <View className="h-10 w-10 rounded-xl bg-blue-500/20 border border-blue-400/30 items-center justify-center">

@@ -1,9 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
-
+import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
+import { STORAGE_KEYS } from "./authService";
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "https://api.mecwide.com";
 const AUTH_BASE_URL = process.env.EXPO_PUBLIC_AUTH_URL || "https://auth.mecwide.com";
-
 // Instância principal para API geral
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -25,7 +26,10 @@ export const authClient: AxiosInstance = axios.create({
 // Request interceptor: adiciona token automaticamente
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    const token = await AsyncStorage.getItem("@mecconnect:token");
+    const token =
+      Platform.OS === "web"
+        ? await AsyncStorage.getItem("@mecconnect:token")
+        : await SecureStore.getItemAsync("mecconnect_token");
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -50,7 +54,12 @@ apiClient.interceptors.response.use(
           throw new Error(data?.message || "Requisição inválida");
         case 401:
           // Token inválido ou expirado - limpar storage
-          await AsyncStorage.multiRemove(["@mecconnect:token", "@mecconnect:user", "@mecconnect:accessApps"]);
+          if (Platform.OS === "web") {
+            localStorage.removeItem(STORAGE_KEYS.TOKEN);
+          } else {
+            await SecureStore.deleteItemAsync(STORAGE_KEYS.TOKEN);
+          }
+
           throw new Error("Sessão expirada. Faça login novamente.");
         case 403:
           throw new Error("Acesso negado");

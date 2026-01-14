@@ -70,7 +70,7 @@ export default function SettingsScreen() {
                     <AppText className="text-base font-semibold text-gray-100">
                       {user?.nome || "Utilizador Desconhecido"}
                     </AppText>
-                    {user?.prof_email && <AppText className="text-xs text-gray-500 mt-1">{user.prof_email}</AppText>}
+                    {user?.email_prof && <AppText className="text-xs text-gray-500 mt-1">{user.email_prof}</AppText>}
                   </View>
                 </View>
 
@@ -82,18 +82,6 @@ export default function SettingsScreen() {
                     <View className="flex-1">
                       <AppText className="text-xs text-gray-400">Cargo</AppText>
                       <AppText className="text-sm text-gray-100">{user.desc_job}</AppText>
-                    </View>
-                  </View>
-                )}
-
-                {user?.city && (
-                  <View className="border-t border-white/10 p-4 flex-row items-center gap-3">
-                    <View className="h-9 w-9 rounded-full bg-white/5 border border-white/10 items-center justify-center">
-                      <FontAwesome5 name="map-marker-alt" size={12} color="#9ca3af" />
-                    </View>
-                    <View className="flex-1">
-                      <AppText className="text-xs text-gray-400">Localização</AppText>
-                      <AppText className="text-sm text-gray-100">{user.city}</AppText>
                     </View>
                   </View>
                 )}

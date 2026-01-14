@@ -28,10 +28,9 @@ const managementMenuItems = [
 
 export function Sidebar({ isOpen, onClose, mode = "communication" }: SidebarProps) {
   const isDesktop = useIsDesktop();
-  const { user } = useAuth();
+  const { user, isSuperAdmin } = useAuth();
   const pathname = usePathname();
 
-  const isDeveloper = user?.roleIt === "developer";
   const menuItems = mode === "management" ? managementMenuItems : communicationMenuItems;
   const modeLabel = mode === "management" ? "Gestão" : "Comunicação";
 
@@ -65,7 +64,7 @@ export function Sidebar({ isOpen, onClose, mode = "communication" }: SidebarProp
               <AppText className="text-xs text-gray-400">Modo {modeLabel}</AppText>
             </View>
           </View>
-          {isDeveloper && (
+          {isSuperAdmin && (
             <TouchableOpacity
               onPress={() => router.push("/(app)/mode-selection")}
               className="mt-4 rounded-xl py-2.5 px-3 flex-row items-center justify-center gap-2"

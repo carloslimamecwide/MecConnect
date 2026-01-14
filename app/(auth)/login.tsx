@@ -1,7 +1,7 @@
 import { useIsDesktop } from "@/src/hooks/useIsDesktop";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { router } from "expo-router";
-import React, { useState } from "react";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { Image, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppText } from "../../src/components/Common/AppText";
@@ -9,9 +9,9 @@ import { Button } from "../../src/components/Common/Button";
 import { DismissKeyboard } from "../../src/components/Common/DismissKeyboard";
 import BrandBackground from "../../src/components/branding/BrandBackground";
 import { useAuth } from "../../src/contexts/AuthContext";
-
 export default function LoginScreen() {
-  const { login, isSuperAdmin } = useAuth();
+  const router = useRouter();
+  const { login, isSuperAdmin, isAuthenticated } = useAuth();
   const isDesktop = useIsDesktop();
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === "web";
@@ -21,6 +21,12 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace(isSuperAdmin ? "/(app)/mode-selection" : "/(app)/(communication)/dashboard");
+    }
+  }, [isAuthenticated, isSuperAdmin]);
 
   async function handleLogin() {
     if (!cv || !password) {
@@ -33,8 +39,6 @@ export default function LoginScreen() {
 
     try {
       await login(cv, password);
-
-      router.replace(isSuperAdmin ? "/(app)/mode-selection" : "/(app)/(communication)/dashboard");
     } catch (err: any) {
       setError(err.message || "Erro ao fazer login. Verifique suas credenciais.");
     } finally {

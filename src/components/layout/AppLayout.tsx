@@ -17,14 +17,14 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
-  const { user } = useAuth();
+  const { isSuperAdmin } = useAuth();
   const isDesktop = useIsDesktop();
   const router = useRouter();
   const segments = useSegments();
   const { isOffline } = useConnectivity();
   const { showToast } = useToast();
   const [wasOffline, setWasOffline] = useState(false);
-  const isDeveloper = user?.roleIt === "developer";
+
   const segmentList = segments as string[];
   const mode =
     segmentList.includes("(management)") || segmentList.includes("management") ? "management" : "communication";
@@ -43,7 +43,7 @@ export function AppLayout({ children, title = "MecConnect" }: AppLayoutProps) {
 
   const handleLogoPress = () => {
     if (isModeSelection) return;
-    if (isDeveloper) {
+    if (isSuperAdmin) {
       router.push("/(app)/mode-selection" as any);
     } else {
       router.push("/(app)/(communication)/dashboard" as any);

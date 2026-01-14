@@ -4,7 +4,7 @@ import { Platform } from "react-native";
 import type { BackendLoginResponse, LoginResponse, User } from "../types/auth";
 import { apiClient, authClient } from "./apiClient";
 
-const STORAGE_KEYS = {
+export const STORAGE_KEYS = {
   TOKEN: "mecconnect_token",
 };
 
@@ -43,8 +43,8 @@ class AuthService {
         desc_ax2: matrix.desc_ax2,
         rc: matrix.rc,
         desc_job: matrix.desc_job,
-        city: matrix.city,
       };
+      console.log("Logged in user:", JSON.stringify(user, null, 2));
       const loginResponse: LoginResponse = {
         user,
         token: response.data.token,
@@ -101,9 +101,9 @@ class AuthService {
     }
     if (Array.isArray(decoded.role)) {
       // Verifica apenas o primeiro índice do array de roles
-      return decoded.role[0] === "ADM";
+      return decoded.role[0] === "ADM" || decoded.role[0] === "SUPER_ADMIN";
     } else {
-      return decoded.role === "ADM";
+      return decoded.role === "ADM" || decoded.role === "SUPER_ADMIN";
     }
   }
 

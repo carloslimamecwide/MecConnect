@@ -102,7 +102,7 @@ class EventsService {
         return [];
       }
 
-      console.log("Fetched active Events:", JSON.stringify(response.data, null, 2));
+      // console.log("Fetched active Events:", JSON.stringify(response.data, null, 2));
       return response.data;
     } catch (error: any) {
       console.error("Error fetching active events:", error);

@@ -6,7 +6,6 @@ export type User = {
   desc_ax2: string;
   rc: string;
   desc_job?: string;
-  city?: string;
 };
 
 export interface BackendLoginResponse {
