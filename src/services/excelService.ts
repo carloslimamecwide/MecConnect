@@ -391,4 +391,156 @@ export const excelService = {
       reader.readAsArrayBuffer(file);
     });
   },
+
+  /**
+   * Exporta os dados preenchidos do formulário para um ficheiro Excel
+   */
+  exportFilledForm(
+    title: I18nText,
+    description: I18nText,
+    dateExpiration: Date,
+    groups: Array<{
+      group: I18nText;
+      questions: Array<{
+        text: I18nText;
+        descType: QuestionDescType;
+        required: boolean;
+        options: Array<{
+          description: I18nText;
+        }>;
+      }>;
+    }>,
+  ): void {
+    const workbook = XLSX.utils.book_new();
+
+    // Sheet 1: Instruções
+    const instructionsSheet = XLSX.utils.aoa_to_sheet([
+      ["FORMULÁRIO PREENCHIDO", "", "", ""],
+      ["", "", "", ""],
+      ["Este ficheiro contém os dados do formulário que foi preenchido manualmente."],
+      ["Se desejar modificar e reimportar, siga as instruções abaixo."],
+      ["", "", "", ""],
+      ["INSTRUÇÕES PARA MODIFICAÇÃO E REIMPORTAÇÃO:", "", "", ""],
+      ["", "", "", ""],
+      ["1. Na aba 'Informações', pode alterar:"],
+      ["   - Título do formulário em PT, EN, ES"],
+      ["   - Descrição em PT, EN, ES"],
+      ["   - Data de expiração no formato YYYY-MM-DD (só em PT)"],
+      ["", "", "", ""],
+      ["2. Na aba 'Grupos e Perguntas', pode alterar:"],
+      ["   - Coluna A: Número do grupo"],
+      ["   - Coluna B: Nome do grupo em PT"],
+      ["   - Coluna C: Nome do grupo em EN"],
+      ["   - Coluna D: Nome do grupo em ES"],
+      ["   - Coluna E: Número da pergunta dentro do grupo"],
+      ["   - Coluna F: Texto da pergunta em PT"],
+      ["   - Coluna G: Texto da pergunta em EN"],
+      ["   - Coluna H: Texto da pergunta em ES"],
+      ["   - Coluna I: Tipo (TextBox, Dropdown, Rating)"],
+      ["   - Coluna J: Obrigatória (Sim/Não)"],
+      ["", "", "", ""],
+      ["3. Se tipo for 'Dropdown', na aba 'Opções':"],
+      ["   - Coluna A: Número do grupo"],
+      ["   - Coluna B: Número da pergunta"],
+      ["   - Coluna C: Número da opção"],
+      ["   - Coluna D: Descrição em PT"],
+      ["   - Coluna E: Descrição em EN"],
+      ["   - Coluna F: Descrição em ES"],
+    ]);
+    instructionsSheet["!cols"] = [{ wch: 80 }, { wch: 20 }, { wch: 20 }, { wch: 20 }];
+
+    // Sheet 2: Informações gerais (com dados preenchidos)
+    const infoSheet = XLSX.utils.aoa_to_sheet([
+      ["INFORMAÇÕES DO FORMULÁRIO", "", "", ""],
+      ["", "", "", ""],
+      ["Campo", "PT", "EN", "ES"],
+      ["Título", title.PT, title.EN, title.ES],
+      ["Descrição", description.PT, description.EN, description.ES],
+      ["Data de Expiração (YYYY-MM-DD)", dateExpiration.toLocaleDateString("en-CA"), "", ""],
+    ]);
+    infoSheet["!cols"] = [{ wch: 30 }, { wch: 30 }, { wch: 30 }, { wch: 30 }];
+
+    // Sheet 3: Grupos e Perguntas (com dados preenchidos)
+    const groupsData: any[] = [
+      [
+        "Grupo #",
+        "Nome do Grupo (PT)",
+        "Nome do Grupo (EN)",
+        "Nome do Grupo (ES)",
+        "Pergunta #",
+        "Texto (PT)",
+        "Texto (EN)",
+        "Texto (ES)",
+        "Tipo",
+        "Obrigatória",
+        "Exemplo? (Sim/Não)",
+      ],
+    ];
+
+    groups.forEach((group, groupIdx) => {
+      group.questions.forEach((question, questionIdx) => {
+        groupsData.push([
+          groupIdx + 1,
+          group.group.PT,
+          group.group.EN,
+          group.group.ES,
+          questionIdx + 1,
+          question.text.PT,
+          question.text.EN,
+          question.text.ES,
+          question.descType,
+          question.required ? "Sim" : "Não",
+          "Não",
+        ]);
+      });
+    });
+
+    const groupsSheet = XLSX.utils.aoa_to_sheet(groupsData);
+    groupsSheet["!cols"] = [
+      { wch: 10 },
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 12 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 15 },
+    ];
+
+    // Sheet 4: Opções (com dados preenchidos)
+    const optionsData: any[] = [
+      ["Grupo #", "Pergunta #", "Opção #", "Descrição (PT)", "Descrição (EN)", "Descrição (ES)", "Exemplo? (Sim/Não)"],
+    ];
+
+    groups.forEach((group, groupIdx) => {
+      group.questions.forEach((question, questionIdx) => {
+        if (question.descType === "Dropdown") {
+          question.options.forEach((option, optIdx) => {
+            optionsData.push([
+              groupIdx + 1,
+              questionIdx + 1,
+              optIdx + 1,
+              option.description.PT,
+              option.description.EN,
+              option.description.ES,
+              "Não",
+            ]);
+          });
+        }
+      });
+    });
+
+    const optionsSheet = XLSX.utils.aoa_to_sheet(optionsData);
+    optionsSheet["!cols"] = [{ wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 30 }, { wch: 30 }, { wch: 30 }, { wch: 18 }];
+
+    XLSX.utils.book_append_sheet(workbook, instructionsSheet, "Instruções");
+    XLSX.utils.book_append_sheet(workbook, infoSheet, "Informações");
+    XLSX.utils.book_append_sheet(workbook, groupsSheet, "Grupos e Perguntas");
+    XLSX.utils.book_append_sheet(workbook, optionsSheet, "Opções");
+
+    XLSX.writeFile(workbook, "formulario-preenchido.xlsx");
+  },
 };

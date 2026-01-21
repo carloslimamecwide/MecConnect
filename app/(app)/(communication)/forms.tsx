@@ -381,6 +381,20 @@ export default function FormsScreen() {
   }
 
   async function handleConfirmCreate() {
+    try {
+      excelService.exportFilledForm(titles, descriptions, expirationDate, groups);
+      showToast({
+        message: "Excel descarregado automaticamente",
+        type: "success",
+        position: "top",
+      });
+    } catch (error: any) {
+      showToast({
+        message: "Aviso: Erro ao descarregar Excel",
+        type: "error",
+        position: "top",
+      });
+    }
     await handleCreateForm();
     setShowCreateModal(false);
   }
@@ -406,6 +420,37 @@ export default function FormsScreen() {
       setFormToDelete(null);
     }
   }
+  const handleStepclick = () => {
+    if (step === 0) {
+      if (LANGUAGES.some((lang) => !titles[lang].trim())) {
+        showToast({
+          message: "Preencha os títulos em todos os idiomas",
+          type: "error",
+          position: "top",
+        });
+        return;
+      }
+      if (LANGUAGES.some((lang) => !descriptions[lang].trim())) {
+        showToast({
+          message: "Preencha as descrições em todos os idiomas",
+          type: "error",
+          position: "top",
+        });
+        return;
+      }
+    }
+    if (step === 1) {
+      if (!validateGroups()) {
+        showToast({
+          message: "Preencha todos os grupos, perguntas e opções",
+          type: "error",
+          position: "top",
+        });
+        return;
+      }
+    }
+    setStep((s) => s + 1);
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -413,7 +458,7 @@ export default function FormsScreen() {
         <PageWrapper>
           <ScrollView showsVerticalScrollIndicator={false}>
             <View className="mb-8">
-              <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center justify-between mb-3">
                 <View className="flex-row items-center gap-3">
                   <View className="h-12 w-12 rounded-2xl bg-blue-500/20 border border-blue-400/30 items-center justify-center">
                     <FontAwesome5 name="clipboard-list" size={18} color="#60a5fa" />
@@ -422,34 +467,36 @@ export default function FormsScreen() {
                     <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Formulários</AppText>
                   </View>
                 </View>
-                <View className="flex-row items-center gap-2">
-                  <TouchableOpacity
-                    onPress={handleDownloadTemplate}
-                    className="rounded-lg px-4 py-2 flex-row items-center gap-2 bg-green-600/20 border border-green-500/30"
-                  >
-                    <FontAwesome5 name="download" size={14} color="#34d399" />
-                    <AppText className="text-green-400 font-semibold text-sm">Template</AppText>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={handleImportExcel}
-                    className="rounded-lg px-4 py-2 flex-row items-center gap-2 bg-purple-600/20 border border-purple-500/30"
-                  >
-                    <FontAwesome5 name="upload" size={14} color="#a78bfa" />
-                    <AppText className="text-purple-400 font-semibold text-sm">Importar</AppText>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => setShowCreateForm((v) => !v)}
-                    className="rounded-lg px-4 py-2 flex-row items-center gap-2"
-                    style={{ backgroundColor: showCreateForm ? "#ef4444" : "#0066CC" }}
-                  >
-                    <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />
-                    <AppText className="text-white font-semibold text-sm">
-                      {showCreateForm ? "Cancelar" : "Criar"}
-                    </AppText>
-                  </TouchableOpacity>
-                </View>
               </View>
-              <View className="mt-4 rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex-row items-center justify-between">
+
+              <View className="flex-row flex-wrap items-center gap-2 mb-4">
+                <TouchableOpacity
+                  onPress={handleDownloadTemplate}
+                  className="flex-1 min-w-[100px] rounded-lg px-3 py-2.5 flex-row items-center justify-center gap-2 bg-green-600/20 border border-green-500/30"
+                >
+                  <FontAwesome5 name="download" size={14} color="#34d399" />
+                  <AppText className="text-green-400 font-semibold text-sm">Template</AppText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleImportExcel}
+                  className="flex-1 min-w-[100px] rounded-lg px-3 py-2.5 flex-row items-center justify-center gap-2 bg-purple-600/20 border border-purple-500/30"
+                >
+                  <FontAwesome5 name="upload" size={14} color="#a78bfa" />
+                  <AppText className="text-purple-400 font-semibold text-sm">Importar</AppText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setShowCreateForm((v) => !v)}
+                  className="flex-1 min-w-[100px] rounded-lg px-3 py-2.5 flex-row items-center justify-center gap-2"
+                  style={{ backgroundColor: showCreateForm ? "#ef4444" : "#0066CC" }}
+                >
+                  <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />
+                  <AppText className="text-white font-semibold text-sm">
+                    {showCreateForm ? "Cancelar" : "Criar"}
+                  </AppText>
+                </TouchableOpacity>
+              </View>
+
+              <View className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex-row items-center justify-between">
                 <View className="flex-row items-center gap-2">
                   <View className={`h-2 w-2 rounded-full ${forms.length ? "bg-emerald-400" : "bg-amber-400"}`} />
                   <AppText className="text-xs text-gray-300">
@@ -744,37 +791,7 @@ export default function FormsScreen() {
                       title="Avançar"
                       variant="primary"
                       width={step > 0 ? "48%" : "100%"}
-                      onPress={() => {
-                        if (step === 0) {
-                          if (LANGUAGES.some((lang) => !titles[lang].trim())) {
-                            showToast({
-                              message: "Preencha os títulos em todos os idiomas",
-                              type: "error",
-                              position: "top",
-                            });
-                            return;
-                          }
-                          if (LANGUAGES.some((lang) => !descriptions[lang].trim())) {
-                            showToast({
-                              message: "Preencha as descrições em todos os idiomas",
-                              type: "error",
-                              position: "top",
-                            });
-                            return;
-                          }
-                        }
-                        if (step === 1) {
-                          if (!validateGroups()) {
-                            showToast({
-                              message: "Preencha todos os grupos, perguntas e opções",
-                              type: "error",
-                              position: "top",
-                            });
-                            return;
-                          }
-                        }
-                        setStep((s) => s + 1);
-                      }}
+                      onPress={handleStepclick}
                     />
                   )}
                   {step === 2 && (
