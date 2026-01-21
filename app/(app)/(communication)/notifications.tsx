@@ -124,7 +124,6 @@ export default function NotificationsScreen() {
               </View>
               <View className="flex-1">
                 <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Central de Notificações</AppText>
-                <AppText className="text-gray-300 text-sm md:text-base">Envie e teste notificações push</AppText>
               </View>
             </View>
             <View className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex-row items-center justify-between">

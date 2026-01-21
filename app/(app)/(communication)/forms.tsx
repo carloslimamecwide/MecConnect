@@ -3,8 +3,9 @@ import { Button } from "@/src/components/Common/Button";
 import { ConfirmModal } from "@/src/components/Common/ConfirmModal";
 import { DatePickerSheet } from "@/src/components/Common/DatePickerSheet";
 import { Input } from "@/src/components/Common/Input";
-import Loading from "@/src/components/Common/Loading";
 import { TextArea } from "@/src/components/Common/TextArea";
+import FormList from "@/src/components/forms/FormList";
+import { DESC_TYPES, formatDescType, LANGUAGES, STEP_LABELS } from "@/src/constants/forms";
 import { useToast } from "@/src/contexts/ToastContext";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import BottomSheet from "@gorhom/bottom-sheet";
@@ -18,10 +19,6 @@ import { useAuth } from "../../../src/contexts/AuthContext";
 import type { EventForm, I18nText, Language, QuestionDescType } from "../../../src/services/eventsService";
 import { eventsService } from "../../../src/services/eventsService";
 import { excelService, type ExcelFormData } from "../../../src/services/excelService";
-
-const LANGUAGES: Language[] = ["PT", "EN", "ES"];
-const STEP_LABELS = ["Informações", "Grupos", "Revisão"];
-const DESC_TYPES: QuestionDescType[] = ["TextBox", "Dropdown", "Rating"];
 
 const emptyI18n = (): I18nText => ({ PT: "", EN: "", ES: "" });
 const displayValue = (value: string) => (value.trim() ? value : "-");
@@ -45,12 +42,6 @@ type FormGroup = {
 const newOption = (): FormOption => ({ description: emptyI18n() });
 const newQuestion = (): FormQuestion => ({ text: emptyI18n(), descType: "TextBox", required: true, options: [] });
 const newGroup = (): FormGroup => ({ group: emptyI18n(), questions: [newQuestion()] });
-
-const formatDescType = (value: QuestionDescType) => {
-  if (value === "TextBox") return "Texto";
-  if (value === "Rating") return "Rating";
-  return "Dropdown";
-};
 
 const trimI18n = (value: I18nText): I18nText => ({
   PT: value.PT.trim(),
@@ -154,17 +145,6 @@ export default function FormsScreen() {
       setIsLoading(false);
     }
   }
-
-  const getGroupCount = (form: EventForm) => form.questionGroups?.length ?? 0;
-  const getQuestionCount = (form: EventForm) =>
-    form.questionGroups?.reduce((total, group) => total + group.questions.length, 0) ?? 0;
-  const getDescTypes = (form: EventForm) => {
-    const types = new Set<QuestionDescType>();
-    form.questionGroups?.forEach((group) => {
-      group.questions.forEach((question) => types.add(question.descType));
-    });
-    return Array.from(types);
-  };
 
   const setGroupName = (groupIdx: number, value: string) => {
     setGroups((prev) =>
@@ -479,10 +459,10 @@ export default function FormsScreen() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleImportExcel}
-                  className="flex-1 min-w-[100px] rounded-lg px-3 py-2.5 flex-row items-center justify-center gap-2 bg-purple-600/20 border border-purple-500/30"
+                  className="flex-1 min-w-[100px] rounded-lg px-3 py-2.5 flex-row items-center justify-center gap-2 bg-orange-600/20 border border-orange-500/30"
                 >
-                  <FontAwesome5 name="upload" size={14} color="#a78bfa" />
-                  <AppText className="text-purple-400 font-semibold text-sm">Importar</AppText>
+                  <FontAwesome5 name="upload" size={14} color="#fb923c" />
+                  <AppText className="text-orange-400 font-semibold text-sm">Importar</AppText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setShowCreateForm((v) => !v)}
@@ -506,7 +486,6 @@ export default function FormsScreen() {
                 <AppText className="text-xs text-gray-400">Gestão rápida</AppText>
               </View>
             </View>
-
             {showCreateForm && (
               <View className="mb-8 p-5 rounded-2xl bg-white/5 border border-white/10">
                 <AppText className="text-lg font-bold text-gray-100 mb-4">Novo Formulário</AppText>
@@ -811,91 +790,12 @@ export default function FormsScreen() {
               </View>
             )}
 
-            <View className="mb-4">
-              <AppText className="text-lg font-bold text-gray-100 mb-3">Formulários Disponíveis</AppText>
-              {isLoading ? (
-                <Loading message="A carregar Formulários..." size="large" />
-              ) : forms.length === 0 ? (
-                <View className="rounded-xl p-6 bg-white/5 border border-white/10 items-center">
-                  <FontAwesome5 name="clipboard-list" size={32} color="rgba(255,255,255,0.3)" />
-                  <AppText className="text-gray-400 mt-3">Nenhum formulário disponível</AppText>
-                </View>
-              ) : (
-                <View className="gap-3">
-                  {forms.map((form) => {
-                    const groupCount = getGroupCount(form);
-                    const questionCount = getQuestionCount(form);
-                    const types = getDescTypes(form);
-                    return (
-                      <View key={form.id} className="rounded-xl p-5 bg-white/5 border border-white/10">
-                        <View className="flex-row items-start justify-between mb-2">
-                          <View className="flex-1">
-                            <AppText className="text-base font-bold text-gray-100 mb-1">{form.title}</AppText>
-                            <AppText className="text-sm text-gray-300">{form.description}</AppText>
-                          </View>
-                          <View className="flex-row items-center gap-3">
-                            <FontAwesome5 name="clipboard-check" size={18} color="#60a5fa" />
-                            <TouchableOpacity
-                              onPress={() => {
-                                setFormToDelete({ id: form.id, title: form.title });
-                                setShowDeleteModal(true);
-                              }}
-                            >
-                              <FontAwesome5 name="trash" size={16} color="#ef4444" />
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-
-                        <View className="flex-row flex-wrap items-center gap-4 mt-3">
-                          <View className="flex-row items-center gap-1">
-                            <FontAwesome5 name="calendar" size={12} color="rgba(255,255,255,0.5)" />
-                            <AppText className="text-xs text-gray-400">
-                              Expira: {new Date(form.dateExpiration).toLocaleDateString("pt-PT")}
-                            </AppText>
-                          </View>
-                          <View className="flex-row items-center gap-1">
-                            <FontAwesome5 name="layer-group" size={12} color="rgba(255,255,255,0.5)" />
-                            <AppText className="text-xs text-gray-400">{groupCount} grupo(s)</AppText>
-                          </View>
-                          <View className="flex-row items-center gap-1">
-                            <FontAwesome5 name="list-ul" size={12} color="rgba(255,255,255,0.5)" />
-                            <AppText className="text-xs text-gray-400">{questionCount} pergunta(s)</AppText>
-                          </View>
-                          <View className="flex-row items-center gap-1">
-                            <FontAwesome5 name="language" size={12} color="rgba(255,255,255,0.5)" />
-                            <AppText className="text-xs text-gray-400">{form.language}</AppText>
-                          </View>
-                        </View>
-
-                        {types.length > 0 && (
-                          <View className="flex-row flex-wrap gap-2 mt-3">
-                            {types.map((type) => (
-                              <View key={type} className="rounded-full px-2.5 py-1 bg-white/5 border border-white/10">
-                                <AppText className="text-[10px] text-gray-300">{formatDescType(type)}</AppText>
-                              </View>
-                            ))}
-                          </View>
-                        )}
-
-                        {form.questionGroups?.length ? (
-                          <View className="border-t border-white/10 mt-3 pt-3">
-                            <AppText className="text-xs text-gray-400 mb-2">Grupos</AppText>
-                            {form.questionGroups.map((group) => (
-                              <View key={group.id} className="flex-row items-center justify-between py-1">
-                                <AppText className="text-sm text-gray-200">
-                                  {group.group?.trim() || "Sem grupo"}
-                                </AppText>
-                                <AppText className="text-xs text-gray-400">{group.questions.length} perguntas</AppText>
-                              </View>
-                            ))}
-                          </View>
-                        ) : null}
-                      </View>
-                    );
-                  })}
-                </View>
-              )}
-            </View>
+            <FormList
+              forms={forms}
+              isLoading={isLoading}
+              setFormToDelete={setFormToDelete}
+              setShowDeleteModal={setShowDeleteModal}
+            />
           </ScrollView>
         </PageWrapper>
 
