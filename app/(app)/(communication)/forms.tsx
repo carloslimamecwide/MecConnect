@@ -8,6 +8,7 @@ import { TextArea } from "@/src/components/Common/TextArea";
 import { useToast } from "@/src/contexts/ToastContext";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import BottomSheet from "@gorhom/bottom-sheet";
+import * as DocumentPicker from "expo-document-picker";
 import React, { useEffect, useRef, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -16,6 +17,7 @@ import { PageWrapper } from "../../../src/components/layout/PageWrapper";
 import { useAuth } from "../../../src/contexts/AuthContext";
 import type { EventForm, I18nText, Language, QuestionDescType } from "../../../src/services/eventsService";
 import { eventsService } from "../../../src/services/eventsService";
+import { excelService, type ExcelFormData } from "../../../src/services/excelService";
 
 const LANGUAGES: Language[] = ["PT", "EN", "ES"];
 const STEP_LABELS = ["Informações", "Grupos", "Revisão"];
@@ -67,6 +69,7 @@ export default function FormsScreen() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const [formToDelete, setFormToDelete] = useState<{ id: string; title: string } | null>(null);
   const [forms, setForms] = useState<EventForm[]>([]);
   const [titles, setTitles] = useState<I18nText>(emptyI18n());
@@ -82,6 +85,63 @@ export default function FormsScreen() {
     if (!cv) return;
     loadForms();
   }, [cv]);
+
+  async function handleDownloadTemplate() {
+    try {
+      excelService.downloadTemplate();
+    } catch (error: any) {
+      showToast({ message: error.message || "Erro ao descarregar template", type: "error", position: "top" });
+    }
+  }
+
+  async function handleImportExcel() {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel"],
+        copyToCacheDirectory: true,
+      });
+
+      if (result.canceled) {
+        return;
+      }
+
+      const file = result.assets[0];
+      const response = await fetch(file.uri);
+      const blob = await response.blob();
+      const excelFile = new File([blob], file.name, { type: file.mimeType });
+
+      const excelData: ExcelFormData = await excelService.parseExcel(excelFile);
+
+      // Populate form fields from Excel
+      setTitles(excelData.title);
+      setDescriptions(excelData.description);
+
+      // Parse and set expiration date
+      const [year, month, day] = excelData.dateExpiration.split("-");
+      setExpirationDate(new Date(`${year}-${month}-${day}`));
+
+      // Transform Excel groups to component groups
+      const importedGroups = excelData.groups.map((group) => ({
+        group: group.groupName,
+        questions: group.questions,
+      }));
+
+      setGroups(importedGroups);
+      setShowCreateForm(true);
+      setStep(0);
+      showToast({
+        message: "Formulário importado com sucesso! Revise e customize conforme necessário.",
+        type: "success",
+        position: "top",
+      });
+    } catch (error: any) {
+      showToast({
+        message: error.message || "Erro ao importar ficheiro Excel",
+        type: "error",
+        position: "top",
+      });
+    }
+  }
 
   async function loadForms() {
     try {
@@ -109,8 +169,8 @@ export default function FormsScreen() {
   const setGroupName = (groupIdx: number, value: string) => {
     setGroups((prev) =>
       prev.map((group, idx) =>
-        idx === groupIdx ? { ...group, group: { ...group.group, [activeLang]: value } } : group
-      )
+        idx === groupIdx ? { ...group, group: { ...group.group, [activeLang]: value } } : group,
+      ),
     );
   };
 
@@ -130,10 +190,10 @@ export default function FormsScreen() {
         return {
           ...group,
           questions: group.questions.map((question, idx) =>
-            idx === qIdx ? { ...question, text: { ...question.text, [activeLang]: value } } : question
+            idx === qIdx ? { ...question, text: { ...question.text, [activeLang]: value } } : question,
           ),
         };
-      })
+      }),
     );
   };
 
@@ -154,7 +214,7 @@ export default function FormsScreen() {
             };
           }),
         };
-      })
+      }),
     );
   };
 
@@ -165,18 +225,18 @@ export default function FormsScreen() {
         return {
           ...group,
           questions: group.questions.map((question, idx) =>
-            idx === qIdx ? { ...question, required: !question.required } : question
+            idx === qIdx ? { ...question, required: !question.required } : question,
           ),
         };
-      })
+      }),
     );
   };
 
   const addQuestion = (groupIdx: number) => {
     setGroups((prev) =>
       prev.map((group, idx) =>
-        idx === groupIdx ? { ...group, questions: [...group.questions, newQuestion()] } : group
-      )
+        idx === groupIdx ? { ...group, questions: [...group.questions, newQuestion()] } : group,
+      ),
     );
   };
 
@@ -186,7 +246,7 @@ export default function FormsScreen() {
         if (gIdx !== groupIdx) return group;
         const next = group.questions.filter((_, idx) => idx !== qIdx);
         return { ...group, questions: next.length ? next : [newQuestion()] };
-      })
+      }),
     );
   };
 
@@ -201,12 +261,12 @@ export default function FormsScreen() {
             return {
               ...question,
               options: question.options.map((opt, oIdx) =>
-                oIdx === optIdx ? { ...opt, description: { ...opt.description, [activeLang]: value } } : opt
+                oIdx === optIdx ? { ...opt, description: { ...opt.description, [activeLang]: value } } : opt,
               ),
             };
           }),
         };
-      })
+      }),
     );
   };
 
@@ -217,10 +277,10 @@ export default function FormsScreen() {
         return {
           ...group,
           questions: group.questions.map((question, qIndex) =>
-            qIndex === qIdx ? { ...question, options: [...question.options, newOption()] } : question
+            qIndex === qIdx ? { ...question, options: [...question.options, newOption()] } : question,
           ),
         };
-      })
+      }),
     );
   };
 
@@ -236,7 +296,7 @@ export default function FormsScreen() {
             return { ...question, options: next.length ? next : [newOption()] };
           }),
         };
-      })
+      }),
     );
   };
 
@@ -362,16 +422,32 @@ export default function FormsScreen() {
                     <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Formulários</AppText>
                   </View>
                 </View>
-                <TouchableOpacity
-                  onPress={() => setShowCreateForm((v) => !v)}
-                  className="rounded-lg px-4 py-2 flex-row items-center gap-2"
-                  style={{ backgroundColor: showCreateForm ? "#ef4444" : "#0066CC" }}
-                >
-                  <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />
-                  <AppText className="text-white font-semibold text-sm">
-                    {showCreateForm ? "Cancelar" : "Criar Formulário"}
-                  </AppText>
-                </TouchableOpacity>
+                <View className="flex-row items-center gap-2">
+                  <TouchableOpacity
+                    onPress={handleDownloadTemplate}
+                    className="rounded-lg px-4 py-2 flex-row items-center gap-2 bg-green-600/20 border border-green-500/30"
+                  >
+                    <FontAwesome5 name="download" size={14} color="#34d399" />
+                    <AppText className="text-green-400 font-semibold text-sm">Template</AppText>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleImportExcel}
+                    className="rounded-lg px-4 py-2 flex-row items-center gap-2 bg-purple-600/20 border border-purple-500/30"
+                  >
+                    <FontAwesome5 name="upload" size={14} color="#a78bfa" />
+                    <AppText className="text-purple-400 font-semibold text-sm">Importar</AppText>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setShowCreateForm((v) => !v)}
+                    className="rounded-lg px-4 py-2 flex-row items-center gap-2"
+                    style={{ backgroundColor: showCreateForm ? "#ef4444" : "#0066CC" }}
+                  >
+                    <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />
+                    <AppText className="text-white font-semibold text-sm">
+                      {showCreateForm ? "Cancelar" : "Criar"}
+                    </AppText>
+                  </TouchableOpacity>
+                </View>
               </View>
               <View className="mt-4 rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex-row items-center justify-between">
                 <View className="flex-row items-center gap-2">
