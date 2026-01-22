@@ -1,5 +1,6 @@
 import { AppText } from "@/src/components/Common/AppText";
 import { MODE_CARDS } from "@/src/constants/modeCard";
+import { AppRoute } from "@/src/types/modeCard";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { router } from "expo-router";
 import React from "react";
@@ -7,12 +8,11 @@ import { TouchableOpacity, View } from "react-native";
 import { AppLayout } from "../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../src/components/layout/PageWrapper";
 import { useIsDesktop } from "../../src/hooks/useIsDesktop";
-
 export default function ModeSelectionScreen() {
   const isDesktop = useIsDesktop();
 
-  const handleCardPress = (route: string) => {
-    router.replace(route as any);
+  const handleCardPress = (route: AppRoute) => {
+    router.replace(route);
   };
 
   return (

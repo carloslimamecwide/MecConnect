@@ -4,7 +4,7 @@ export interface ModeCard {
   subtitle: string;
   description: string;
   icon: string;
-  route: string;
+  route: AppRoute;
   features: string[];
   bgColor: string;
   borderColor: string;
@@ -14,3 +14,4 @@ export interface ModeCard {
   topGlowColor: string;
   bottomGlowColor: string;
 }
+export type AppRoute = "/(app)/(communication)/dashboard" | "/(app)/(management)/users";
