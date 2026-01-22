@@ -2,11 +2,8 @@ import * as SecureStore from "expo-secure-store";
 import { jwtDecode } from "jwt-decode";
 import { Platform } from "react-native";
 import type { BackendLoginResponse, LoginResponse, User } from "../types/auth";
+import { STORAGE_KEYS } from "../constants/storage";
 import { apiClient, authClient } from "./apiClient";
-
-export const STORAGE_KEYS = {
-  TOKEN: "mecconnect_token",
-};
 
 export type MyTokenPayload = {
   jti: string;

@@ -148,11 +148,11 @@ export default function RewardsScreen() {
         <PageWrapper>
           <ScrollView showsVerticalScrollIndicator={false}>
             <View className="mb-8">
-              <View className="flex-row items-center justify-between">
+              <View className="flex-col md:flex-row items-start md:items-center justify-between">
                 <AppTitle title="Rewards" iconName="gift" />
                 <TouchableOpacity
                   onPress={() => setShowCreateForm(!showCreateForm)}
-                  className="rounded-lg px-4 py-2 flex-row items-center gap-2"
+                  className="rounded-lg px-4 py-2 flex-row items-center gap-2 mt-3 md:mt-0"
                   style={{ backgroundColor: showCreateForm ? "#ef4444" : "#0066CC" }}
                 >
                   <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />

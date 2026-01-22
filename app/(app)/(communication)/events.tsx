@@ -239,12 +239,12 @@ export default function EventsScreen() {
       <AppLayout title="Eventos">
         <PageWrapper>
           <View className="mb-8">
-            <View className="flex-row items-center justify-between">
+            <View className="flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-0">
               <AppTitle title="Eventos" iconName="calendar-alt" />
 
               <TouchableOpacity
                 onPress={() => setShowCreateForm((v) => !v)}
-                className="rounded-lg px-4 py-2 flex-row items-center gap-2"
+                className="rounded-lg px-4 py-2 flex-row items-center gap-2 self-start md:self-auto"
                 style={{ backgroundColor: showCreateForm ? "#ef4444" : "#0066CC" }}
               >
                 <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />

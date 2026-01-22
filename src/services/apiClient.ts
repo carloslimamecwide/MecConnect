@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
-import { STORAGE_KEYS } from "./authService";
+import { STORAGE_KEYS } from "../constants/storage";
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "https://api.mecwide.com";
 const AUTH_BASE_URL = process.env.EXPO_PUBLIC_AUTH_URL || "https://auth.mecwide.com";
 // Instância principal para API geral
