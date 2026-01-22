@@ -79,7 +79,8 @@ export default function FormsScreen() {
 
   async function handleDownloadTemplate() {
     try {
-      excelService.downloadTemplate();
+      await excelService.downloadTemplate();
+      showToast({ message: "Template descarregado com sucesso!", type: "success", position: "top" });
     } catch (error: any) {
       showToast({ message: error.message || "Erro ao descarregar template", type: "error", position: "top" });
     }
@@ -362,7 +363,7 @@ export default function FormsScreen() {
 
   async function handleConfirmCreate() {
     try {
-      excelService.exportFilledForm(titles, descriptions, expirationDate, groups);
+      await excelService.exportFilledForm(titles, descriptions, expirationDate, groups);
       showToast({
         message: "Excel descarregado automaticamente",
         type: "success",

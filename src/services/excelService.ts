@@ -1,3 +1,6 @@
+import { File as ExpoFile, Paths } from "expo-file-system";
+import * as Sharing from "expo-sharing";
+import { Platform } from "react-native";
 import * as XLSX from "xlsx";
 import type { I18nText, Language, QuestionDescType } from "./eventsService";
 
@@ -24,7 +27,7 @@ export const excelService = {
   /**
    * Gera um template Excel para preenchimento de formulário
    */
-  generateTemplate(): void {
+  async generateTemplate(): Promise<void> {
     const workbook = XLSX.utils.book_new();
 
     // Sheet 1: Instruções
@@ -198,14 +201,44 @@ export const excelService = {
     XLSX.utils.book_append_sheet(workbook, groupsSheet, "Grupos e Perguntas");
     XLSX.utils.book_append_sheet(workbook, optionsSheet, "Opções");
 
-    XLSX.writeFile(workbook, "template-formulario.xlsx");
+    // Para web, usar XLSX.writeFile que funciona no navegador
+    if (Platform.OS === "web") {
+      XLSX.writeFile(workbook, "template-formulario.xlsx");
+      return;
+    }
+
+    // Para iOS/Android, usar expo-file-system + expo-sharing
+    const wbout = XLSX.write(workbook, { type: "base64", bookType: "xlsx" });
+
+    // Criar arquivo no diretório de cache
+    const file = new ExpoFile(Paths.cache, "template-formulario.xlsx");
+    file.create({ overwrite: true });
+
+    // Converter base64 para Uint8Array e escrever no arquivo
+    const binaryString = atob(wbout);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    file.write(bytes);
+
+    // Partilhar o arquivo
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(file.uri, {
+        mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        dialogTitle: "Guardar Template de Formulário",
+        UTI: "com.microsoft.excel.xlsx",
+      });
+    } else {
+      throw new Error("Partilha de ficheiros não está disponível neste dispositivo");
+    }
   },
 
   /**
    * Faz download do template Excel
    */
-  downloadTemplate(): void {
-    this.generateTemplate();
+  async downloadTemplate(): Promise<void> {
+    await this.generateTemplate();
   },
 
   /**
@@ -395,7 +428,7 @@ export const excelService = {
   /**
    * Exporta os dados preenchidos do formulário para um ficheiro Excel
    */
-  exportFilledForm(
+  async exportFilledForm(
     title: I18nText,
     description: I18nText,
     dateExpiration: Date,
@@ -410,7 +443,7 @@ export const excelService = {
         }>;
       }>;
     }>,
-  ): void {
+  ): Promise<void> {
     const workbook = XLSX.utils.book_new();
 
     // Sheet 1: Instruções
@@ -541,6 +574,36 @@ export const excelService = {
     XLSX.utils.book_append_sheet(workbook, groupsSheet, "Grupos e Perguntas");
     XLSX.utils.book_append_sheet(workbook, optionsSheet, "Opções");
 
-    XLSX.writeFile(workbook, "formulario-preenchido.xlsx");
+    // Para web, usar XLSX.writeFile que funciona no navegador
+    if (Platform.OS === "web") {
+      XLSX.writeFile(workbook, "formulario-preenchido.xlsx");
+      return;
+    }
+
+    // Para iOS/Android, usar expo-file-system + expo-sharing
+    const wbout = XLSX.write(workbook, { type: "base64", bookType: "xlsx" });
+
+    // Criar arquivo no diretório de cache
+    const file = new ExpoFile(Paths.cache, "formulario-preenchido.xlsx");
+    file.create({ overwrite: true });
+
+    // Converter base64 para Uint8Array e escrever no arquivo
+    const binaryString = atob(wbout);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    file.write(bytes);
+
+    // Partilhar o arquivo
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(file.uri, {
+        mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        dialogTitle: "Guardar Formulário Preenchido",
+        UTI: "com.microsoft.excel.xlsx",
+      });
+    } else {
+      throw new Error("Partilha de ficheiros não está disponível neste dispositivo");
+    }
   },
 };
