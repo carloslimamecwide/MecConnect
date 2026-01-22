@@ -7,8 +7,96 @@ import { AppLayout } from "../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../src/components/layout/PageWrapper";
 import { useIsDesktop } from "../../src/hooks/useIsDesktop";
 
+interface ModeCard {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  icon: string;
+  route: string;
+  features: string[];
+  bgColor: string;
+  borderColor: string;
+  iconBgColor: string;
+  iconBorderColor: string;
+  iconColor: string;
+  topGlowColor: string;
+  bottomGlowColor: string;
+}
+
+const MODE_CARDS: ModeCard[] = [
+  {
+    id: "communication",
+    title: "Comunicação",
+    subtitle: "Campanhas e conteúdos",
+    description: "Gerir formulários, eventos, rewards e notificações com impacto.",
+    icon: "bullhorn",
+    route: "/(app)/(communication)/dashboard",
+    features: ["Formulários", "Eventos", "Rewards", "Notificações"],
+    bgColor: "rgba(2,132,199,0.12)",
+    borderColor: "border-white/10",
+    iconBgColor: "bg-sky-500/20",
+    iconBorderColor: "border-sky-400/30",
+    iconColor: "#7dd3fc",
+    topGlowColor: "bg-sky-400/20",
+    bottomGlowColor: "bg-blue-500/20",
+  },
+  {
+    id: "management",
+    title: "Gestão",
+    subtitle: "Administração interna",
+    description: "Controlar utilizadores, permissões e configurações avançadas.",
+    icon: "users-cog",
+    route: "/(app)/(management)/users",
+    features: ["Utilizadores", "Permissões", "Definições"],
+    bgColor: "rgba(16,185,129,0.12)",
+    borderColor: "border-white/10",
+    iconBgColor: "bg-emerald-500/20",
+    iconBorderColor: "border-emerald-400/30",
+    iconColor: "#34d399",
+    topGlowColor: "bg-emerald-400/20",
+    bottomGlowColor: "bg-emerald-500/20",
+  },
+  // {
+  //   id: "analytics",
+  //   title: "Análise",
+  //   subtitle: "Relatórios e insights",
+  //   description: "Monitorizar KPI operacionais e exportar relatórios.",
+  //   icon: "chart-line",
+  //   route: "/(app)/(analytics)/dashboard",
+  //   features: ["KPIs", "Relatórios", "Export"],
+  //   bgColor: "rgba(139,92,246,0.12)",
+  //   borderColor: "border-white/10",
+  //   iconBgColor: "bg-purple-500/20",
+  //   iconBorderColor: "border-purple-400/30",
+  //   iconColor: "#d8b4fe",
+  //   topGlowColor: "bg-purple-400/20",
+  //   bottomGlowColor: "bg-purple-500/20",
+  // },
+  // {
+  //   id: "operations",
+  //   title: "Operações",
+  //   subtitle: "Chão de fábrica",
+  //   description: "Registar produção, turnos e incidentes críticos.",
+  //   icon: "industry",
+  //   route: "/(app)/(operations)/dashboard",
+  //   features: ["Produção", "Turnos", "Incidentes"],
+  //   bgColor: "rgba(245,158,11,0.12)",
+  //   borderColor: "border-white/10",
+  //   iconBgColor: "bg-amber-500/20",
+  //   iconBorderColor: "border-amber-400/30",
+  //   iconColor: "#fbbf24",
+  //   topGlowColor: "bg-amber-400/20",
+  //   bottomGlowColor: "bg-amber-500/20",
+  // },
+];
+
 export default function ModeSelectionScreen() {
   const isDesktop = useIsDesktop();
+
+  const handleCardPress = (route: string) => {
+    router.replace(route as any);
+  };
 
   return (
     <AppLayout title="Modo de Acesso">
@@ -21,74 +109,43 @@ export default function ModeSelectionScreen() {
             </AppText>
           </View>
 
-          <View className={`gap-4 ${isDesktop ? "flex-row" : ""}`}>
-            <TouchableOpacity
-              onPress={() => router.replace("/(app)/(communication)/dashboard" as any)}
-              className={`rounded-3xl border border-white/10 p-6 overflow-hidden ${isDesktop ? "flex-1" : ""}`}
-              style={{ backgroundColor: "rgba(2,132,199,0.12)" }}
-              activeOpacity={0.85}
-            >
-              <View className="absolute -top-8 -right-10 h-24 w-24 rounded-full bg-sky-400/20" />
-              <View className="absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-blue-500/20" />
-              <View className="flex-row items-center justify-between">
-                <View className="flex-row items-center gap-3">
-                  <View className="h-12 w-12 rounded-2xl items-center justify-center bg-sky-500/20 border border-sky-400/30">
-                    <FontAwesome5 name="bullhorn" size={18} color="#7dd3fc" />
+          <View className={`gap-4 ${isDesktop ? "grid grid-cols-2" : ""}`}>
+            {MODE_CARDS.map((card) => (
+              <TouchableOpacity
+                key={card.id}
+                onPress={() => handleCardPress(card.route)}
+                className={`rounded-3xl ${card.borderColor} p-6 overflow-hidden ${isDesktop ? "flex-1" : ""}`}
+                style={{ backgroundColor: card.bgColor }}
+                activeOpacity={0.85}
+              >
+                <View className={`absolute -top-8 -right-10 h-24 w-24 rounded-full ${card.topGlowColor}`} />
+                <View className={`absolute -bottom-10 -left-10 h-28 w-28 rounded-full ${card.bottomGlowColor}`} />
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-3">
+                    <View
+                      className={`h-12 w-12 rounded-2xl items-center justify-center ${card.iconBgColor} ${card.iconBorderColor}`}
+                    >
+                      <FontAwesome5 name={card.icon as any} size={18} color={card.iconColor} />
+                    </View>
+                    <View>
+                      <AppText className="text-xl font-bold text-gray-100">{card.title}</AppText>
+                      <AppText className="text-xs text-sky-200/80">{card.subtitle}</AppText>
+                    </View>
                   </View>
-                  <View>
-                    <AppText className="text-xl font-bold text-gray-100">Comunicação</AppText>
-                    <AppText className="text-xs text-sky-200/80">Campanhas e conteúdos</AppText>
-                  </View>
+                  <FontAwesome5 name="arrow-right" size={16} color="rgba(255,255,255,0.6)" />
                 </View>
-                <FontAwesome5 name="arrow-right" size={16} color="rgba(255,255,255,0.6)" />
-              </View>
 
-              <AppText className="text-sm text-gray-300 mt-4">
-                Gerir formulários, eventos, rewards e notificações com impacto.
-              </AppText>
+                <AppText className="text-sm text-gray-300 mt-4">{card.description}</AppText>
 
-              <View className="flex-row flex-wrap gap-2 mt-4">
-                {["Formulários", "Eventos", "Rewards", "Notificações"].map((item) => (
-                  <View key={item} className="rounded-full px-3 py-1 bg-white/5 border border-white/10">
-                    <AppText className="text-[11px] text-gray-300">{item}</AppText>
-                  </View>
-                ))}
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => router.replace("/(app)/(management)/users" as any)}
-              className={`rounded-3xl border border-white/10 p-6 overflow-hidden ${isDesktop ? "flex-1" : ""}`}
-              style={{ backgroundColor: "rgba(16,185,129,0.12)" }}
-              activeOpacity={0.85}
-            >
-              <View className="absolute -top-10 -left-8 h-24 w-24 rounded-full bg-emerald-400/20" />
-              <View className="absolute -bottom-12 -right-10 h-28 w-28 rounded-full bg-emerald-500/20" />
-              <View className="flex-row items-center justify-between">
-                <View className="flex-row items-center gap-3">
-                  <View className="h-12 w-12 rounded-2xl items-center justify-center bg-emerald-500/20 border border-emerald-400/30">
-                    <FontAwesome5 name="users-cog" size={18} color="#34d399" />
-                  </View>
-                  <View>
-                    <AppText className="text-xl font-bold text-gray-100">Gestão</AppText>
-                    <AppText className="text-xs text-emerald-200/80">Administração interna</AppText>
-                  </View>
+                <View className="flex-row flex-wrap gap-2 mt-4">
+                  {card.features.map((feature) => (
+                    <View key={feature} className="rounded-full px-3 py-1 bg-white/5 border border-white/10">
+                      <AppText className="text-[11px] text-gray-300">{feature}</AppText>
+                    </View>
+                  ))}
                 </View>
-                <FontAwesome5 name="arrow-right" size={16} color="rgba(255,255,255,0.6)" />
-              </View>
-
-              <AppText className="text-sm text-gray-300 mt-4">
-                Controlar utilizadores, permissões e configurações avançadas.
-              </AppText>
-
-              <View className="flex-row flex-wrap gap-2 mt-4">
-                {["Utilizadores", "Permissões", "Definições"].map((item) => (
-                  <View key={item} className="rounded-full px-3 py-1 bg-white/5 border border-white/10">
-                    <AppText className="text-[11px] text-gray-300">{item}</AppText>
-                  </View>
-                ))}
-              </View>
-            </TouchableOpacity>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
       </PageWrapper>
