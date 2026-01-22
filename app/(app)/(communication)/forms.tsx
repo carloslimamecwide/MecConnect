@@ -13,6 +13,7 @@ import * as DocumentPicker from "expo-document-picker";
 import React, { useEffect, useRef, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import AppTitle from "../../../src/components/Common/AppTitle";
 import { AppLayout } from "../../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../../src/components/layout/PageWrapper";
 import { useAuth } from "../../../src/contexts/AuthContext";
@@ -80,7 +81,6 @@ export default function FormsScreen() {
   async function handleDownloadTemplate() {
     try {
       await excelService.downloadTemplate();
-      showToast({ message: "Template descarregado com sucesso!", type: "success", position: "top" });
     } catch (error: any) {
       showToast({ message: error.message || "Erro ao descarregar template", type: "error", position: "top" });
     }
@@ -440,14 +440,7 @@ export default function FormsScreen() {
           <ScrollView showsVerticalScrollIndicator={false}>
             <View className="mb-8">
               <View className="flex-row items-center justify-between mb-3">
-                <View className="flex-row items-center gap-3">
-                  <View className="h-12 w-12 rounded-2xl bg-blue-500/20 border border-blue-400/30 items-center justify-center">
-                    <FontAwesome5 name="clipboard-list" size={18} color="#60a5fa" />
-                  </View>
-                  <View>
-                    <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Formulários</AppText>
-                  </View>
-                </View>
+                <AppTitle title="Formulários" iconName="clipboard-list" />
               </View>
 
               <View className="flex-row flex-wrap items-center gap-2 mb-4">

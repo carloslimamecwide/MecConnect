@@ -1,4 +1,5 @@
 import { AppText } from "@/src/components/Common/AppText";
+import AppTitle from "@/src/components/Common/AppTitle";
 import { Button } from "@/src/components/Common/Button";
 import { ConfirmModal } from "@/src/components/Common/ConfirmModal";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -37,16 +38,7 @@ export default function SettingsScreen() {
         <PageWrapper>
           <ScrollView showsVerticalScrollIndicator={false}>
             <View className="mb-6">
-              <View className="flex-row items-center gap-3 mb-4">
-                <View className="h-12 w-12 rounded-2xl bg-blue-500/20 border border-blue-400/30 items-center justify-center">
-                  <FontAwesome5 name="cog" size={18} color="#60a5fa" />
-                </View>
-                <View className="flex-1">
-                  <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">
-                    Definições da Aplicação
-                  </AppText>
-                </View>
-              </View>
+              <AppTitle title="Definições da Aplicação" iconName="cog" />
               <View className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex-row items-center justify-between">
                 <View className="flex-row items-center gap-2">
                   <View className="h-2 w-2 rounded-full bg-emerald-400" />

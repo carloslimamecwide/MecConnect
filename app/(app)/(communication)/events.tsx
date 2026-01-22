@@ -1,4 +1,5 @@
 import { AppText } from "@/src/components/Common/AppText";
+import AppTitle from "@/src/components/Common/AppTitle";
 import { ConfirmModal } from "@/src/components/Common/ConfirmModal";
 import Loading from "@/src/components/Common/Loading";
 import { useAuth } from "@/src/contexts/AuthContext";
@@ -183,7 +184,7 @@ export default function EventsScreen() {
           ...q,
           options: q.options.map((opt, j) => (j === optIdx ? { ...opt, [lang]: value } : opt)),
         };
-      })
+      }),
     );
   };
 
@@ -197,7 +198,7 @@ export default function EventsScreen() {
         if (i !== qIdx) return q;
         const next = q.options.filter((_, j) => j !== optIdx);
         return { ...q, options: next.length ? next : [emptyI18n()] };
-      })
+      }),
     );
   };
 
@@ -225,7 +226,7 @@ export default function EventsScreen() {
 
   const applyYesNoOptions = (qIdx: number) => {
     setQuestions((prev) =>
-      prev.map((q, i) => (i === qIdx ? { ...q, options: YES_NO_OPTIONS.map((opt) => ({ ...opt })) } : q))
+      prev.map((q, i) => (i === qIdx ? { ...q, options: YES_NO_OPTIONS.map((opt) => ({ ...opt })) } : q)),
     );
   };
 
@@ -239,14 +240,7 @@ export default function EventsScreen() {
         <PageWrapper>
           <View className="mb-8">
             <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center gap-3">
-                <View className="h-12 w-12 rounded-2xl bg-blue-500/20 border border-blue-400/30 items-center justify-center">
-                  <FontAwesome5 name="calendar-alt" size={18} color="#60a5fa" />
-                </View>
-                <View>
-                  <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Eventos</AppText>
-                </View>
-              </View>
+              <AppTitle title="Eventos" iconName="calendar-alt" />
 
               <TouchableOpacity
                 onPress={() => setShowCreateForm((v) => !v)}

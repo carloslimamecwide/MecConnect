@@ -1,4 +1,5 @@
 import { AppText } from "@/src/components/Common/AppText";
+import AppTitle from "@/src/components/Common/AppTitle";
 import { Button } from "@/src/components/Common/Button";
 import { ConfirmModal } from "@/src/components/Common/ConfirmModal";
 import { DatePickerSheet } from "@/src/components/Common/DatePickerSheet";
@@ -148,14 +149,7 @@ export default function RewardsScreen() {
           <ScrollView showsVerticalScrollIndicator={false}>
             <View className="mb-8">
               <View className="flex-row items-center justify-between">
-                <View className="flex-row items-center gap-3">
-                  <View className="h-12 w-12 rounded-2xl bg-blue-500/20 border border-blue-400/30 items-center justify-center">
-                    <FontAwesome5 name="gift" size={18} color="#60a5fa" />
-                  </View>
-                  <View>
-                    <AppText className="text-2xl md:text-3xl font-bold text-gray-100 mb-1">Rewards</AppText>
-                  </View>
-                </View>
+                <AppTitle title="Rewards" iconName="gift" />
                 <TouchableOpacity
                   onPress={() => setShowCreateForm(!showCreateForm)}
                   className="rounded-lg px-4 py-2 flex-row items-center gap-2"
