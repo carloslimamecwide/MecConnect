@@ -234,7 +234,7 @@ export default function LoginScreen() {
                   />
                 </View>
 
-                <View className={`w-full max-w-md ${Platform.OS === "android" ? "pb-20" : ""}`}>
+                <View className={`w-full max-w-md pb-20`}>
                   <View className="rounded-3xl border border-white/10 bg-white/5 p-6">
                     <View className="mb-6">
                       <AppText className="text-xs text-blue-200 uppercase tracking-widest mb-2">

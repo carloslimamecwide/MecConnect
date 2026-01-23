@@ -6,7 +6,9 @@ import { DatePickerSheet } from "@/src/components/Common/DatePickerSheet";
 import { Input } from "@/src/components/Common/Input";
 import Loading from "@/src/components/Common/Loading";
 import { TextArea } from "@/src/components/Common/TextArea";
+import { LANGUAGES } from "@/src/constants/forms";
 import { useToast } from "@/src/contexts/ToastContext";
+import type { Language } from "@/src/services/eventsService";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import BottomSheet from "@gorhom/bottom-sheet";
 import React, { useEffect, useRef, useState } from "react";
@@ -16,9 +18,8 @@ import { AppLayout } from "../../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../../src/components/layout/PageWrapper";
 import { useAuth } from "../../../src/contexts/AuthContext";
 import { RewardForm, rewardService } from "../../../src/services/rewardService";
-
-const LANGUAGES = ["PT", "EN", "ES"] as const;
-type Language = (typeof LANGUAGES)[number];
+// const LANGUAGES = ["PT", "EN", "ES"] as const;
+// type Language = (typeof LANGUAGES)[number];
 
 export default function RewardsScreen() {
   const { user, token } = useAuth();
@@ -77,6 +78,8 @@ export default function RewardsScreen() {
 
     try {
       setIsCreating(true);
+
+      // console.log("Criando reward com dados:", { titles, descriptions, expirationDate, numberOfWinners });
       await rewardService.createReward({
         rewardForm: {
           title: { ...titles },

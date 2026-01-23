@@ -15,30 +15,22 @@ import { Input } from "../../../src/components/Common/Input";
 import { TextArea } from "../../../src/components/Common/TextArea";
 import { AppLayout } from "../../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../../src/components/layout/PageWrapper";
+import {
+  LANGUAGES,
+  STEP_LABELS,
+  YES_NO_OPTIONS,
+  displayValue,
+  emptyI18n,
+  newQuestion,
+} from "../../../src/constants/events";
 import type { EventForm, I18nText, Language, QuestionForm } from "../../../src/services/eventsService";
 import { eventsService } from "../../../src/services/eventsService";
-
-const LANGUAGES: Language[] = ["PT", "EN", "ES"];
-const STEP_LABELS = ["Informações", "Perguntas", "Revisão"];
-const YES_NO_OPTIONS: I18nText[] = [
-  { PT: "Sim", EN: "Yes", ES: "Sí" },
-  { PT: "Não", EN: "No", ES: "No" },
-];
-const displayValue = (value: string) => (value.trim() ? value : "-");
-
-const emptyI18n = (): I18nText => ({ PT: "", EN: "", ES: "" });
-const newQuestion = (): QuestionForm => ({
-  text: emptyI18n(),
-  options: [emptyI18n()],
-  descType: "Dropdown",
-});
 
 export default function EventsScreen() {
   const { showToast } = useToast();
   const { user } = useAuth();
 
   const datePickerRef = useRef<BottomSheet>(null);
-
   const [events, setEvents] = useState<EventForm[]>([]);
   const [titles, setTitles] = useState<I18nText>(emptyI18n());
   const [descriptions, setDescriptions] = useState<I18nText>(emptyI18n());
