@@ -1,4 +1,3 @@
-import { Platform } from "react-native";
 import { apiClient } from "./apiClient";
 
 interface PushNotificationPayload {
@@ -11,6 +10,7 @@ interface GeneralNotificationPayload {
   title: string;
   description: string;
   url?: string;
+  contentType?: "pdf" | "video" | "image";
   publishAt?: string;
 }
 
@@ -22,14 +22,6 @@ interface NotificationResponse {
 interface SegmentOption {
   value: string;
   label: string;
-}
-
-export interface NotificationAttachment {
-  name: string;
-  uri: string;
-  mimeType?: string;
-  size?: number;
-  webBlob?: Blob;
 }
 
 const SCREEN_OPTIONS: SegmentOption[] = [
@@ -61,10 +53,10 @@ const SCREEN_OPTIONS: SegmentOption[] = [
 ];
 
 class NotificationService {
-  async testPushNotification(cv: string, payload: PushNotificationPayload): Promise<NotificationResponse> {
-    console.log("Enviando notificação de teste para CV:", cv, "com payload:", JSON.stringify(payload, null, 2));
+  async testPushNotification(payload: PushNotificationPayload): Promise<NotificationResponse> {
+    console.log("com payload:", JSON.stringify(payload, null, 2));
     try {
-      const response = await apiClient.post<NotificationResponse>(`/notifications/test/${cv}`, payload);
+      const response = await apiClient.post<NotificationResponse>(`/notifications/test`, payload);
       return response.data;
     } catch (error) {
       console.error("Test notification error:", error);
@@ -82,49 +74,10 @@ class NotificationService {
       throw error;
     }
   }
-  async GeneralNotification(
-    cv: string,
-    payload: GeneralNotificationPayload,
-    attachment?: NotificationAttachment,
-  ): Promise<NotificationResponse> {
-
-    console.log("Enviando notificação geral para CV:", cv, "com payload:", JSON.stringify(payload, null, 2), "e anexo:", attachment);
+  async GeneralNotification(payload: GeneralNotificationPayload): Promise<NotificationResponse> {
+    console.log("com payload:", JSON.stringify(payload, null, 2));
     try {
-      if (attachment) {
-        const formData = new FormData();
-        formData.append("title", payload.title);
-        formData.append("description", payload.description);
-        if (payload.url) {
-          formData.append("url", payload.url);
-        }
-        if (payload.publishAt) {
-          formData.append("publishAt", payload.publishAt);
-        }
-
-        if (Platform.OS === "web" && attachment.webBlob) {
-          formData.append("file", attachment.webBlob, attachment.name);
-        } else {
-          formData.append("file", {
-            uri: attachment.uri,
-            name: attachment.name,
-            type: attachment.mimeType || "application/octet-stream",
-          } as any);
-        }
-
-        const config =
-          Platform.OS === "web"
-            ? undefined
-            : {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-              };
-
-        const response = await apiClient.post<NotificationResponse>(`/notifications/general/${cv}`, formData, config);
-        return response.data;
-      }
-
-      const response = await apiClient.post<NotificationResponse>(`/notifications/general/${cv}`, payload);
+      const response = await apiClient.post<NotificationResponse>(`/notifications/general`, payload);
       return response.data;
     } catch (error) {
       console.error("General notification error:", error);
