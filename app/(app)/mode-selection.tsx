@@ -35,8 +35,6 @@ export default function ModeSelectionScreen() {
                 style={{ backgroundColor: card.bgColor }}
                 activeOpacity={0.85}
               >
-                <View className={`absolute -top-8 -right-10 h-24 w-24 rounded-full ${card.topGlowColor}`} />
-                <View className={`absolute -bottom-10 -left-10 h-28 w-28 rounded-full ${card.bottomGlowColor}`} />
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-3">
                     <View
