@@ -43,6 +43,16 @@ export default function NotificationsScreen() {
   const [isSending, setIsSending] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
+  const resetForm = () => {
+    setTitle("");
+    setMessage("");
+    setScreen("");
+    setUrl("");
+    setContentType("");
+    setPublishAt(null);
+    setPublishUntil(null);
+  };
+
   useEffect(() => {
     const loadData = async () => {
       // Carregar screens
@@ -223,7 +233,10 @@ export default function NotificationsScreen() {
               width="48%"
               variant={notificationType === "push" ? "primary" : "secondary"}
               icon="bell"
-              onPress={() => setNotificationType("push")}
+              onPress={() => {
+                setNotificationType("push");
+                resetForm();
+              }}
               disabled={isSending || isTesting}
             />
             <Button
@@ -231,7 +244,10 @@ export default function NotificationsScreen() {
               width="48%"
               variant={notificationType === "geral" ? "primary" : "secondary"}
               icon="link"
-              onPress={() => setNotificationType("geral")}
+              onPress={() => {
+                setNotificationType("geral");
+                resetForm();
+              }}
               disabled={isSending || isTesting}
             />
           </View>
