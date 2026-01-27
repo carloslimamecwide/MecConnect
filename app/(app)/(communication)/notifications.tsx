@@ -12,7 +12,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { AppLayout } from "../../../src/components/layout/AppLayout";
 import { PageWrapper } from "../../../src/components/layout/PageWrapper";
-import { useAuth } from "../../../src/contexts/AuthContext";
 import { useToast } from "../../../src/contexts/ToastContext";
 import { notificationService } from "../../../src/services/notificationService";
 
@@ -28,7 +27,6 @@ const CONTENT_TYPE_OPTIONS = [
 ];
 
 export default function NotificationsScreen() {
-  const { user } = useAuth();
   const { showToast } = useToast();
   const dateTimePickerRef = useRef<BottomSheet>(null);
   const endDateTimePickerRef = useRef<BottomSheet>(null);
@@ -58,8 +56,8 @@ export default function NotificationsScreen() {
   const isFormValid =
     title.trim() !== "" &&
     message.trim() !== "" &&
-    (notificationType === "push" || (notificationType === "geral" && url.trim() !== "" && contentType !== "")) &&
-    publishUntil !== null;
+    (notificationType === "push" ||
+      (notificationType === "geral" && url.trim() !== "" && contentType !== "" && publishUntil !== null));
 
   const formatDateTimeLabel = (date: Date) =>
     date.toLocaleString("pt-PT", {
@@ -78,14 +76,14 @@ export default function NotificationsScreen() {
         message:
           notificationType === "geral"
             ? "Preencha título, descrição, URL, tipo e término"
-            : "Preencha o título, a mensagem e o término",
+            : "Preencha o título e a mensagem",
         type: "error",
         position: "top",
       });
       return;
     }
 
-    if (publishAt && publishUntil && publishUntil < publishAt) {
+    if (notificationType === "geral" && publishAt && publishUntil && publishUntil < publishAt) {
       showToast({ message: "O término deve ser depois da data de divulgação", type: "error", position: "top" });
       return;
     }
@@ -97,7 +95,6 @@ export default function NotificationsScreen() {
         message: message.trim(),
         screen: screen.trim() || undefined,
         publishAt: publishAt ? publishAt.toISOString() : undefined,
-        publishUntil: publishUntil ? publishUntil.toISOString() : undefined,
       });
 
       showToast({ message: "Notificação de teste enviada com sucesso!", type: "success", position: "top" });
@@ -121,14 +118,14 @@ export default function NotificationsScreen() {
         message:
           notificationType === "geral"
             ? "Preencha título, descrição, URL, tipo e término"
-            : "Preencha o título, a mensagem e o término",
+            : "Preencha o título e a mensagem",
         type: "error",
         position: "top",
       });
       return;
     }
 
-    if (publishAt && publishUntil && publishUntil < publishAt) {
+    if (notificationType === "geral" && publishAt && publishUntil && publishUntil < publishAt) {
       showToast({ message: "O término deve ser depois da data de divulgação", type: "error", position: "top" });
       return;
     }
@@ -145,7 +142,6 @@ export default function NotificationsScreen() {
           message: message.trim(),
           screen: screen.trim() || "",
           publishAt: publishAt ? publishAt.toISOString() : undefined,
-          publishUntil: publishUntil ? publishUntil.toISOString() : undefined,
         });
       } else {
         await notificationService.generalNotification({
@@ -188,7 +184,7 @@ export default function NotificationsScreen() {
                     ? "Pronto para enviar"
                     : notificationType === "geral"
                       ? "Preencha título, descrição, URL, tipo e término"
-                      : "Preencha título, mensagem e término"}
+                      : "Preencha título e mensagem"}
                 </AppText>
               </View>
               <AppText className="text-xs text-gray-400">
@@ -277,8 +273,7 @@ export default function NotificationsScreen() {
                               <Button
                                 title={publishAt ? "Alterar" : "Agendar"}
                                 variant="info"
-                                width="auto"
-                                className="px-3 py-1.5"
+                                width="25%"
                                 onPress={() => dateTimePickerRef.current?.expand()}
                               />
                             </View>
@@ -287,7 +282,7 @@ export default function NotificationsScreen() {
                                 title="Remover agendamento"
                                 variant="secondary"
                                 width="auto"
-                                className="px-3 py-1.5 self-start"
+                                className="self-start"
                                 onPress={() => setPublishAt(null)}
                               />
                             )}
@@ -301,8 +296,7 @@ export default function NotificationsScreen() {
                               <Button
                                 title={publishUntil ? "Alterar" : "Definir"}
                                 variant="warning"
-                                width="auto"
-                                className="px-3 py-1.5"
+                                width="25%"
                                 onPress={() => endDateTimePickerRef.current?.expand()}
                               />
                             </View>
@@ -311,7 +305,7 @@ export default function NotificationsScreen() {
                                 title="Remover término"
                                 variant="secondary"
                                 width="auto"
-                                className="px-3 py-1.5 self-start"
+                                className="self-start"
                                 onPress={() => setPublishUntil(null)}
                               />
                             )}
@@ -345,56 +339,29 @@ export default function NotificationsScreen() {
 
                     <View className="rounded-xl border border-white/10 bg-white/5 p-4 mt-6">
                       <AppText className="text-xs font-semibold text-gray-300 uppercase mb-3">Divulgação</AppText>
-                      <View className="gap-3">
-                        <View className="flex-row items-center justify-between gap-3">
-                          <View className="flex-1">
-                            <AppText className="text-xs text-gray-400">Data e hora de início</AppText>
-                            <AppText className="text-sm font-semibold text-gray-100">
-                              {publishAt ? formatDateTimeLabel(publishAt) : "Envio imediato"}
-                            </AppText>
-                          </View>
-                          <Button
-                            title={publishAt ? "Alterar" : "Agendar"}
-                            variant="info"
-                            width="auto"
-                            className="px-3 py-1.5"
-                            onPress={() => dateTimePickerRef.current?.expand()}
-                          />
+                      <View className="flex-row items-center justify-between gap-3">
+                        <View className="flex-1">
+                          <AppText className="text-xs text-gray-400">Data e hora</AppText>
+                          <AppText className="text-sm font-semibold text-gray-100">
+                            {publishAt ? formatDateTimeLabel(publishAt) : "Envio imediato"}
+                          </AppText>
                         </View>
-                        {publishAt && (
-                          <Button
-                            title="Remover agendamento"
-                            variant="secondary"
-                            width="auto"
-                            className="px-3 py-1.5 self-start"
-                            onPress={() => setPublishAt(null)}
-                          />
-                        )}
-                        <View className="flex-row items-center justify-between gap-3 pt-2 border-t border-white/10">
-                          <View className="flex-1">
-                            <AppText className="text-xs text-gray-400">Término de divulgação</AppText>
-                            <AppText className="text-sm font-semibold text-gray-100">
-                              {publishUntil ? formatDateTimeLabel(publishUntil) : "Definir término"}
-                            </AppText>
-                          </View>
-                          <Button
-                            title={publishUntil ? "Alterar" : "Definir"}
-                            variant="warning"
-                            width="auto"
-                            className="px-3 py-1.5"
-                            onPress={() => endDateTimePickerRef.current?.expand()}
-                          />
-                        </View>
-                        {publishUntil && (
-                          <Button
-                            title="Remover término"
-                            variant="secondary"
-                            width="auto"
-                            className="px-3 py-1.5 self-start"
-                            onPress={() => setPublishUntil(null)}
-                          />
-                        )}
+                        <Button
+                          title={publishAt ? "Alterar" : "Agendar"}
+                          variant="info"
+                          width="30%"
+                          onPress={() => dateTimePickerRef.current?.expand()}
+                        />
                       </View>
+                      {publishAt && (
+                        <Button
+                          title="Remover agendamento"
+                          variant="secondary"
+                          width="auto"
+                          className="self-start"
+                          onPress={() => setPublishAt(null)}
+                        />
+                      )}
                     </View>
                   </>
                 )}
@@ -452,11 +419,6 @@ export default function NotificationsScreen() {
                     {publishAt && (
                       <AppText className="text-[11px] text-amber-300 mt-2">
                         Divulgação: {formatDateTimeLabel(publishAt)}
-                      </AppText>
-                    )}
-                    {publishUntil && (
-                      <AppText className="text-[11px] text-amber-300 mt-1">
-                        Término: {formatDateTimeLabel(publishUntil)}
                       </AppText>
                     )}
                   </View>

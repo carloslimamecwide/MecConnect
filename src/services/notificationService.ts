@@ -5,7 +5,6 @@ interface PushNotificationPayload {
   message: string;
   screen?: string;
   publishAt?: string;
-  publishUntil?: string;
 }
 interface GeneralNotificationPayload {
   title: string;
