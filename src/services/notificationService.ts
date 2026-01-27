@@ -1,14 +1,17 @@
+import { Platform } from "react-native";
 import { apiClient } from "./apiClient";
 
 interface PushNotificationPayload {
   title: string;
   message: string;
   screen?: string;
+  publishAt?: string;
 }
 interface GeneralNotificationPayload {
   title: string;
   description: string;
   url?: string;
+  publishAt?: string;
 }
 
 interface NotificationResponse {
@@ -16,17 +19,17 @@ interface NotificationResponse {
   message: string;
 }
 
-interface User {
-  cv: string;
-  nome: string;
-  desc_ax2: string;
-  email_prof: string;
-  [key: string]: any;
-}
-
 interface SegmentOption {
   value: string;
   label: string;
+}
+
+export interface NotificationAttachment {
+  name: string;
+  uri: string;
+  mimeType?: string;
+  size?: number;
+  webBlob?: Blob;
 }
 
 const SCREEN_OPTIONS: SegmentOption[] = [
@@ -79,9 +82,48 @@ class NotificationService {
       throw error;
     }
   }
-  async GeneralNotification(cv: string, payload: GeneralNotificationPayload): Promise<NotificationResponse> {
-    console.log("Enviando notificação geral para CV:", cv, "com payload:", JSON.stringify(payload, null, 2));
+  async GeneralNotification(
+    cv: string,
+    payload: GeneralNotificationPayload,
+    attachment?: NotificationAttachment,
+  ): Promise<NotificationResponse> {
+
+    console.log("Enviando notificação geral para CV:", cv, "com payload:", JSON.stringify(payload, null, 2), "e anexo:", attachment);
     try {
+      if (attachment) {
+        const formData = new FormData();
+        formData.append("title", payload.title);
+        formData.append("description", payload.description);
+        if (payload.url) {
+          formData.append("url", payload.url);
+        }
+        if (payload.publishAt) {
+          formData.append("publishAt", payload.publishAt);
+        }
+
+        if (Platform.OS === "web" && attachment.webBlob) {
+          formData.append("file", attachment.webBlob, attachment.name);
+        } else {
+          formData.append("file", {
+            uri: attachment.uri,
+            name: attachment.name,
+            type: attachment.mimeType || "application/octet-stream",
+          } as any);
+        }
+
+        const config =
+          Platform.OS === "web"
+            ? undefined
+            : {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              };
+
+        const response = await apiClient.post<NotificationResponse>(`/notifications/general/${cv}`, formData, config);
+        return response.data;
+      }
+
       const response = await apiClient.post<NotificationResponse>(`/notifications/general/${cv}`, payload);
       return response.data;
     } catch (error) {
