@@ -43,6 +43,9 @@ export default function RewardsScreen() {
   const [numberOfWinners, setNumberOfWinners] = useState(1);
   const [numberOfWinnersDraw, setNumberOfWinnersDraw] = useState(1);
   const [activeLang, setActiveLang] = useState<Language>("PT");
+  const rewardsCount = rewards.length;
+  const expiredCount = rewards.filter((reward) => new Date(reward.dateExpiration) < new Date()).length;
+  const activeCount = rewardsCount - expiredCount;
 
   useEffect(() => {
     loadRewards();
@@ -151,34 +154,56 @@ export default function RewardsScreen() {
         <PageWrapper>
           <ScrollView showsVerticalScrollIndicator={false}>
             <View className="mb-8">
-              <View className="flex-col md:flex-row items-start md:items-center justify-between">
-                <AppTitle title="Rewards" iconName="gift" />
-                <TouchableOpacity
-                  onPress={() => setShowCreateForm(!showCreateForm)}
-                  className="rounded-lg px-4 py-2 flex-row items-center gap-2 mt-3 md:mt-0"
-                  style={{ backgroundColor: showCreateForm ? "#ef4444" : "#0066CC" }}
-                >
-                  <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />
-                  <AppText className="text-white font-semibold text-sm">
-                    {showCreateForm ? "Cancelar" : "Criar Reward"}
-                  </AppText>
-                </TouchableOpacity>
-              </View>
-              <View className="mt-4 rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex-row items-center justify-between">
-                <View className="flex-row items-center gap-2">
-                  <View className={`h-2 w-2 rounded-full ${rewards.length ? "bg-emerald-400" : "bg-amber-400"}`} />
-                  <AppText className="text-xs text-gray-300">
-                    {rewards.length ? `${rewards.length} reward(s) ativo(s)` : "Sem rewards ativos"}
-                  </AppText>
+              <View className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 px-5 py-5">
+                <View className="relative">
+                  <View className="flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <View>
+                      <AppTitle title="Rewards" iconName="gift" />
+                      <AppText className="text-xs text-gray-400 mt-2">
+                        Crie campanhas de recompensa e realize os sorteios com controlo total.
+                      </AppText>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => setShowCreateForm(!showCreateForm)}
+                      className="rounded-full px-5 py-2.5 flex-row items-center gap-2 border border-white/10"
+                      style={{ backgroundColor: showCreateForm ? "rgba(239,68,68,0.18)" : "rgba(0,102,204,0.25)" }}
+                    >
+                      <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />
+                      <AppText className="text-white font-semibold text-sm">
+                        {showCreateForm ? "Fechar criação" : "Criar reward"}
+                      </AppText>
+                    </TouchableOpacity>
+                  </View>
+                  <View className="mt-4 flex-row flex-wrap gap-3">
+                    <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                      <AppText className="text-[11px] text-gray-300 uppercase">Ativos</AppText>
+                      <AppText className="text-sm text-gray-100 font-semibold">{activeCount}</AppText>
+                    </View>
+                    <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                      <AppText className="text-[11px] text-gray-300 uppercase">Expirados</AppText>
+                      <AppText className="text-sm text-gray-100 font-semibold">{expiredCount}</AppText>
+                    </View>
+                    <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                      <AppText className="text-[11px] text-gray-300 uppercase">Idiomas</AppText>
+                      <AppText className="text-sm text-gray-100 font-semibold">{LANGUAGES.join(" · ")}</AppText>
+                    </View>
+                  </View>
                 </View>
-                <AppText className="text-xs text-gray-400">Gestão rápida</AppText>
               </View>
             </View>
 
             {/* Create Form */}
             {showCreateForm && (
               <View className="mb-8 p-5 rounded-2xl bg-white/5 border border-white/10">
-                <AppText className="text-lg font-bold text-gray-100 mb-4">Novo Reward</AppText>
+                <View className="flex-row items-center justify-between mb-4">
+                  <View>
+                    <AppText className="text-lg font-bold text-gray-100">Novo Reward</AppText>
+                    <AppText className="text-xs text-gray-400 mt-1">Defina o prémio e o número de vencedores.</AppText>
+                  </View>
+                  <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                    <AppText className="text-[10px] text-gray-300 uppercase">Setup</AppText>
+                  </View>
+                </View>
 
                 <View className="mb-4">
                   <AppText className="text-sm font-semibold text-gray-300 mb-2">Idioma de edição</AppText>
@@ -231,6 +256,7 @@ export default function RewardsScreen() {
                     keyboardType="numeric"
                     className="mb-2"
                   />
+                  <AppText className="text-xs text-gray-500">O sorteio só fica disponível após a expiração.</AppText>
                 </View>
                 <View className="mb-4">
                   <AppText className="text-sm font-semibold text-gray-300 mb-2">Data de Expiração</AppText>
@@ -268,33 +294,52 @@ export default function RewardsScreen() {
 
             {/* Rewards List */}
             <View className="mb-4">
-              <AppText className="text-lg font-bold text-gray-100 mb-3">Rewards Disponíveis</AppText>
+              <View className="flex-row items-center justify-between mb-3">
+                <AppText className="text-lg font-bold text-gray-100">Rewards Disponíveis</AppText>
+                <TouchableOpacity
+                  onPress={loadRewards}
+                  className="rounded-full px-3 py-1.5 flex-row items-center gap-2 border border-white/10 bg-white/5"
+                >
+                  <FontAwesome5 name="sync-alt" size={12} color="#93c5fd" />
+                  <AppText className="text-xs text-blue-200">Atualizar</AppText>
+                </TouchableOpacity>
+              </View>
               {isLoading ? (
                 <Loading message="A carregar Rewards..." size="large" />
               ) : rewards.length === 0 ? (
-                <View className="rounded-xl p-6 bg-white/5 border border-white/10 items-center">
-                  <FontAwesome5 name="gift" size={32} color="rgba(255,255,255,0.3)" />
-                  <AppText className="text-gray-400 mt-3">Nenhum reward disponível</AppText>
+                <View className="rounded-2xl p-6 bg-white/5 border border-white/10 items-center">
+                  <View className="h-14 w-14 rounded-full bg-emerald-400/15 items-center justify-center">
+                    <FontAwesome5 name="gift" size={22} color="rgba(255,255,255,0.5)" />
+                  </View>
+                  <AppText className="text-gray-300 mt-3">Nenhum reward disponível</AppText>
+                  <AppText className="text-xs text-gray-500 mt-1">Crie o primeiro reward para começar.</AppText>
                 </View>
               ) : (
                 <View className="gap-3">
                   {rewards.map((reward) => {
                     const expired = new Date(reward.dateExpiration) < new Date();
                     return (
-                      <View key={reward.id} className="rounded-xl p-5 bg-white/5 border border-white/10">
+                      <View
+                        key={reward.id}
+                        className={`rounded-2xl p-5 bg-white/5 border border-white/10 relative overflow-hidden `}
+                      >
                         <View className="flex-row items-start justify-between mb-2">
                           <View className="flex-1">
                             <AppText className="text-base font-bold text-gray-100 mb-1">{reward.title}</AppText>
                             <AppText className="text-sm text-gray-300">{reward.description}</AppText>
                           </View>
                           <View className="flex-row items-center gap-3">
-                            <FontAwesome5 name="gift" size={20} color="#10b981" />
+                            <FontAwesome5
+                              name={expired ? "trophy" : "gift"}
+                              size={20}
+                              color={expired ? "#fbbf24" : "#10b981"}
+                            />
                             <TouchableOpacity onPress={() => handleDeleteClick(reward.id)}>
                               <FontAwesome5 name="trash" size={18} color="#ef4444" />
                             </TouchableOpacity>
                           </View>
                         </View>
-                        <View className="flex-row items-center gap-4 mt-3">
+                        <View className="flex-row flex-wrap items-center gap-3 mt-3">
                           <View className="flex-row items-center gap-1">
                             <FontAwesome5 name="calendar" size={12} color="rgba(255,255,255,0.5)" />
                             <AppText className="text-xs text-gray-400">
@@ -304,6 +349,19 @@ export default function RewardsScreen() {
                           <View className="flex-row items-center gap-1">
                             <FontAwesome5 name="language" size={12} color="rgba(255,255,255,0.5)" />
                             <AppText className="text-xs text-gray-400">{reward.language}</AppText>
+                          </View>
+                          <View
+                            className={`rounded-full border px-2.5 py-0.5 ${
+                              expired
+                                ? "border-amber-400/30 bg-amber-400/10"
+                                : "border-emerald-400/30 bg-emerald-400/10"
+                            }`}
+                          >
+                            <AppText
+                              className={`text-[10px] uppercase ${expired ? "text-amber-200" : "text-emerald-200"}`}
+                            >
+                              {expired ? "Sorteio disponível" : "Ativo"}
+                            </AppText>
                           </View>
                         </View>
                         {expired && (

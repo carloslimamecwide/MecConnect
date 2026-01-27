@@ -235,8 +235,6 @@ export default function EventsScreen() {
         <PageWrapper>
           <View className="mb-8">
             <View className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 px-5 py-5">
-              <View className="absolute -right-12 -top-12 h-28 w-28 rounded-full bg-blue-500/15" />
-              <View className="absolute -left-10 bottom-0 h-20 w-20 rounded-full bg-emerald-400/10" />
               <View className="relative">
                 <View className="flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
                   <View>
@@ -279,7 +277,9 @@ export default function EventsScreen() {
               <View className="flex-row items-center justify-between mb-4">
                 <View>
                   <AppText className="text-lg font-bold text-gray-100">Novo Evento</AppText>
-                  <AppText className="text-xs text-gray-400 mt-1">Crie o evento e publique quando estiver pronto.</AppText>
+                  <AppText className="text-xs text-gray-400 mt-1">
+                    Crie o evento e publique quando estiver pronto.
+                  </AppText>
                 </View>
                 <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
                   <AppText className="text-[10px] text-gray-300 uppercase">Etapa {step + 1}</AppText>
@@ -465,7 +465,10 @@ export default function EventsScreen() {
                       )}
                     </View>
                   ))}
-                  <TouchableOpacity onPress={addQuestion} className="mb-4 rounded-full border border-white/10 bg-white/5 px-4 py-2 self-start">
+                  <TouchableOpacity
+                    onPress={addQuestion}
+                    className="mb-4 rounded-full border border-white/10 bg-white/5 px-4 py-2 self-start"
+                  >
                     <AppText className="text-blue-300 text-xs">Adicionar nova pergunta</AppText>
                   </TouchableOpacity>
                 </>
@@ -606,9 +609,10 @@ export default function EventsScreen() {
             ) : (
               <View className="gap-3">
                 {events.map((event) => (
-                  <View key={event.id} className="rounded-2xl p-5 bg-white/5 border border-white/10 relative overflow-hidden">
-                    <View className="absolute -right-10 -top-10 h-20 w-20 rounded-full bg-emerald-400/10" />
-                    <View className="absolute left-0 top-0 h-full w-1 bg-emerald-400/40" />
+                  <View
+                    key={event.id}
+                    className="rounded-2xl p-5 bg-white/5 border border-white/10 relative overflow-hidden"
+                  >
                     <View className="flex-row items-start justify-between mb-2">
                       <View className="flex-1">
                         <AppText className="text-base font-bold text-gray-100 mb-1">{event.title}</AppText>
