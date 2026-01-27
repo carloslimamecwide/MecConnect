@@ -59,6 +59,15 @@ export default function NotificationsScreen() {
     (notificationType === "push" ||
       (notificationType === "geral" && url.trim() !== "" && contentType !== "" && publishUntil !== null));
 
+  const isGeneral = notificationType === "geral";
+  const isScheduled = publishAt ? publishAt.getTime() > Date.now() : false;
+  const statusLabel = isFormValid ? (isScheduled ? "Agendado" : "Pronto") : "Pendente";
+  const statusTone = isFormValid
+    ? isScheduled
+      ? "bg-amber-400/15 text-amber-200 border-amber-300/30"
+      : "bg-emerald-400/15 text-emerald-200 border-emerald-300/30"
+    : "bg-amber-400/15 text-amber-200 border-amber-300/30";
+
   const formatDateTimeLabel = (date: Date) =>
     date.toLocaleString("pt-PT", {
       day: "2-digit",
@@ -94,7 +103,6 @@ export default function NotificationsScreen() {
         title: title.trim(),
         message: message.trim(),
         screen: screen.trim() || undefined,
-        publishAt: publishAt ? publishAt.toISOString() : undefined,
       });
 
       showToast({ message: "Notificação de teste enviada com sucesso!", type: "success", position: "top" });
@@ -175,21 +183,37 @@ export default function NotificationsScreen() {
       <PageWrapper>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View className="mb-8">
-            <AppTitle title="Central de Notificações" iconName="bell" />
-            <View className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex-row items-center justify-between">
-              <View className="flex-row items-center gap-2">
-                <View className={`h-2 w-2 rounded-full ${isFormValid ? "bg-emerald-400" : "bg-amber-400"}`} />
-                <AppText className="text-xs text-gray-300">
-                  {isFormValid
-                    ? "Pronto para enviar"
-                    : notificationType === "geral"
-                      ? "Preencha título, descrição, URL, tipo e término"
-                      : "Preencha título e mensagem"}
+            <View className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 px-5 py-5">
+              <View className="relative">
+                <AppTitle title="Central de Notificações" iconName="bell" />
+                <View className="mt-2 flex-row flex-wrap items-center justify-between gap-3">
+                  <View className={`rounded-full border px-3 py-1 ${statusTone}`}>
+                    <AppText className="text-[11px] font-semibold tracking-wide uppercase text-white">
+                      {statusLabel}
+                    </AppText>
+                  </View>
+                  <AppText className="text-xs text-gray-400">Web · iOS · Android</AppText>
+                </View>
+                <View className="mt-4 flex-row gap-3">
+                  <View className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                    <AppText className="text-[10px] text-gray-400 uppercase">Canal</AppText>
+                    <AppText className="text-sm font-semibold text-gray-100">
+                      {isGeneral ? "Geral (URL)" : "Push Notification"}
+                    </AppText>
+                  </View>
+                  <View className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                    <AppText className="text-[10px] text-gray-400 uppercase">Vigência</AppText>
+                    <AppText className="text-sm font-semibold text-gray-100">
+                      {isGeneral ? (publishUntil ? formatDateTimeLabel(publishUntil) : "Sem término") : "Imediata"}
+                    </AppText>
+                  </View>
+                </View>
+                <AppText className="text-xs text-gray-400 mt-3">
+                  {isGeneral
+                    ? "Requer URL, tipo de conteúdo e término de divulgação."
+                    : "Screen de destino opcional. Agendamento disponível."}
                 </AppText>
               </View>
-              <AppText className="text-xs text-gray-400">
-                {notificationType === "push" ? "Destino MecSpace" : "Disponível em MecSpace"}
-              </AppText>
             </View>
           </View>
           {/* Tipo de notificação */}
@@ -198,6 +222,7 @@ export default function NotificationsScreen() {
               title="Push Notification"
               width="48%"
               variant={notificationType === "push" ? "primary" : "secondary"}
+              icon="bell"
               onPress={() => setNotificationType("push")}
               disabled={isSending || isTesting}
             />
@@ -205,6 +230,7 @@ export default function NotificationsScreen() {
               title="Notificação Geral"
               width="48%"
               variant={notificationType === "geral" ? "primary" : "secondary"}
+              icon="link"
               onPress={() => setNotificationType("geral")}
               disabled={isSending || isTesting}
             />
@@ -233,7 +259,7 @@ export default function NotificationsScreen() {
                       onChangeText={setMessage}
                       placeholder={
                         notificationType === "geral"
-                          ? "Descreva o conteúdo e explique para quem é"
+                          ? "Descreva o conteúdo e explique o contexto de uso"
                           : "Ex: Uma nova versão está disponível para download"
                       }
                       rows={4}
@@ -273,7 +299,7 @@ export default function NotificationsScreen() {
                               <Button
                                 title={publishAt ? "Alterar" : "Agendar"}
                                 variant="info"
-                                width="25%"
+                                width="28%"
                                 onPress={() => dateTimePickerRef.current?.expand()}
                               />
                             </View>
@@ -296,7 +322,7 @@ export default function NotificationsScreen() {
                               <Button
                                 title={publishUntil ? "Alterar" : "Definir"}
                                 variant="warning"
-                                width="25%"
+                                width="28%"
                                 onPress={() => endDateTimePickerRef.current?.expand()}
                               />
                             </View>
@@ -379,7 +405,7 @@ export default function NotificationsScreen() {
                     </View>
                     <View className="flex-1">
                       <AppText className="text-xs text-gray-400">MecConnect</AppText>
-                      <AppText className="text-xs text-gray-500">{publishAt ? "Agendado" : "Agora"}</AppText>
+                      <AppText className="text-xs text-gray-500">{isScheduled ? "Agendado" : "Agora"}</AppText>
                     </View>
                   </View>
                   <AppText className="text-sm font-semibold text-gray-100">
