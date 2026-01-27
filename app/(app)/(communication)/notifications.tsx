@@ -14,7 +14,7 @@ import { useAuth } from "../../../src/contexts/AuthContext";
 import { useToast } from "../../../src/contexts/ToastContext";
 import { notificationService } from "../../../src/services/notificationService";
 
-interface SegmentOption {
+interface ScreenOption {
   value: string;
   label: string;
 }
@@ -22,13 +22,12 @@ interface SegmentOption {
 export default function NotificationsScreen() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const [notificationType, setNotificationType] = useState<"push" | "geral">("push");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [segment, setSegment] = useState("");
   const [screen, setScreen] = useState("");
-  const [segments, setSegments] = useState<SegmentOption[]>([]);
-  const [screens, setScreens] = useState<SegmentOption[]>([]);
-  const [isLoadingSegments, setIsLoadingSegments] = useState(false);
+  const [url, setUrl] = useState("");
+  const [screens, setScreens] = useState<ScreenOption[]>([]);
   const [isTesting, setIsTesting] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -38,43 +37,42 @@ export default function NotificationsScreen() {
       // Carregar screens
       const screenOptions = notificationService.getScreenOptions();
       setScreens(screenOptions);
-
-      setIsLoadingSegments(true);
-      try {
-        const fetchedSegments = await notificationService.fetchSegments();
-        setSegments(fetchedSegments);
-      } catch (err) {
-        console.error("Erro ao carregar segmentos:", err);
-        showToast({ message: "Erro ao carregar segmentos", type: "error", position: "top" });
-      } finally {
-        setIsLoadingSegments(false);
-      }
     };
+
     loadData();
   }, []);
 
-  const isFormValid = title.trim() !== "" && message.trim() !== "";
-  const selectedSegmentLabel = segments.find((opt) => opt.value === segment)?.label;
+  const isFormValid =
+    title.trim() !== "" &&
+    message.trim() !== "" &&
+    (notificationType === "push" || (notificationType === "geral" && url.trim() !== ""));
+
   const selectedScreenLabel = screens.find((opt) => opt.value === screen)?.label;
 
   const handleTestNotification = async () => {
     if (!isFormValid) {
-      showToast({ message: "Preencha o título e a mensagem", type: "error", position: "top" });
+      showToast({
+        message: notificationType === "geral" ? "Preencha título, descrição e URL" : "Preencha o título e a mensagem",
+        type: "error",
+        position: "top",
+      });
       return;
     }
 
     setIsTesting(true);
     try {
-      await notificationService.testNotification(user?.cv || "", {
+      await notificationService.testPushNotification(user?.cv || "", {
         title: title.trim(),
         message: message.trim(),
         screen: screen.trim() || undefined,
       });
+
       showToast({ message: "Notificação de teste enviada com sucesso!", type: "success", position: "top" });
       setTitle("");
       setMessage("");
-      setSegment("");
+ 
       setScreen("");
+      setUrl("");
     } catch (err: any) {
       showToast({ message: err.message || "Erro ao enviar notificação", type: "error", position: "top" });
     } finally {
@@ -94,17 +92,26 @@ export default function NotificationsScreen() {
   const handleConfirmBroadcast = async () => {
     setIsSending(true);
     try {
-      await notificationService.broadcastNotification({
-        title: title.trim(),
-        message: message.trim(),
-        segment: segment.trim() || "",
-        screen: screen.trim() || "",
-      });
+      if (notificationType === "push") {
+        await notificationService.broadcastPushNotification({
+          title: title.trim(),
+          message: message.trim(),
+          screen: screen.trim() || "",
+        });
+      } else {
+        // Serviço para notificação geral (exemplo)
+        await notificationService.GeneralNotification(user?.cv || "", {
+          title: title.trim(),
+          description: message.trim(),
+          url: url.trim(),
+        });
+      }
       showToast({ message: "Notificação enviada para todos com sucesso!", type: "success", position: "top" });
       setTitle("");
       setMessage("");
-      setSegment("");
+    
       setScreen("");
+      setUrl("");
       setShowConfirmModal(false);
     } catch (err: any) {
       showToast({ message: err.message || "Erro ao enviar notificação", type: "error", position: "top" });
@@ -124,11 +131,32 @@ export default function NotificationsScreen() {
               <View className="flex-row items-center gap-2">
                 <View className={`h-2 w-2 rounded-full ${isFormValid ? "bg-emerald-400" : "bg-amber-400"}`} />
                 <AppText className="text-xs text-gray-300">
-                  {isFormValid ? "Pronto para enviar" : "Preencha título e mensagem"}
+                  {isFormValid
+                    ? "Pronto para enviar"
+                    : notificationType === "geral"
+                      ? "Preencha título, descrição e URL"
+                      : "Preencha título e mensagem"}
                 </AppText>
               </View>
               <AppText className="text-xs text-gray-400">Destino opcional</AppText>
             </View>
+          </View>
+          {/* Tipo de notificação */}
+          <View className="flex-row justify-around mb-6">
+            <Button
+              title="Push"
+              width="48%"
+              variant={notificationType === "push" ? "primary" : "secondary"}
+              onPress={() => setNotificationType("push")}
+              disabled={isSending || isTesting}
+            />
+            <Button
+              title="Geral"
+              width="48%"
+              variant={notificationType === "geral" ? "primary" : "secondary"}
+              onPress={() => setNotificationType("geral")}
+              disabled={isSending || isTesting}
+            />
           </View>
 
           <View className="gap-6 md:flex-row">
@@ -139,47 +167,57 @@ export default function NotificationsScreen() {
                   <AppText className="text-xs font-semibold text-blue-200 uppercase mb-4">Conteúdo</AppText>
                   <View className="gap-6">
                     <Input
-                      label="Título da Notificação"
+                      label={notificationType === "geral" ? "Título" : "Título da Notificação"}
                       value={title}
                       onChangeText={setTitle}
-                      placeholder="Ex: Nova atualização disponível"
+                      placeholder={
+                        notificationType === "geral"
+                          ? "Ex: Novo documento disponível"
+                          : "Ex: Nova atualização disponível"
+                      }
                     />
 
                     <TextArea
-                      label="Mensagem"
+                      label={notificationType === "geral" ? "Descrição" : "Mensagem"}
                       value={message}
                       onChangeText={setMessage}
-                      placeholder="Ex: Uma nova versão está disponível para download"
+                      placeholder={
+                        notificationType === "geral"
+                          ? "Descreva o conteúdo, link ou vídeo"
+                          : "Ex: Uma nova versão está disponível para download"
+                      }
                       rows={4}
                     />
+
+                    {notificationType === "geral" && (
+                      <Input
+                        label="URL do Documento ou Vídeo"
+                        value={url}
+                        onChangeText={setUrl}
+                        placeholder="Cole o link do documento, vídeo ou página"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                      />
+                    )}
                   </View>
                 </View>
 
-                <View className="border-t border-white/10 mt-6 pt-6">
-                  <AppText className="text-xs font-semibold text-blue-200 uppercase mb-4">Destino (Opcional)</AppText>
-                  <View className="gap-4">
-                    <View>
-                      <AppText className="text-sm font-semibold text-gray-300 mb-2">Segmento</AppText>
-                      <Select
-                        options={segments}
-                        value={segment}
-                        onChange={setSegment}
-                        placeholder="Selecionar segmento..."
-                        isLoading={isLoadingSegments}
-                      />
-                    </View>
-
-                    <View>
-                      <AppText className="text-sm font-semibold text-gray-300 mb-2">Screen para Redirecionar</AppText>
-                      <Select
-                        options={screens}
-                        value={screen}
-                        onChange={setScreen}
-                        placeholder="Selecionar screen..."
-                      />
+                {notificationType === "push" && (
+                  <View className="border-t border-white/10 mt-6 pt-6">
+                    <AppText className="text-xs font-semibold text-blue-200 uppercase mb-4">Destino (Opcional)</AppText>
+                    <View className="gap-4">
+                      <View>
+                        <AppText className="text-sm font-semibold text-gray-300 mb-2">Screen para Redirecionar</AppText>
+                        <Select
+                          options={screens}
+                          value={screen}
+                          onChange={setScreen}
+                          placeholder="Selecionar screen..."
+                        />
+                      </View>
                     </View>
                   </View>
-                </View>
+                )}
               </View>
             </View>
 
@@ -198,30 +236,40 @@ export default function NotificationsScreen() {
                     </View>
                   </View>
                   <AppText className="text-sm font-semibold text-gray-100">
-                    {title.trim() || "Título da notificação"}
+                    {title.trim() || (notificationType === "geral" ? "Título" : "Título da notificação")}
                   </AppText>
                   <AppText className="text-xs text-gray-300 mt-1">
-                    {message.trim() || "Escreva uma mensagem clara e objetiva para os utilizadores."}
+                    {message.trim() ||
+                      (notificationType === "geral"
+                        ? "Descrição do conteúdo, link ou vídeo."
+                        : "Escreva uma mensagem clara e objetiva para os utilizadores.")}
                   </AppText>
+                  {notificationType === "geral" && url.trim() && (
+                    <AppText className="text-xs text-blue-400 mt-2 break-all">{url}</AppText>
+                  )}
                 </View>
 
-                <View className="border-t border-white/10 mt-4 pt-3">
-                  <AppText className="text-xs text-gray-400">Segmento: {selectedSegmentLabel || "Todos"}</AppText>
-                  <AppText className="text-xs text-gray-400">Screen: {selectedScreenLabel || "Nenhuma"}</AppText>
-                </View>
+                {notificationType === "push" && (
+                  <View className="border-t border-white/10 mt-4 pt-3">
+                    <AppText className="text-xs text-gray-400">Screen: {selectedScreenLabel || "Nenhuma"}</AppText>
+                  </View>
+                )}
               </View>
 
               {/* Botões */}
+
               <View className="gap-3 mt-4 mb-8">
-                <Button
-                  title="Testar no Meu Dispositivo"
-                  variant="info"
-                  icon="mobile-alt"
-                  isLoading={isTesting}
-                  loadingText="Enviando..."
-                  disabled={!isFormValid || isSending}
-                  onPress={handleTestNotification}
-                />
+                {notificationType === "push" && (
+                  <Button
+                    title="Testar no Meu Dispositivo"
+                    variant="info"
+                    icon="mobile-alt"
+                    isLoading={isTesting}
+                    loadingText="Enviando..."
+                    disabled={!isFormValid || isSending}
+                    onPress={handleTestNotification}
+                  />
+                )}
 
                 <Button
                   title="Confirmar e Enviar para Todos"

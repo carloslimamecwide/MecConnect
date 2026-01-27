@@ -1,10 +1,14 @@
 import { apiClient } from "./apiClient";
 
-interface NotificationPayload {
+interface PushNotificationPayload {
   title: string;
   message: string;
-  segment?: string;
   screen?: string;
+}
+interface GeneralNotificationPayload {
+  title: string;
+  description: string;
+  url?: string;
 }
 
 interface NotificationResponse {
@@ -54,8 +58,8 @@ const SCREEN_OPTIONS: SegmentOption[] = [
 ];
 
 class NotificationService {
-  async testNotification(cv: string, payload: NotificationPayload): Promise<NotificationResponse> {
-    // console.log("Enviando notificação de teste para CV:", cv, "com payload:", JSON.stringify(payload, null, 2));
+  async testPushNotification(cv: string, payload: PushNotificationPayload): Promise<NotificationResponse> {
+    console.log("Enviando notificação de teste para CV:", cv, "com payload:", JSON.stringify(payload, null, 2));
     try {
       const response = await apiClient.post<NotificationResponse>(`/notifications/test/${cv}`, payload);
       return response.data;
@@ -65,7 +69,7 @@ class NotificationService {
     }
   }
 
-  async broadcastNotification(payload: NotificationPayload): Promise<NotificationResponse> {
+  async broadcastPushNotification(payload: PushNotificationPayload): Promise<NotificationResponse> {
     console.log("Enviando notificação broadcast com payload:", JSON.stringify(payload, null, 2));
     try {
       const response = await apiClient.post<NotificationResponse>("/notifications/broadcast", payload);
@@ -75,30 +79,13 @@ class NotificationService {
       throw error;
     }
   }
-
-  async fetchSegments(): Promise<SegmentOption[]> {
+  async GeneralNotification(cv: string, payload: GeneralNotificationPayload): Promise<NotificationResponse> {
+    console.log("Enviando notificação geral para CV:", cv, "com payload:", JSON.stringify(payload, null, 2));
     try {
-      const response = await apiClient.get<User[]>("/HierarchyMatrix?status=active");
-      const users = response.data;
-
-      // Extrair desc_ax2 únicos e criar options
-      const uniqueSegments = new Set<string>();
-      users.forEach((user) => {
-        if (user.desc_ax2) {
-          uniqueSegments.add(user.desc_ax2);
-        }
-      });
-
-      const segments: SegmentOption[] = Array.from(uniqueSegments)
-        .sort()
-        .map((segment) => ({
-          value: segment,
-          label: segment,
-        }));
-
-      return segments;
+      const response = await apiClient.post<NotificationResponse>(`/notifications/general/${cv}`, payload);
+      return response.data;
     } catch (error) {
-      console.error("Fetch segments error:", error);
+      console.error("General notification error:", error);
       throw error;
     }
   }
