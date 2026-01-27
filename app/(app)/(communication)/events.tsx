@@ -49,6 +49,9 @@ export default function EventsScreen() {
   const [step, setStep] = useState(0); // 0: Info, 1: Perguntas, 2: Revisão
 
   const cv = user?.cv ?? "";
+  const eventsCount = events.length;
+  const hasEvents = eventsCount > 0;
+  const headerStatus = hasEvents ? `${eventsCount} evento(s) ativo(s)` : "Sem eventos ativos";
 
   useEffect(() => {
     if (!cv) return;
@@ -231,34 +234,57 @@ export default function EventsScreen() {
       <AppLayout title="Eventos">
         <PageWrapper>
           <View className="mb-8">
-            <View className="flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-0">
-              <AppTitle title="Eventos" iconName="calendar-alt" />
-
-              <TouchableOpacity
-                onPress={() => setShowCreateForm((v) => !v)}
-                className="rounded-lg px-4 py-2 flex-row items-center gap-2 self-start md:self-auto"
-                style={{ backgroundColor: showCreateForm ? "#ef4444" : "#0066CC" }}
-              >
-                <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />
-                <AppText className="text-white font-semibold text-sm">
-                  {showCreateForm ? "Cancelar" : "Criar Evento"}
-                </AppText>
-              </TouchableOpacity>
-            </View>
-            <View className="mt-4 rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex-row items-center justify-between">
-              <View className="flex-row items-center gap-2">
-                <View className={`h-2 w-2 rounded-full ${events.length ? "bg-emerald-400" : "bg-amber-400"}`} />
-                <AppText className="text-xs text-gray-300">
-                  {events.length ? `${events.length} evento(s) ativo(s)` : "Sem eventos ativos"}
-                </AppText>
+            <View className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 px-5 py-5">
+              <View className="absolute -right-12 -top-12 h-28 w-28 rounded-full bg-blue-500/15" />
+              <View className="absolute -left-10 bottom-0 h-20 w-20 rounded-full bg-emerald-400/10" />
+              <View className="relative">
+                <View className="flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+                  <View>
+                    <AppTitle title="Eventos" iconName="calendar-alt" />
+                    <AppText className="text-xs text-gray-400 mt-2">
+                      Planeie, publique e acompanhe a participação.
+                    </AppText>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => setShowCreateForm((v) => !v)}
+                    className="rounded-full px-5 py-2.5 flex-row items-center gap-2 self-start md:self-auto border border-white/10"
+                    style={{ backgroundColor: showCreateForm ? "rgba(239,68,68,0.15)" : "rgba(0,102,204,0.25)" }}
+                  >
+                    <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />
+                    <AppText className="text-white font-semibold text-sm">
+                      {showCreateForm ? "Fechar criação" : "Criar evento"}
+                    </AppText>
+                  </TouchableOpacity>
+                </View>
+                <View className="mt-4 flex-row flex-wrap gap-3">
+                  <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                    <AppText className="text-[11px] text-gray-300 uppercase">Status</AppText>
+                    <AppText className="text-sm text-gray-100 font-semibold">{headerStatus}</AppText>
+                  </View>
+                  <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                    <AppText className="text-[11px] text-gray-300 uppercase">Idiomas</AppText>
+                    <AppText className="text-sm text-gray-100 font-semibold">{LANGUAGES.join(" · ")}</AppText>
+                  </View>
+                  <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                    <AppText className="text-[11px] text-gray-300 uppercase">Questionário</AppText>
+                    <AppText className="text-sm text-gray-100 font-semibold">{questions.length} perguntas</AppText>
+                  </View>
+                </View>
               </View>
-              <AppText className="text-xs text-gray-400">Gestão rápida</AppText>
             </View>
           </View>
 
           {showCreateForm && (
             <View className="mb-8 p-5 rounded-2xl bg-white/5 border border-white/10">
-              <AppText className="text-lg font-bold text-gray-100 mb-4">Novo Evento</AppText>
+              <View className="flex-row items-center justify-between mb-4">
+                <View>
+                  <AppText className="text-lg font-bold text-gray-100">Novo Evento</AppText>
+                  <AppText className="text-xs text-gray-400 mt-1">Crie o evento e publique quando estiver pronto.</AppText>
+                </View>
+                <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                  <AppText className="text-[10px] text-gray-300 uppercase">Etapa {step + 1}</AppText>
+                </View>
+              </View>
 
               <View className="mb-5">
                 <View className="flex-row items-center justify-between mb-3">
@@ -274,7 +300,7 @@ export default function EventsScreen() {
                       <View
                         key={label}
                         className={`flex-1 rounded-full px-3 py-2 border ${
-                          isActive ? "bg-blue-600/20 border-blue-400/40" : "bg-white/5 border-white/10"
+                          isActive ? "bg-blue-600/20 border-blue-400/50" : "bg-white/5 border-white/10"
                         }`}
                       >
                         <AppText className={`text-xs text-center ${isActive ? "text-blue-200" : "text-gray-400"}`}>
@@ -367,7 +393,7 @@ export default function EventsScreen() {
                     <AppText className="text-xs text-gray-400">{questions.length} pergunta(s)</AppText>
                   </View>
                   {questions.map((q, qIdx) => (
-                    <View key={qIdx} className="mb-5 rounded-lg p-4 border border-white/10">
+                    <View key={qIdx} className="mb-5 rounded-xl p-4 border border-white/10 bg-white/5">
                       <View className="flex-row items-center justify-between">
                         <View className="flex-1 mr-3">
                           <AppText className="text-gray-100 font-bold">Pergunta {qIdx + 1}</AppText>
@@ -406,7 +432,7 @@ export default function EventsScreen() {
                             className="mb-2"
                           />
 
-                          <View className="mt-3 pt-3">
+                          <View className="mt-3 pt-3 border-t border-white/10">
                             <View className="flex-row items-center justify-between mb-3">
                               <AppText className="text-xs text-gray-300">Opções ({q.options.length})</AppText>
                               <View className="flex-row items-center gap-3">
@@ -439,8 +465,8 @@ export default function EventsScreen() {
                       )}
                     </View>
                   ))}
-                  <TouchableOpacity onPress={addQuestion} className="mb-4">
-                    <AppText className="text-blue-400">Adicionar nova pergunta</AppText>
+                  <TouchableOpacity onPress={addQuestion} className="mb-4 rounded-full border border-white/10 bg-white/5 px-4 py-2 self-start">
+                    <AppText className="text-blue-300 text-xs">Adicionar nova pergunta</AppText>
                   </TouchableOpacity>
                 </>
               )}
@@ -556,19 +582,33 @@ export default function EventsScreen() {
           )}
 
           <View className="mb-4">
-            <AppText className="text-lg font-bold text-gray-100 mb-3">Eventos Disponíveis</AppText>
+            <View className="flex-row items-center justify-between mb-3">
+              <AppText className="text-lg font-bold text-gray-100">Eventos Disponíveis</AppText>
+              <TouchableOpacity
+                onPress={loadEvents}
+                className="rounded-full px-3 py-1.5 flex-row items-center gap-2 border border-white/10 bg-white/5"
+              >
+                <FontAwesome5 name="sync-alt" size={12} color="#93c5fd" />
+                <AppText className="text-xs text-blue-200">Atualizar</AppText>
+              </TouchableOpacity>
+            </View>
 
             {isLoading ? (
               <Loading message="A carregar Eventos..." size="large" />
             ) : events.length === 0 ? (
-              <View className="rounded-xl p-6 bg-white/5 border border-white/10 items-center">
-                <FontAwesome5 name="calendar" size={32} color="rgba(255,255,255,0.3)" />
-                <AppText className="text-gray-400 mt-3">Nenhum evento disponível</AppText>
+              <View className="rounded-2xl p-6 bg-white/5 border border-white/10 items-center">
+                <View className="h-14 w-14 rounded-full bg-blue-500/15 items-center justify-center">
+                  <FontAwesome5 name="calendar" size={22} color="rgba(255,255,255,0.5)" />
+                </View>
+                <AppText className="text-gray-300 mt-3">Nenhum evento disponível</AppText>
+                <AppText className="text-xs text-gray-500 mt-1">Crie o primeiro evento para começar.</AppText>
               </View>
             ) : (
               <View className="gap-3">
                 {events.map((event) => (
-                  <View key={event.id} className="rounded-xl p-5 bg-white/5 border border-white/10">
+                  <View key={event.id} className="rounded-2xl p-5 bg-white/5 border border-white/10 relative overflow-hidden">
+                    <View className="absolute -right-10 -top-10 h-20 w-20 rounded-full bg-emerald-400/10" />
+                    <View className="absolute left-0 top-0 h-full w-1 bg-emerald-400/40" />
                     <View className="flex-row items-start justify-between mb-2">
                       <View className="flex-1">
                         <AppText className="text-base font-bold text-gray-100 mb-1">{event.title}</AppText>
@@ -588,7 +628,7 @@ export default function EventsScreen() {
                       </View>
                     </View>
 
-                    <View className="flex-row items-center gap-4 mt-3">
+                    <View className="flex-row flex-wrap items-center gap-3 mt-3">
                       <View className="flex-row items-center gap-1">
                         <FontAwesome5 name="calendar" size={12} color="rgba(255,255,255,0.5)" />
                         <AppText className="text-xs text-gray-400">
@@ -598,6 +638,9 @@ export default function EventsScreen() {
                       <View className="flex-row items-center gap-1">
                         <FontAwesome5 name="language" size={12} color="rgba(255,255,255,0.5)" />
                         <AppText className="text-xs text-gray-400">{event.language}</AppText>
+                      </View>
+                      <View className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-0.5">
+                        <AppText className="text-[10px] text-emerald-200 uppercase">Ativo</AppText>
                       </View>
                     </View>
                   </View>
