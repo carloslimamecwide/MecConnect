@@ -72,6 +72,7 @@ export default function FormsScreen() {
   const [step, setStep] = useState(0);
 
   const cv = user?.cv ?? "";
+  const formsCount = forms.length;
 
   useEffect(() => {
     if (!cv) return;
@@ -439,50 +440,73 @@ export default function FormsScreen() {
         <PageWrapper>
           <ScrollView showsVerticalScrollIndicator={false}>
             <View className="mb-8">
-              <View className="flex-row items-center justify-between mb-3">
-                <AppTitle title="Formulários" iconName="clipboard-list" />
-              </View>
+              <View className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 px-5 py-5">
+                <View className="relative">
+                  <View className="flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <View>
+                      <AppTitle title="Formulários" iconName="clipboard-list" />
+                      <AppText className="text-xs text-gray-400 mt-2">
+                        Crie questionários com grupos e opções, ou importe via Excel.
+                      </AppText>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => setShowCreateForm((v) => !v)}
+                      className="rounded-full px-5 py-2.5 flex-row items-center gap-2 self-start md:self-auto  border border-white/10 width-auto"
+                      style={{ backgroundColor: showCreateForm ? "rgba(239,68,68,0.18)" : "rgba(0,102,204,0.25)" }}
+                    >
+                      <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />
+                      <AppText className="text-white font-semibold text-sm">
+                        {showCreateForm ? "Fechar criação" : "Criar formulário"}
+                      </AppText>
+                    </TouchableOpacity>
+                  </View>
 
-              <View className="flex-row flex-wrap items-center gap-2 mb-4">
-                <TouchableOpacity
-                  onPress={handleDownloadTemplate}
-                  className="flex-1 min-w-[100px] rounded-lg px-3 py-2.5 flex-row items-center justify-center gap-2 bg-green-600/20 border border-green-500/30"
-                >
-                  <FontAwesome5 name="download" size={14} color="#34d399" />
-                  <AppText className="text-green-400 font-semibold text-sm">Template</AppText>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleImportExcel}
-                  className="flex-1 min-w-[100px] rounded-lg px-3 py-2.5 flex-row items-center justify-center gap-2 bg-orange-600/20 border border-orange-500/30"
-                >
-                  <FontAwesome5 name="upload" size={14} color="#fb923c" />
-                  <AppText className="text-orange-400 font-semibold text-sm">Importar</AppText>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setShowCreateForm((v) => !v)}
-                  className="flex-1 min-w-[100px] rounded-lg px-3 py-2.5 flex-row items-center justify-center gap-2"
-                  style={{ backgroundColor: showCreateForm ? "#ef4444" : "#0066CC" }}
-                >
-                  <FontAwesome5 name={showCreateForm ? "times" : "plus"} size={14} color="#fff" />
-                  <AppText className="text-white font-semibold text-sm">
-                    {showCreateForm ? "Cancelar" : "Criar"}
-                  </AppText>
-                </TouchableOpacity>
-              </View>
+                  <View className="mt-4 flex-row flex-wrap gap-3">
+                    <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                      <AppText className="text-[11px] text-gray-300 uppercase">Ativos</AppText>
+                      <AppText className="text-sm text-gray-100 font-semibold">
+                        {formsCount ? `${formsCount} formulário(s)` : "Sem ativos"}
+                      </AppText>
+                    </View>
+                    <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                      <AppText className="text-[11px] text-gray-300 uppercase">Idiomas</AppText>
+                      <AppText className="text-sm text-gray-100 font-semibold">{LANGUAGES.join(" · ")}</AppText>
+                    </View>
+                  </View>
 
-              <View className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex-row items-center justify-between">
-                <View className="flex-row items-center gap-2">
-                  <View className={`h-2 w-2 rounded-full ${forms.length ? "bg-emerald-400" : "bg-amber-400"}`} />
-                  <AppText className="text-xs text-gray-300">
-                    {forms.length ? `${forms.length} formulário(s) ativo(s)` : "Sem formulários ativos"}
-                  </AppText>
+                  <View className="mt-4 flex-row flex-wrap items-center gap-2">
+                    <TouchableOpacity
+                      onPress={handleDownloadTemplate}
+                      className="rounded-full px-4 py-2 flex-row items-center gap-2 bg-emerald-500/15 border border-emerald-400/30"
+                    >
+                      <FontAwesome5 name="download" size={13} color="#34d399" />
+                      <AppText className="text-emerald-300 font-semibold text-xs">Template</AppText>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={handleImportExcel}
+                      className="rounded-full px-4 py-2 flex-row items-center gap-2 bg-orange-500/15 border border-orange-400/30"
+                    >
+                      <FontAwesome5 name="upload" size={13} color="#fb923c" />
+                      <AppText className="text-orange-300 font-semibold text-xs">Importar Excel</AppText>
+                    </TouchableOpacity>
+                    <View className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
+                      <AppText className="text-[10px] text-gray-400">Gestão rápida</AppText>
+                    </View>
+                  </View>
                 </View>
-                <AppText className="text-xs text-gray-400">Gestão rápida</AppText>
               </View>
             </View>
             {showCreateForm && (
               <View className="mb-8 p-5 rounded-2xl bg-white/5 border border-white/10">
-                <AppText className="text-lg font-bold text-gray-100 mb-4">Novo Formulário</AppText>
+                <View className="flex-row items-center justify-between mb-4">
+                  <View>
+                    <AppText className="text-lg font-bold text-gray-100">Novo Formulário</AppText>
+                    <AppText className="text-xs text-gray-400 mt-1">Estruture grupos, perguntas e opções.</AppText>
+                  </View>
+                  <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                    <AppText className="text-[10px] text-gray-300 uppercase">Etapa {step + 1}</AppText>
+                  </View>
+                </View>
 
                 <View className="mb-5">
                   <View className="flex-row items-center justify-between mb-3">
@@ -587,7 +611,7 @@ export default function FormsScreen() {
                       <AppText className="text-xs text-gray-400">{groups.length} grupo(s)</AppText>
                     </View>
                     {groups.map((group, groupIdx) => (
-                      <View key={groupIdx} className="mb-4 rounded-lg p-4 border border-white/10">
+                      <View key={groupIdx} className="mb-4 rounded-xl p-4 border border-white/10 bg-white/5">
                         <View className="flex-row items-center justify-between mb-2">
                           <AppText className="text-gray-100 font-bold">Grupo {groupIdx + 1}</AppText>
                           <TouchableOpacity onPress={() => removeGroup(groupIdx)}>
@@ -604,7 +628,7 @@ export default function FormsScreen() {
 
                         <AppText className="text-xs text-gray-300 mt-2 mb-2">Perguntas</AppText>
                         {group.questions.map((question, qIdx) => (
-                          <View key={qIdx} className="rounded-lg p-3 border border-white/10 mb-3">
+                          <View key={qIdx} className="rounded-xl p-3 border border-white/10 bg-black/10 mb-3">
                             <View className="flex-row items-center justify-between mb-2">
                               <AppText className="text-gray-200 font-semibold">Pergunta {qIdx + 1}</AppText>
                               <TouchableOpacity onPress={() => removeQuestion(groupIdx, qIdx)}>
@@ -675,20 +699,29 @@ export default function FormsScreen() {
                                     />
                                   </View>
                                 ))}
-                                <TouchableOpacity onPress={() => addOption(groupIdx, qIdx)} className="mt-1">
-                                  <AppText className="text-blue-400 text-xs">Adicionar opção</AppText>
+                                <TouchableOpacity
+                                  onPress={() => addOption(groupIdx, qIdx)}
+                                  className="mt-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 self-start"
+                                >
+                                  <AppText className="text-blue-300 text-xs">Adicionar opção</AppText>
                                 </TouchableOpacity>
                               </View>
                             )}
                           </View>
                         ))}
-                        <TouchableOpacity onPress={() => addQuestion(groupIdx)} className="mt-1">
-                          <AppText className="text-blue-400 text-xs">Adicionar pergunta</AppText>
+                        <TouchableOpacity
+                          onPress={() => addQuestion(groupIdx)}
+                          className="mt-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 self-start"
+                        >
+                          <AppText className="text-blue-300 text-xs">Adicionar pergunta</AppText>
                         </TouchableOpacity>
                       </View>
                     ))}
-                    <TouchableOpacity onPress={addGroup}>
-                      <AppText className="text-blue-400">Adicionar novo grupo</AppText>
+                    <TouchableOpacity
+                      onPress={addGroup}
+                      className="rounded-full border border-white/10 bg-white/5 px-4 py-2 self-start"
+                    >
+                      <AppText className="text-blue-300 text-xs">Adicionar novo grupo</AppText>
                     </TouchableOpacity>
                   </>
                 )}
