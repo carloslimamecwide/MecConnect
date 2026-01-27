@@ -1,3 +1,4 @@
+import { AppText } from "@/src/components/Common/AppText";
 import AppTitle from "@/src/components/Common/AppTitle";
 import { Button } from "@/src/components/Common/Button";
 import { ConfirmModal } from "@/src/components/Common/ConfirmModal";
@@ -28,9 +29,22 @@ export default function SettingsScreen() {
       <AppLayout title="Definições">
         <PageWrapper>
           <ScrollView showsVerticalScrollIndicator={false}>
-            <View className="mb-6">
-              <AppTitle title="Definições da Aplicação" iconName="cog" />
-              <SessionStatusCard appVersion={appVersion} />
+            <View className="mb-8">
+              <View className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 px-5 py-5">
+                <View className="relative">
+                  <View className="flex-row items-center justify-between">
+                    <View>
+                      <AppTitle title="Definições da Aplicação" iconName="cog" />
+                      <AppText className="text-xs text-gray-400 mt-2">
+                        Gerencie conta, aplicação e suporte num só lugar.
+                      </AppText>
+                    </View>
+                  </View>
+                  <View className="mt-4">
+                    <SessionStatusCard appVersion={appVersion} />
+                  </View>
+                </View>
+              </View>
             </View>
             {/* Secção: Conta / Perfil */}
             <UserSection user={user} />
@@ -39,6 +53,7 @@ export default function SettingsScreen() {
             {/* Secção: Suporte */}
             <SupportSection onPress={() => router.push("/support")} />
             {/* Botão Terminar Sessão */}
+
             <Button
               title="Terminar Sessão"
               variant="danger"

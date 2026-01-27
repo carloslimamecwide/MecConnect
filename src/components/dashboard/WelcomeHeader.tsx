@@ -12,8 +12,6 @@ export function WelcomeHeader({ firstName, expiringSoonCount, onRefresh }: Welco
   return (
     <View className="mb-8">
       <View className="rounded-3xl p-6 border border-white/10 bg-white/5 relative overflow-hidden">
-        <View className="absolute -top-10 -right-12 h-32 w-32 rounded-full bg-blue-500/15" />
-        <View className="absolute -bottom-12 -left-12 h-28 w-28 rounded-full bg-emerald-500/10" />
         <View className="flex-row items-center justify-between">
           <View>
             <AppText className="text-xs text-gray-400 mb-2">Bem-vindo</AppText>
