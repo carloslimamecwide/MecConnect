@@ -5,6 +5,7 @@ interface PushNotificationPayload {
   message: string;
   screen?: string;
   publishAt?: string;
+  publishUntil?: string;
 }
 interface GeneralNotificationPayload {
   title: string;
@@ -12,6 +13,7 @@ interface GeneralNotificationPayload {
   url?: string;
   contentType?: "pdf" | "video" | "image";
   publishAt?: string;
+  publishUntil?: string;
 }
 
 interface NotificationResponse {
@@ -74,7 +76,7 @@ class NotificationService {
       throw error;
     }
   }
-  async GeneralNotification(payload: GeneralNotificationPayload): Promise<NotificationResponse> {
+  async generalNotification(payload: GeneralNotificationPayload): Promise<NotificationResponse> {
     console.log("com payload:", JSON.stringify(payload, null, 2));
     try {
       const response = await apiClient.post<NotificationResponse>(`/notifications/general`, payload);
