@@ -29,18 +29,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function loadStoredAuth() {
     try {
       const storedToken = await authService.getToken();
+      // console.log("Stored token:", storedToken);
       if (!storedToken) {
         setIsLoading(false);
+        setUser(null);
+        setToken(null);
+        setIsAdmin(false);
+        setIsSuperAdmin(false);
         return;
       }
-      // Decodifica o token para obter o cv do usuário
-      const decoded = await authService.decodeToken(storedToken);
-      const cv = decoded?.nameid || "";
-      if (!cv) {
-        setIsLoading(false);
-        return;
-      }
-      const matrixUser = await authService.getMatrizHierarquica(cv);
+      const currentUser = await authService.getCurrentUser(storedToken);
       // Se biometria estiver habilitada, exige autenticação biométrica
       if (await biometricService.isBiometricEnabled()) {
         const ok = await biometricService.authenticateBiometric();
@@ -50,11 +48,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(null);
           setToken(null);
           setIsAdmin(false);
+          setIsSuperAdmin(false);
           setIsLoading(false);
           return;
         }
       }
-      setUser(matrixUser);
+      setUser(currentUser);
       setToken(storedToken);
       setIsAdmin(await authService.isAdmin(storedToken));
       setIsSuperAdmin(await authService.isSuperAdmin(storedToken));
@@ -68,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function login(username: string, password: string) {
     try {
       const response = await authService.login(username, password);
-
+      // console.log("Login response:", JSON.stringify(response, null, 2));
       setUser(response.user);
       setToken(response.token);
       setIsAdmin(response.isAdminUser);

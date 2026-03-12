@@ -15,7 +15,7 @@ function useSupport() {
   const [form, setForm] = useState({
     cv: user?.cv || "",
     name: user?.nome || "",
-    email: user?.email_prof || "",
+    email: user?.prof_email || "",
     subject: "",
     description: "",
     platform: "MecConnect",

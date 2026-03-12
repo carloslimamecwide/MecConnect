@@ -78,7 +78,8 @@ apiClient.interceptors.response.use(
   }
 );
 
-// Auth client não precisa de token no header (é ele que obtém o token)
+// Auth client também é usado para endpoints autenticados (ex: /Auth/me),
+// por isso o token pode ser enviado por chamada quando necessário.
 authClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {

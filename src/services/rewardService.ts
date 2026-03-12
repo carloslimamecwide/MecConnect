@@ -45,8 +45,7 @@ class RewardService {
       if (response.status === 204) {
         return [];
       }
-
-      console.log("Fetched active rewards:", JSON.stringify(response.data, null, 2));
+      // console.log("Fetched active rewards:", JSON.stringify(response.data, null, 2));
       return response.data;
     } catch (error: any) {
       console.error("Error fetching active rewards:", error);

@@ -1,26 +1,15 @@
 import * as SecureStore from "expo-secure-store";
 import { jwtDecode } from "jwt-decode";
 import { Platform } from "react-native";
-import type { BackendLoginResponse, LoginResponse, User } from "../types/auth";
 import { STORAGE_KEYS } from "../constants/storage";
-import { apiClient, authClient } from "./apiClient";
-
-export type MyTokenPayload = {
-  jti: string;
-  nameid: string;
-  email: string;
-  given_name: string;
-  app_id: string;
-  role: string | string[];
-  nbf: number;
-  exp: number;
-  iat: number;
-};
+import type { LoginResponse, User } from "../types/auth";
+import type { MyTokenPayload } from "../types/token";
+import { authClient } from "./apiClient";
 
 class AuthService {
   async login(cv: string, password: string): Promise<LoginResponse> {
     try {
-      const response = await authClient.post<BackendLoginResponse>("/Auth/App/FER/login", {
+      const response = await authClient.post<LoginResponse>("/Auth/App/FER/login", {
         user_cv: cv,
         password,
       });
@@ -30,22 +19,13 @@ class AuthService {
         throw new Error("Usuário não possui privilégios de administrador");
       }
       const isSuperAdmin = await this.isSuperAdmin(response.data.token);
-      const matrix = await this.getMatrizHierarquica(response.data.cv);
-      // Mapear resposta do backend para o formato interno
-      const user: User = {
-        cv: matrix.cv,
-        nome: matrix.nome,
-        email_prof: matrix.email_prof,
-        ax2: matrix.ax2,
-        desc_ax2: matrix.desc_ax2,
-        rc: matrix.rc,
-        desc_job: matrix.desc_job,
-      };
+      const user = await this.getCurrentUser(response.data.token);
+
       console.log("Logged in user:", JSON.stringify(user, null, 2));
       const loginResponse: LoginResponse = {
         user,
         token: response.data.token,
-        isAdminUser: isAdminUser,
+        isAdminUser,
         isSuperAdminUser: isSuperAdmin,
       };
 
@@ -62,12 +42,18 @@ class AuthService {
       throw error;
     }
   }
-  async getMatrizHierarquica(cv: string): Promise<User> {
+
+  async getCurrentUser(token: string): Promise<User> {
     try {
-      const response = await apiClient.get(`/HierarchyMatrix/${cv}`);
+      const response = await authClient.get<User>("/Auth/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       return response.data;
     } catch (error) {
-      console.error("Error fetching matriz hierarquica:", error);
+      console.error("Error fetching authenticated user:", error);
       throw error;
     }
   }
@@ -98,9 +84,23 @@ class AuthService {
     }
     if (Array.isArray(decoded.role)) {
       // Verifica apenas o primeiro índice do array de roles
-      return decoded.role[0] === "ADM" || decoded.role[0] === "SUPER_ADMIN";
+      return decoded.role[0] === "COL" || decoded.role[0] === "ADM";
     } else {
-      return decoded.role === "ADM" || decoded.role === "SUPER_ADMIN";
+      return decoded.role === "COL" || decoded.role === "ADM";
+    }
+  }
+  async isSuperAdmin(token: string): Promise<boolean> {
+    if (!token) {
+      return false;
+    }
+    const decoded = await this.decodeToken(token);
+    if (!decoded.role) {
+      return false;
+    }
+    if (Array.isArray(decoded.role)) {
+      return decoded.role[0] === "ADM";
+    } else {
+      return decoded.role === "ADM";
     }
   }
 
@@ -114,22 +114,6 @@ class AuthService {
       return jwtDecode<MyTokenPayload>(token);
     } catch {
       return {} as MyTokenPayload;
-    }
-  }
-  async isSuperAdmin(token: string): Promise<boolean> {
-    if (!token) {
-      return false;
-    }
-    const decoded = await this.decodeToken(token);
-    if (!decoded.role) {
-      return false;
-    }
-    if (Array.isArray(decoded.role)) {
-      // return decoded.role.includes("SUPER_ADMIN");
-      return true;
-    } else {
-      // return decoded.role === "SUPER_ADMIN";
-      return true;
     }
   }
 }

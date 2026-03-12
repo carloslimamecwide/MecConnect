@@ -23,7 +23,7 @@ function UserSection({ user }: Props) {
             <AppText className="text-base font-semibold text-gray-100">
               {user?.nome || "Utilizador Desconhecido"}
             </AppText>
-            {user?.email_prof && <AppText className="text-xs text-gray-500 mt-1">{user.email_prof}</AppText>}
+            {user?.prof_email && <AppText className="text-xs text-gray-500 mt-1">{user.prof_email}</AppText>}
           </View>
         </View>
 
